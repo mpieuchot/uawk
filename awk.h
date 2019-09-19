@@ -171,9 +171,7 @@ extern Node	*nullnode;
 
 /* jump subtypes */
 #define JEXIT	21
-#define JNEXT	22
 #define	JRET	25
-#define	JNEXTFILE	26
 
 /* node types */
 #define NVALUE	1
@@ -188,7 +186,6 @@ extern	int	pairstack[], paircnt;
 #define isexpr(n)	((n)->ntype == NEXPR)
 #define isjump(n)	((n)->ctype == OJUMP)
 #define isexit(n)	((n)->csub == JEXIT)
-#define	isnext(n)	((n)->csub == JNEXT || (n)->csub == JNEXTFILE)
 #define	isret(n)	((n)->csub == JRET)
 #define isrec(n)	((n)->tval & REC)
 #define isfld(n)	((n)->tval & FLD)

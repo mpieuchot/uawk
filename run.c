@@ -76,10 +76,6 @@ static Cell	truecell	={ OBOOL, BTRUE, 0, 0, 1.0, NUM };
 Cell	*True	= &truecell;
 static Cell	falsecell	={ OBOOL, BFALSE, 0, 0, 0.0, NUM };
 Cell	*False	= &falsecell;
-static Cell	nextcell	={ OJUMP, JNEXT, 0, 0, 0.0, NUM };
-Cell	*jnext	= &nextcell;
-static Cell	nextfilecell	={ OJUMP, JNEXTFILE, 0, 0, 0.0, NUM };
-Cell	*jnextfile	= &nextfilecell;
 static Cell	exitcell	={ OJUMP, JEXIT, 0, 0, 0.0, NUM };
 Cell	*jexit	= &exitcell;
 static Cell	retcell		={ OJUMP, JRET, 0, 0, 0.0, NUM };
@@ -196,8 +192,6 @@ Cell *program(Node **a, int n)	/* execute an awk program */
 		goto ex1;
 	if (a[2]) {		/* END */
 		x = execute(a[2]);
-		if (isnext(x))
-			FATAL("illegal next or nextfile from END");
 		tempfree(x);
 	}
   ex1:
@@ -306,7 +300,7 @@ Cell *call(Node **a, int n)	/* function call.  very kludgy and fragile */
 		}
 	}
 	tempfree(fcn);
-	if (isexit(y) || isnext(y))
+	if (isexit(y))
 		return y;
 	if (freed == 0) {
 		tempfree(y);	/* don't free twice! */
@@ -343,7 +337,7 @@ Cell *arg(Node **a, int n)	/* nth argument of a function */
 	return fp->args[n];
 }
 
-Cell *jump(Node **a, int n)	/* break, continue, next, nextfile, return */
+Cell *jump(Node **a, int n)	/* return */
 {
 	Cell *y;
 
@@ -372,11 +366,6 @@ Cell *jump(Node **a, int n)	/* break, continue, next, nextfile, return */
 			tempfree(y);
 		}
 		return(jret);
-	case NEXT:
-		return(jnext);
-	case NEXTFILE:
-		nextfile();
-		return(jnextfile);
 	default:	/* can't happen */
 		FATAL("illegal jump type %d", n);
 	}
@@ -1395,7 +1384,7 @@ Cell *instat(Node **a, int n)	/* for (a[0] in a[1]) a[2] */
 			setsval(vp, cp->nval);
 			ncp = cp->cnext;
 			x = execute(a[2]);
-			if (isnext(x) || isexit(x) || isret(x)) {
+			if (isexit(x) || isret(x)) {
 				tempfree(vp);
 				return(x);
 			}

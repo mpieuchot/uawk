@@ -179,14 +179,6 @@ int getrec(char **pbuf, int *pbufsize, int isrecord)	/* get next input record */
 	return 0;	/* true end of file */
 }
 
-void nextfile(void)
-{
-	if (infile != NULL && infile != stdin)
-		fclose(infile);
-	infile = NULL;
-	argno++;
-}
-
 int readrec(char **pbuf, int *pbufsize, FILE *inf)	/* read one record into buf */
 {
 	int sep, c;

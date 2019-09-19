@@ -90,8 +90,6 @@ struct xx
 	{ CONDEXPR, "condexpr", " ?: " },
 	{ IF, "ifstat", "if(" },
 	{ IN, "instat", "instat" },
-	{ NEXT, "jump", "next" },
-	{ NEXTFILE, "jump", "nextfile" },
 	{ EXIT, "jump", "exit" },
 	{ RETURN, "jump", "ret" },
 	{ BLTIN, "bltin", "bltin" },

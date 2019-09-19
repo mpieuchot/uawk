@@ -53,7 +53,7 @@ Node	*arglist = 0;	/* list of args for current function */
 %token	<i>	FINAL DOT ALL CCL NCCL CHAR OR STAR QUEST PLUS EMPTYRE
 %token	<i>	AND BOR APPEND EQ GE GT LE LT NE IN
 %token	<i>	ARG BLTIN CLOSE DELETE EXIT FUNC 
-%token	<i>	SUB GSUB IF INDEX LSUBSTR MATCHFCN NEXT NEXTFILE
+%token	<i>	SUB GSUB IF INDEX LSUBSTR MATCHFCN
 %token	<i>	ADD MINUS MULT DIVIDE MOD
 %token	<i>	ASSIGN ASGNOP ADDEQ SUBEQ MULTEQ DIVEQ MODEQ POWEQ
 %token	<i>	PRINT PRINTF SPRINTF
@@ -80,7 +80,7 @@ Node	*arglist = 0;	/* list of args for current function */
 %left	GETLINE
 %nonassoc APPEND EQ GE GT LE LT NE MATCHOP IN '|'
 %left	ARG BLTIN CALL CLOSE DELETE EXIT FUNC 
-%left	GSUB IF INDEX LSUBSTR MATCHFCN NEXT NUMBER
+%left	GSUB IF INDEX LSUBSTR MATCHFCN NUMBER
 %left	PRINT PRINTF RETURN SPLIT SPRINTF STRING SUB SUBSTR
 %left	REGEXPR VAR VARNF IVAR '('
 %left	CAT
@@ -301,12 +301,6 @@ stmt:
 	| if stmt else stmt	{ $$ = stat3(IF, $1, $2, $4); }
 	| if stmt		{ $$ = stat3(IF, $1, $2, NIL); }
 	| lbrace stmtlist rbrace { $$ = $2; }
-	| NEXT st	{ if (infunc)
-				SYNTAX("next is illegal inside a function");
-			  $$ = stat1(NEXT, NIL); }
-	| NEXTFILE st	{ if (infunc)
-				SYNTAX("nextfile is illegal inside a function");
-			  $$ = stat1(NEXTFILE, NIL); }
 	| RETURN pattern st	{ $$ = stat1(RETURN, $2); }
 	| RETURN st		{ $$ = stat1(RETURN, NIL); }
 	| simple_stmt st
