@@ -46,18 +46,16 @@ char	*curfname = 0;	/* current function name */
 %token	<i>	FIRSTTOKEN	/* must be first */
 %token	<p>	PROGRAM PASTAT PASTAT2 XBEGIN XEND
 %token	<i>	NL ',' '{' '(' '|' ';' '/' ')' '}' '[' ']'
-%token	<i>	ARRAY
 %token	<i>	FINAL DOT ALL CCL NCCL CHAR OR STAR QUEST PLUS EMPTYRE
 %token	<i>	AND BOR APPEND EQ GE GT LE LT NE IN
 %token	<i>	ARG EXIT
-%token	<i>	IF LSUBSTR
+%token	<i>	IF
 %token	<i>	ADD MINUS MULT DIVIDE MOD
 %token	<i>	ASSIGN ASGNOP ADDEQ SUBEQ MULTEQ DIVEQ MODEQ POWEQ
 %token	<i>	PRINT PRINTF
 %token	<p>	ELSE INTEST CONDEXPR
 %token	<i>	POSTINCR PREINCR POSTDECR PREDECR
 %token	<cp>	VAR IVAR VARNF CALL NUMBER STRING
-%token	<s>	REGEXPR
 
 %type	<p>	pas pattern ppattern plist pplist patlist prarg term
 %type	<p>	pa_pat pa_stat pa_stats
@@ -75,10 +73,9 @@ char	*curfname = 0;	/* current function name */
 %left	AND
 %nonassoc APPEND EQ GE GT LE LT NE IN '|'
 %left	ARG CALL EXIT
-%left	IF LSUBSTR NUMBER
+%left	IF NUMBER
 %left	PRINT PRINTF STRING
-%left	REGEXPR VAR VARNF IVAR '('
-%left	CAT
+%left	VAR VARNF IVAR '('
 %left	'+' '-'
 %left	'*' '/' '%'
 %left	NOT UMINUS
@@ -175,7 +172,6 @@ ppattern:
 		{ $$ = op2(AND, notnull($1), notnull($3)); }
 	| ppattern IN varname		{ $$ = op2(INTEST, $1, makearr($3)); }
 	| '(' plist ')' IN varname	{ $$ = op2(INTEST, $2, makearr($5)); }
-	| ppattern term %prec CAT	{ $$ = op2(CAT, $1, $2); }
 	| term
 	;
 
@@ -195,7 +191,6 @@ pattern:
 	| pattern NE pattern		{ $$ = op2($2, $1, $3); }
 	| pattern IN varname		{ $$ = op2(INTEST, $1, makearr($3)); }
 	| '(' plist ')' IN varname	{ $$ = op2(INTEST, $2, makearr($5)); }
-	| pattern term %prec CAT	{ $$ = op2(CAT, $1, $2); }
 	| term
 	;
 
@@ -291,7 +286,6 @@ term:
 
 var:
 	  varname
-	| varname '[' patlist ']'	{ $$ = op2(ARRAY, makearr($1), $3); }
 	| IVAR				{ $$ = op1(INDIRECT, celltonode($1, CVAR)); }
 	| INDIRECT term	 		{ $$ = op1(INDIRECT, $2); }
 	;	
@@ -304,15 +298,6 @@ varname:
 
 
 %%
-
-void setfname(Cell *p)
-{
-	if (isarr(p))
-		SYNTAX("%s is an array, not a function", p->nval);
-	else if (isfcn(p))
-		SYNTAX("you can't define function %s more than once", p->nval);
-	curfname = p->nval;
-}
 
 int constnode(Node *p)
 {

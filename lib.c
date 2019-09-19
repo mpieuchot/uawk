@@ -120,8 +120,8 @@ int getrec(char **pbuf, int *pbufsize, int isrecord)	/* get next input record */
 		firsttime = 0;
 		initgetrec();
 	}
-	   DPRINTF( ("RS=<%s>, FS=<%s>, ARGC=%g, FILENAME=%s\n",
-		*RS, *FS, *ARGC, *FILENAME) );
+	   DPRINTF( ("RS=<%s>, ARGC=%g, FILENAME=%s\n",
+		*RS, *ARGC, *FILENAME) );
 	if (isrecord) {
 		donefld = 0;
 		donerec = 1;
@@ -185,10 +185,7 @@ int readrec(char **pbuf, int *pbufsize, FILE *inf)	/* read one record into buf *
 	char *rr, *buf = *pbuf;
 	int bufsize = *pbufsize;
 
-	if (strlen(*FS) >= sizeof(inputFS))
-		FATAL("field separator %.10s... is too long", *FS);
 	/*fflush(stdout); avoids some buffering problem but makes it 25% slower*/
-	strlcpy(inputFS, *FS, sizeof inputFS);	/* for subsequent field splitting */
 	if ((sep = **RS) == 0) {
 		sep = '\n';
 		while ((c=getc(inf)) == '\n' && c != EOF)	/* skip leading \n's */
@@ -278,10 +275,7 @@ void fldbld(void)	/* create fields from current record */
 	}
 	fr = fields;
 	i = 0;	/* number of fields accumulated here */
-	strlcpy(inputFS, *FS, sizeof(inputFS));
-	if (strlen(inputFS) > 1) {	/* it's a regular expression */
-		i = refldbld(r, inputFS);
-	} else if ((sep = *inputFS) == ' ') {	/* default whitespace */
+	if ((sep = *inputFS) == ' ') {	/* default whitespace */
 		for (i = 0; ; ) {
 			while (*r == ' ' || *r == '\t' || *r == '\n')
 				r++;
@@ -407,53 +401,6 @@ void growfldtab(int n)	/* make new fields up to at least $n */
 		FATAL("out of space creating %d fields", nf);
 	makefields(nfields+1, nf);
 	nfields = nf;
-}
-
-int refldbld(const char *rec, const char *fs)	/* build fields from reg expr in FS */
-{
-	/* this relies on having fields[] the same length as $0 */
-	/* the fields are all stored in this one array with \0's */
-	char *fr;
-	int i, tempstat, n;
-	fa *pfa;
-
-	n = strlen(rec);
-	if (n > fieldssize) {
-		xfree(fields);
-		if ((fields = (char *) malloc(n+1)) == NULL)
-			FATAL("out of space for fields in refldbld %d", n);
-		fieldssize = n;
-	}
-	fr = fields;
-	*fr = '\0';
-	if (*rec == '\0')
-		return 0;
-	pfa = makedfa(fs, 1);
-	   DPRINTF( ("into refldbld, rec = <%s>, pat = <%s>\n", rec, fs) );
-	tempstat = pfa->initstat;
-	for (i = 1; ; i++) {
-		if (i > nfields)
-			growfldtab(i);
-		if (freeable(fldtab[i]))
-			xfree(fldtab[i]->sval);
-		fldtab[i]->tval = FLD | STR | DONTFREE;
-		fldtab[i]->sval = fr;
-		   DPRINTF( ("refldbld: i=%d\n", i) );
-		if (nematch(pfa, rec)) {
-			pfa->initstat = 2;	/* horrible coupling to b.c */
-			   DPRINTF( ("match %s (%d chars)\n", patbeg, patlen) );
-			strncpy(fr, rec, patbeg-rec);
-			fr += patbeg - rec + 1;
-			*(fr-1) = '\0';
-			rec = patbeg + patlen;
-		} else {
-			   DPRINTF( ("no match %s\n", rec) );
-			strlcpy(fr, rec, fields + fieldssize - fr);
-			pfa->initstat = tempstat;
-			break;
-		}
-	}
-	return i;		
 }
 
 void recbld(void)	/* create $0 from $1..$NF if necessary */

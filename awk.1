@@ -74,8 +74,6 @@ is not specified.
 A value greater than 1 causes
 .Nm
 to dump core on fatal errors.
-.It Fl F Ar fs
-Define the input field separator to be the regular expression
 .Ar fs .
 .It Fl f Ar progfile
 Read program code from the specified file
@@ -122,22 +120,16 @@ separated by newlines, or by the value of
 If
 .Va RS
 is null, then any number of blank lines are used as the record separator,
-and newlines are used as field separators
-(in addition to the value of
-.Va FS ) .
+and newlines are used as field separators.
 This is convenient when working with multi-line records.
 .Pp
-An input line is normally made up of fields separated by whitespace,
-or by the regular expression
-.Va FS .
+An input line is normally made up of fields separated by whitespace.
 The fields are denoted
 .Va $1 , $2 , ... ,
 while
 .Va $0
 refers to the entire line.
-If
-.Va FS
-is null, the input line is split into one field per character.
+The input line is split into one field per character.
 .Pp
 Normally, any number of blanks separate fields.
 In order to set the field separator to a single blank, use the
@@ -280,26 +272,7 @@ statement formats its expression list according to the format
 Patterns are arbitrary Boolean combinations
 (with
 .Ic "\&! || &&" )
-of regular expressions and
-relational expressions.
-.Nm
-supports extended regular expressions
-.Pq EREs .
-See
-.Xr re_format 7
-for more information on regular expressions.
-Isolated regular expressions
-in a pattern apply to the entire line.
-Regular expressions may also occur in
-relational expressions, using the operators
-.Ic ~
-and
-.Ic !~ .
-.Pf / Ar re Ns /
-is a constant regular expression;
-any string (constant or variable) may be used
-as a regular expression, except in the position of an isolated regular expression
-in a pattern.
+of relational expressions.
 .Pp
 A pattern may consist of two patterns separated by a comma;
 in this case, the action is performed for all lines
@@ -309,7 +282,6 @@ through an occurrence of the second.
 A relational expression is one of the following:
 .Pp
 .Bl -tag -width Ds -offset indent -compact
-.It Ar expression matchop regular-expression
 .It Ar expression relop expression
 .It Ar expression Ic in Ar array-name
 .It Xo Ic \&( Ns
@@ -320,14 +292,7 @@ A relational expression is one of the following:
 .Pp
 where a
 .Ar relop
-is any of the six relational operators in C, and a
-.Ar matchop
-is either
-.Ic ~
-(matches)
-or
-.Ic !~
-(does not match).
+is any of the six relational operators in C,
 A conditional is an arithmetic expression,
 a relational expression,
 or a Boolean combination
@@ -362,10 +327,6 @@ Array of environment variables; subscripts are names.
 The name of the current input file.
 .It Va FNR
 Ordinal number of the current record in the current file.
-.It Va FS
-Regular expression used to separate fields; also settable
-by option
-.Fl F Ar fs .
 .It Va NF
 Number of fields in the current record.
 .Va $NF
@@ -394,12 +355,6 @@ expression can modify the exit status.
 Print first two fields in opposite order:
 .Pp
 .Dl { print $2, $1 }
-.Pp
-Same, with input fields separated by comma and/or blanks and tabs:
-.Bd -literal -offset indent
-BEGIN { FS = ",[ \et]*|[ \et]+" }
-      { print $2, $1 }
-.Ed
 .Pp
 Add up first column, print sum and average:
 .Bd -literal -offset indent

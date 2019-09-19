@@ -49,7 +49,6 @@ extern int	safe;		/* 0 => unsafe, 1 => safe */
 #define	RECSIZE	(8 * 1024)	/* sets limit on records, fields, etc., etc. */
 extern int	recsize;	/* size of current record, orig RECSIZE */
 
-extern char	**FS;
 extern char	**RS;
 extern char	**ORS;
 extern char	**OFS;
@@ -65,7 +64,7 @@ extern int	lineno;		/* line number in awk program */
 extern int	errorflag;	/* 1 if error has occurred */
 extern int	donefld;	/* 1 if record broken into fields */
 extern int	donerec;	/* 1 if record is valid (no fld has changed */
-extern char	inputFS[];	/* FS at time of input, for field splitting */
+extern char	inputFS[];	/* for field splitting */
 
 extern int	dbg;
 

@@ -1,7 +1,7 @@
 #	$OpenBSD: Makefile,v 1.16 2017/07/10 21:30:37 espie Exp $
 
 PROG=	awk
-SRCS=	ytab.c lex.c b.c main.c parse.c proctab.c tran.c lib.c run.c
+SRCS=	ytab.c lex.c main.c parse.c proctab.c tran.c lib.c run.c
 LDADD=	-lm
 DPADD=	${LIBM}
 CLEANFILES+=proctab.c maketab ytab.c ytab.h

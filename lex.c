@@ -133,9 +133,7 @@ int gettok(char **pbuf, int *psz)	/* get next input token */
 
 int	word(char *);
 int	string(void);
-int	regexpr(void);
 int	sc	= 0;	/* 1 => return a } right now */
-int	reg	= 0;	/* 1 => return a REGEXPR now */
 
 int yylex(void)
 {
@@ -148,10 +146,6 @@ int yylex(void)
 	if (sc) {
 		sc = 0;
 		RET('}');
-	}
-	if (reg) {
-		reg = 0;
-		return regexpr();
 	}
 	for (;;) {
 		c = gettok(&buf, &bufsize);
@@ -442,47 +436,6 @@ int word(char *w)
 	} else {
 		RET(VAR);
 	}
-}
-
-void startreg(void)	/* next call to yylex will return a regular expression */
-{
-	reg = 1;
-}
-
-int regexpr(void)
-{
-	int c, openclass = 0;
-	static char *buf = 0;
-	static int bufsz = 500;
-	char *bp;
-
-	if (buf == 0 && (buf = (char *) malloc(bufsz)) == NULL)
-		FATAL("out of space for rex expr");
-	bp = buf;
-	for ( ; ((c = input()) != '/' || openclass == 1) && c != 0; ) {
-		if (!adjbuf(&buf, &bufsz, bp-buf+3, 500, &bp, "regexpr"))
-			FATAL("out of space for reg expr %.10s...", buf);
-		if (c == '\n') {
-			SYNTAX( "newline in regular expression %.10s...", buf ); 
-			unput('\n');
-			break;
-		} else if (c == '\\') {
-			*bp++ = '\\'; 
-			*bp++ = input();
-		} else {
-			if (c == '[')
-				openclass = 1;
-			else if (c == ']')
-				openclass = 0;
-			*bp++ = c;
-		}
-	}
-	*bp = 0;
-	if (c == 0)
-		SYNTAX("non-terminated regular expression %.10s...", buf);
-	yylval.s = tostring(buf);
-	unput('/');
-	RET(REGEXPR);
 }
 
 /* low-level lexical stuff, sort of inherited from lex */

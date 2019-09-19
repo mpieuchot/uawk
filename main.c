@@ -58,8 +58,6 @@ int	safe	= 0;	/* 1 => "safe" mode */
 
 int main(int argc, char *argv[])
 {
-	const char *fs = NULL;
-
 	setlocale(LC_ALL, "");
 	setlocale(LC_NUMERIC, "C"); /* for parsing cmdline & prog */
 
@@ -71,7 +69,7 @@ int main(int argc, char *argv[])
 	}
 
 	if (argc == 1) {
-		fprintf(stderr, "usage: %s [-safe] [-V] [-d[n]] [-F fs] "
+		fprintf(stderr, "usage: %s [-safe] [-V] [-d[n]] "
 		    "[-v var=value] [prog | -f progfile]\n\tfile ...\n",
 		    cmdname);
 		exit(1);
@@ -104,22 +102,6 @@ int main(int argc, char *argv[])
 					FATAL("too many -f options"); 
 				pfile[npfile++] = argv[1];
 			}
-			break;
-		case 'F':	/* set field separator */
-			if (argv[1][2] != 0) {	/* arg is -Fsomething */
-				if (argv[1][2] == 't' && argv[1][3] == 0)	/* wart: t=>\t */
-					fs = "\t";
-				else if (argv[1][2] != 0)
-					fs = &argv[1][2];
-			} else {		/* arg is -F something */
-				argc--; argv++;
-				if (argc > 1 && argv[1][0] == 't' && argv[1][1] == 0)	/* wart: t=>\t */
-					fs = "\t";
-				else if (argc > 1 && argv[1][0] != 0)
-					fs = &argv[1][0];
-			}
-			if (fs == NULL || *fs == '\0')
-				WARNING("field separator FS is empty");
 			break;
 		case 'v':	/* -v a=1 to be done NOW.  one -v for each */
 			if (argv[1][2] != 0) {  /* arg is -vsomething */
@@ -185,8 +167,6 @@ int main(int argc, char *argv[])
 		envinit(environ);
 	yyparse();
 	setlocale(LC_NUMERIC, ""); /* back to whatever it is locally */
-	if (fs)
-		*FS = qstring(fs, '\0');
 	   DPRINTF( ("errorflag=%d\n", errorflag) );
 	if (errorflag == 0) {
 		compile_time = 0;

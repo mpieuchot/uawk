@@ -37,7 +37,6 @@ THIS SOFTWARE.
 
 Array	*symtab;	/* main symbol table */
 
-char	**FS;		/* initial field sep */
 char	**RS;		/* initial record sep */
 char	**OFS;		/* output field sep */
 char	**ORS;		/* output record sep */
@@ -50,7 +49,6 @@ char	**FILENAME;	/* current filename argument */
 Awkfloat *ARGC;		/* number of arguments from command line */
 char	**SUBSEP;	/* subscript separator for a[i,j,k]; default \034 */
 
-Cell	*fsloc;		/* FS */
 Cell	*nrloc;		/* NR */
 Cell	*nfloc;		/* NF */
 Cell	*fnrloc;	/* FNR */
@@ -71,8 +69,6 @@ void syminit(void)	/* initialize symbol table with builtin vars */
 	nullloc = setsymtab("$zero&null", "", 0.0, NUM|STR|CON|DONTFREE, symtab);
 	nullnode = celltonode(nullloc, CCON);
 
-	fsloc = setsymtab("FS", " ", 0.0, STR|DONTFREE, symtab);
-	FS = &fsloc->sval;
 	RS = &setsymtab("RS", "\n", 0.0, STR|DONTFREE, symtab)->sval;
 	OFS = &setsymtab("OFS", " ", 0.0, STR|DONTFREE, symtab)->sval;
 	ORS = &setsymtab("ORS", "\n", 0.0, STR|DONTFREE, symtab)->sval;

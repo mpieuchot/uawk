@@ -24,46 +24,18 @@ THIS SOFTWARE.
 ****************************************************************/
 
 extern	int	yywrap(void);
-extern	void	setfname(Cell *);
 extern	int	constnode(Node *);
 extern	char	*strnode(Node *);
 extern	Node	*notnull(Node *);
 extern	int	yyparse(void);
 
 extern	int	yylex(void);
-extern	void	startreg(void);
 extern	int	input(void);
 extern	void	unput(int);
 extern	void	unputstr(const char *);
 extern	int	yylook(void);
 extern	int	yyback(int *, int);
 extern	int	yyinput(void);
-
-extern	fa	*makedfa(const char *, int);
-extern	fa	*mkdfa(const char *, int);
-extern	int	makeinit(fa *, int);
-extern	void	penter(Node *);
-extern	void	freetr(Node *);
-extern	int	hexstr(uschar **);
-extern	int	quoted(uschar **);
-extern	char	*cclenter(const char *);
-extern	void	overflo(const char *);
-extern	void	cfoll(fa *, Node *);
-extern	int	first(Node *);
-extern	void	follow(Node *);
-extern	int	member(int, const char *);
-extern	int	match(fa *, const char *);
-extern	int	pmatch(fa *, const char *);
-extern	int	nematch(fa *, const char *);
-extern	Node	*reparse(const char *);
-extern	Node	*regexp(void);
-extern	Node	*primary(void);
-extern	Node	*concat(Node *);
-extern	Node	*alt(Node *);
-extern	Node	*unary(Node *);
-extern	int	relex(void);
-extern	int	cgoto(fa *, int, int);
-extern	void	freefa(fa *);
 
 extern	int	pgetc(void);
 extern	char	*cursource(void);
@@ -122,7 +94,6 @@ extern	void	setclvar(char *);
 extern	void	fldbld(void);
 extern	void	cleanfld(int, int);
 extern	void	newfld(int);
-extern	int	refldbld(const char *, const char *);
 extern	void	recbld(void);
 extern	Cell	*fieldadr(int);
 extern	void	yyerror(const char *);
