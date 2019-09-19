@@ -379,117 +379,10 @@ Output format for numbers (default
 Output field separator (default blank).
 .It Va ORS
 Output record separator (default newline).
-.It Va RLENGTH
-The length of the string matched by the
-.Fn match
-function.
 .It Va RS
 Input record separator (default newline).
-.It Va RSTART
-The starting position of the string matched by the
-.Fn match
-function.
 .It Va SUBSEP
 Separates multiple subscripts (default 034).
-.El
-.Sh FUNCTIONS
-The awk language has a variety of built-in functions.
-.Ss String Functions
-.Bl -tag -width "split(s, a, fs)"
-.It Fn gsub r t s
-The same as
-.Fn sub
-except that all occurrences of the regular expression are replaced.
-.Fn gsub
-returns the number of replacements.
-.It Fn index s t
-The position in
-.Fa s
-where the string
-.Fa t
-occurs, or 0 if it does not.
-or of
-.Va $0
-if no argument is given.
-.It Fn match s r
-The position in
-.Fa s
-where the regular expression
-.Fa r
-occurs, or 0 if it does not.
-The variable
-.Va RSTART
-is set to the starting position of the matched string
-.Pq which is the same as the returned value
-or zero if no match is found.
-The variable
-.Va RLENGTH
-is set to the length of the matched string,
-or \-1 if no match is found.
-.It Fn split s a fs
-Splits the string
-.Fa s
-into array elements
-.Va a[1] , a[2] , ... , a[n]
-and returns
-.Va n .
-The separation is done with the regular expression
-.Ar fs
-or with the field separator
-.Va FS
-if
-.Ar fs
-is not given.
-An empty string as field separator splits the string
-into one array element per character.
-.It Fn sprintf fmt expr ...
-The string resulting from formatting
-.Fa expr , ...
-according to the
-.Xr printf 1
-format
-.Fa fmt .
-.It Fn sub r t s
-Substitutes
-.Fa t
-for the first occurrence of the regular expression
-.Fa r
-in the string
-.Fa s .
-If
-.Fa s
-is not given,
-.Va $0
-is used.
-An ampersand
-.Pq Sq &
-in
-.Fa t
-is replaced in string
-.Fa s
-with regular expression
-.Fa r .
-A literal ampersand can be specified by preceding it with two backslashes
-.Pq Sq \e\e .
-A literal backslash can be specified by preceding it with another backslash
-.Pq Sq \e\e .
-.Fn sub
-returns the number of replacements.
-.It Fn substr s m n
-Return at most the
-.Fa n Ns -character
-substring of
-.Fa s
-that begins at position
-.Fa m
-counted from 1.
-If
-.Fa n
-is omitted, or if
-.Fa n
-specifies more characters than are left in the string,
-the length of the substring is limited by the length of
-.Fa s .
 .El
 .Sh EXIT STATUS
 .Ex -std awk
@@ -560,10 +453,7 @@ does not support {n,m} pattern matching.
 The flags
 .Op Fl \&dV
 and
-.Op Fl safe ,
-as well as the commands
-.Cm fflush , compl , and , or ,
-.Cm xor , lshift , rshift ,
+.Op Fl safe
 are extensions to that specification.
 .Sh HISTORY
 An

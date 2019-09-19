@@ -49,17 +49,10 @@ Keyword keywords[] ={	/* keep sorted: binary searched */
 	{ "NF",		VARNF,		VARNF },
 	{ "else",	ELSE,		ELSE },
 	{ "exit",	EXIT,		EXIT },
-	{ "gsub",	GSUB,		GSUB },
 	{ "if",		IF,		IF },
 	{ "in",		IN,		IN },
-	{ "index",	INDEX,		INDEX },
-	{ "match",	MATCHFCN,	MATCHFCN },
 	{ "print",	PRINT,		PRINT },
 	{ "printf",	PRINTF,		PRINTF },
-	{ "split",	SPLIT,		SPLIT },
-	{ "sprintf",	SPRINTF,	SPRINTF },
-	{ "sub",	SUB,		SUB },
-	{ "substr",	SUBSTR,		SUBSTR },
 };
 
 #define	RET(x)	{ if(dbg)printf("lex %s\n", tokname(x)); return(x); }
@@ -210,13 +203,8 @@ int yylex(void)
 		case '!':
 			if (peek() == '=') {
 				input(); yylval.i = NE; RET(NE);
-			} else if (peek() == '~') {
-				input(); yylval.i = NOTMATCH; RET(MATCHOP);
 			} else
 				RET(NOT);
-		case '~':
-			yylval.i = MATCH;
-			RET(MATCHOP);
 		case '<':
 			if (peek() == '=') {
 				input(); yylval.i = LE; RET(LE);

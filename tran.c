@@ -49,8 +49,6 @@ Awkfloat *FNR;		/* number of current record in current file */
 char	**FILENAME;	/* current filename argument */
 Awkfloat *ARGC;		/* number of arguments from command line */
 char	**SUBSEP;	/* subscript separator for a[i,j,k]; default \034 */
-Awkfloat *RSTART;	/* start of re matched with ~; origin 1 (!) */
-Awkfloat *RLENGTH;	/* length of same */
 
 Cell	*fsloc;		/* FS */
 Cell	*nrloc;		/* NR */
@@ -58,8 +56,6 @@ Cell	*nfloc;		/* NF */
 Cell	*fnrloc;	/* FNR */
 Array	*ARGVtab;	/* symbol table containing ARGV[...] */
 Array	*ENVtab;	/* symbol table containing ENVIRON[...] */
-Cell	*rstartloc;	/* RSTART */
-Cell	*rlengthloc;	/* RLENGTH */
 Cell	*symtabloc;	/* SYMTAB */
 
 Cell	*nullloc;	/* a guaranteed empty cell */
@@ -90,10 +86,6 @@ void syminit(void)	/* initialize symbol table with builtin vars */
 	fnrloc = setsymtab("FNR", "", 0.0, NUM, symtab);
 	FNR = &fnrloc->fval;
 	SUBSEP = &setsymtab("SUBSEP", "\034", 0.0, STR|DONTFREE, symtab)->sval;
-	rstartloc = setsymtab("RSTART", "", 0.0, NUM, symtab);
-	RSTART = &rstartloc->fval;
-	rlengthloc = setsymtab("RLENGTH", "", 0.0, NUM, symtab);
-	RLENGTH = &rlengthloc->fval;
 	symtabloc = setsymtab("SYMTAB", "", 0.0, ARR, symtab);
 	symtabloc->sval = (char *) symtab;
 }

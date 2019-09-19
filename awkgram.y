@@ -47,38 +47,36 @@ char	*curfname = 0;	/* current function name */
 %token	<p>	PROGRAM PASTAT PASTAT2 XBEGIN XEND
 %token	<i>	NL ',' '{' '(' '|' ';' '/' ')' '}' '[' ']'
 %token	<i>	ARRAY
-%token	<i>	MATCH NOTMATCH MATCHOP
 %token	<i>	FINAL DOT ALL CCL NCCL CHAR OR STAR QUEST PLUS EMPTYRE
 %token	<i>	AND BOR APPEND EQ GE GT LE LT NE IN
 %token	<i>	ARG EXIT
-%token	<i>	SUB GSUB IF INDEX LSUBSTR MATCHFCN
+%token	<i>	IF LSUBSTR
 %token	<i>	ADD MINUS MULT DIVIDE MOD
 %token	<i>	ASSIGN ASGNOP ADDEQ SUBEQ MULTEQ DIVEQ MODEQ POWEQ
-%token	<i>	PRINT PRINTF SPRINTF
+%token	<i>	PRINT PRINTF
 %token	<p>	ELSE INTEST CONDEXPR
 %token	<i>	POSTINCR PREINCR POSTDECR PREDECR
 %token	<cp>	VAR IVAR VARNF CALL NUMBER STRING
 %token	<s>	REGEXPR
 
-%type	<p>	pas pattern ppattern plist pplist patlist prarg term re
+%type	<p>	pas pattern ppattern plist pplist patlist prarg term
 %type	<p>	pa_pat pa_stat pa_stats
-%type	<s>	reg_expr
 %type	<p>	simple_stmt stmt stmtlist
 %type	<p>	var varname
 %type	<p>	if else
 %type	<i>	st
 %type	<i>	pst opt_pst lbrace rbrace rparen comma nl opt_nl and bor
-%type	<i>	subop print
+%type	<i>	print
 
 %right	ASGNOP
 %right	'?'
 %right	':'
 %left	BOR
 %left	AND
-%nonassoc APPEND EQ GE GT LE LT NE MATCHOP IN '|'
+%nonassoc APPEND EQ GE GT LE LT NE IN '|'
 %left	ARG CALL EXIT
-%left	GSUB IF INDEX LSUBSTR MATCHFCN NUMBER
-%left	PRINT PRINTF SPLIT SPRINTF STRING SUB SUBSTR
+%left	IF LSUBSTR NUMBER
+%left	PRINT PRINTF STRING
 %left	REGEXPR VAR VARNF IVAR '('
 %left	CAT
 %left	'+' '-'
@@ -175,16 +173,9 @@ ppattern:
 		{ $$ = op2(BOR, notnull($1), notnull($3)); }
 	| ppattern and ppattern %prec AND
 		{ $$ = op2(AND, notnull($1), notnull($3)); }
-	| ppattern MATCHOP reg_expr	{ $$ = op3($2, NIL, $1, (Node*)makedfa($3, 0)); }
-	| ppattern MATCHOP ppattern
-		{ if (constnode($3))
-			$$ = op3($2, NIL, $1, (Node*)makedfa(strnode($3), 0));
-		  else
-			$$ = op3($2, (Node *)1, $1, $3); }
 	| ppattern IN varname		{ $$ = op2(INTEST, $1, makearr($3)); }
 	| '(' plist ')' IN varname	{ $$ = op2(INTEST, $2, makearr($5)); }
 	| ppattern term %prec CAT	{ $$ = op2(CAT, $1, $2); }
-	| re
 	| term
 	;
 
@@ -202,16 +193,9 @@ pattern:
 	| pattern LE pattern		{ $$ = op2($2, $1, $3); }
 	| pattern LT pattern		{ $$ = op2($2, $1, $3); }
 	| pattern NE pattern		{ $$ = op2($2, $1, $3); }
-	| pattern MATCHOP reg_expr	{ $$ = op3($2, NIL, $1, (Node*)makedfa($3, 0)); }
-	| pattern MATCHOP pattern
-		{ if (constnode($3))
-			$$ = op3($2, NIL, $1, (Node*)makedfa(strnode($3), 0));
-		  else
-			$$ = op3($2, (Node *)1, $1, $3); }
 	| pattern IN varname		{ $$ = op2(INTEST, $1, makearr($3)); }
 	| '(' plist ')' IN varname	{ $$ = op2(INTEST, $2, makearr($5)); }
 	| pattern term %prec CAT	{ $$ = op2(CAT, $1, $2); }
-	| re
 	| term
 	;
 
@@ -241,16 +225,6 @@ pst:
 
 rbrace:
 	  '}' | rbrace NL
-	;
-
-re:
-	   reg_expr
-		{ $$ = op3(MATCH, NIL, rectonode(), (Node*)makedfa($1, 0)); }
-	| NOT re	{ $$ = op1(NOT, notnull($2)); }
-	;
-
-reg_expr:
-	  '/' {startreg();} REGEXPR '/'		{ $$ = $3; }
 	;
 
 rparen:
@@ -292,10 +266,6 @@ stmtlist:
 	| stmtlist stmt		{ $$ = linkum($1, $2); }
 	;
 
-subop:
-	  SUB | GSUB
-	;
-
 term:
  	  term '/' ASGNOP term		{ $$ = op2(DIVEQ, $1, $4); }
  	| term '+' term			{ $$ = op2(ADD, $1, $3); }
@@ -313,46 +283,9 @@ term:
 	| INCR var			{ $$ = op1(PREINCR, $2); }
 	| var DECR			{ $$ = op1(POSTDECR, $1); }
 	| var INCR			{ $$ = op1(POSTINCR, $1); }
-	| INDEX '(' pattern comma pattern ')'
-		{ $$ = op2(INDEX, $3, $5); }
-	| INDEX '(' pattern comma reg_expr ')'
-		{ SYNTAX("index() doesn't permit regular expressions");
-		  $$ = op2(INDEX, $3, (Node*)$5); }
 	| '(' pattern ')'		{ $$ = $2; }
-	| MATCHFCN '(' pattern comma reg_expr ')'
-		{ $$ = op3(MATCHFCN, NIL, $3, (Node*)makedfa($5, 1)); }
-	| MATCHFCN '(' pattern comma pattern ')'
-		{ if (constnode($5))
-			$$ = op3(MATCHFCN, NIL, $3, (Node*)makedfa(strnode($5), 1));
-		  else
-			$$ = op3(MATCHFCN, (Node *)1, $3, $5); }
 	| NUMBER			{ $$ = celltonode($1, CCON); }
-	| SPLIT '(' pattern comma varname comma pattern ')'     /* string */
-		{ $$ = op4(SPLIT, $3, makearr($5), $7, (Node*)STRING); }
-	| SPLIT '(' pattern comma varname comma reg_expr ')'    /* const /regexp/ */
-		{ $$ = op4(SPLIT, $3, makearr($5), (Node*)makedfa($7, 1), (Node *)REGEXPR); }
-	| SPLIT '(' pattern comma varname ')'
-		{ $$ = op4(SPLIT, $3, makearr($5), NIL, (Node*)STRING); }  /* default */
-	| SPRINTF '(' patlist ')'	{ $$ = op1($1, $3); }
 	| STRING	 		{ $$ = celltonode($1, CCON); }
-	| subop '(' reg_expr comma pattern ')'
-		{ $$ = op4($1, NIL, (Node*)makedfa($3, 1), $5, rectonode()); }
-	| subop '(' pattern comma pattern ')'
-		{ if (constnode($3))
-			$$ = op4($1, NIL, (Node*)makedfa(strnode($3), 1), $5, rectonode());
-		  else
-			$$ = op4($1, (Node *)1, $3, $5, rectonode()); }
-	| subop '(' reg_expr comma pattern comma var ')'
-		{ $$ = op4($1, NIL, (Node*)makedfa($3, 1), $5, $7); }
-	| subop '(' pattern comma pattern comma var ')'
-		{ if (constnode($3))
-			$$ = op4($1, NIL, (Node*)makedfa(strnode($3), 1), $5, $7);
-		  else
-			$$ = op4($1, (Node *)1, $3, $5, $7); }
-	| SUBSTR '(' pattern comma pattern comma pattern ')'
-		{ $$ = op3(SUBSTR, $3, $5, $7); }
-	| SUBSTR '(' pattern comma pattern ')'
-		{ $$ = op3(SUBSTR, $3, $5, NIL); }
 	| var
 	;
 
