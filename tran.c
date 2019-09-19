@@ -53,7 +53,6 @@ Cell	*nrloc;		/* NR */
 Cell	*nfloc;		/* NF */
 Cell	*fnrloc;	/* FNR */
 Array	*ARGVtab;	/* symbol table containing ARGV[...] */
-Array	*ENVtab;	/* symbol table containing ENVIRON[...] */
 Cell	*symtabloc;	/* SYMTAB */
 
 Cell	*nullloc;	/* a guaranteed empty cell */
@@ -103,28 +102,6 @@ void arginit(int ac, char **av)	/* set up ARGV and ARGC */
 		else
 			setsymtab(temp, *av, 0.0, STR, ARGVtab);
 		av++;
-	}
-}
-
-void envinit(char **envp)	/* set up ENVIRON variable */
-{
-	Cell *cp;
-	char *p;
-
-	cp = setsymtab("ENVIRON", "", 0.0, ARR, symtab);
-	ENVtab = makesymtab(NSYMTAB);
-	cp->sval = (char *) ENVtab;
-	for ( ; *envp; envp++) {
-		if ((p = strchr(*envp, '=')) == NULL)
-			continue;
-		if( p == *envp ) /* no left hand side name in env string */
-			continue;
-		*p++ = 0;	/* split into two strings at = */
-		if (is_number(p))
-			setsymtab(*envp, p, atof(p), STR|NUM, ENVtab);
-		else
-			setsymtab(*envp, p, 0.0, STR, ENVtab);
-		p[-1] = '=';	/* restore in case env is passed down to a shell */
 	}
 }
 

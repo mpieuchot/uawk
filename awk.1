@@ -82,14 +82,8 @@ instead of from the command line.
 .It Fl safe
 Disable file output
 .Pf ( Ic print No > ,
-.Ic print No >> ) ,
-process creation
-.Po
-.Ic print | ,
-.Pc
-and access to the environment
-.Pf ( Va ENVIRON ;
-see the section on variables below).
+.Ic print No >> ) 
+and process creation.
 This is a first
 .Pq and not very reliable
 approximation to a
@@ -321,8 +315,6 @@ non-null members are taken as filenames.
 Conversion format when converting numbers
 (default
 .Qq Li %.6g ) .
-.It Va ENVIRON
-Array of environment variables; subscripts are names.
 .It Va FILENAME
 The name of the current input file.
 .It Va FNR

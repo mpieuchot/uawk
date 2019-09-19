@@ -163,8 +163,6 @@ int main(int argc, char *argv[])
 	argv[0] = cmdname;	/* put prog name at front of arglist */
 	   DPRINTF( ("argc=%d, argv[0]=%s\n", argc, argv[0]) );
 	arginit(argc, argv);
-	if (!safe)
-		envinit(environ);
 	yyparse();
 	setlocale(LC_NUMERIC, ""); /* back to whatever it is locally */
 	   DPRINTF( ("errorflag=%d\n", errorflag) );
