@@ -33,9 +33,7 @@ int yywrap(void) { return(1); }
 
 Node	*beginloc = 0;
 Node	*endloc = 0;
-int	infunc	= 0;	/* = 1 if in arglist or body of func */
 char	*curfname = 0;	/* current function name */
-Node	*arglist = 0;	/* list of args for current function */
 %}
 
 %union {
@@ -52,7 +50,7 @@ Node	*arglist = 0;	/* list of args for current function */
 %token	<i>	MATCH NOTMATCH MATCHOP
 %token	<i>	FINAL DOT ALL CCL NCCL CHAR OR STAR QUEST PLUS EMPTYRE
 %token	<i>	AND BOR APPEND EQ GE GT LE LT NE IN
-%token	<i>	ARG BLTIN EXIT FUNC 
+%token	<i>	ARG BLTIN EXIT
 %token	<i>	SUB GSUB IF INDEX LSUBSTR MATCHFCN
 %token	<i>	ADD MINUS MULT DIVIDE MOD
 %token	<i>	ASSIGN ASGNOP ADDEQ SUBEQ MULTEQ DIVEQ MODEQ POWEQ
@@ -66,7 +64,7 @@ Node	*arglist = 0;	/* list of args for current function */
 %type	<p>	pa_pat pa_stat pa_stats
 %type	<s>	reg_expr
 %type	<p>	simple_stmt stmt stmtlist
-%type	<p>	var varname funcname varlist
+%type	<p>	var varname
 %type	<p>	if else
 %type	<i>	st
 %type	<i>	pst opt_pst lbrace rbrace rparen comma nl opt_nl and bor
@@ -78,7 +76,7 @@ Node	*arglist = 0;	/* list of args for current function */
 %left	BOR
 %left	AND
 %nonassoc APPEND EQ GE GT LE LT NE MATCHOP IN '|'
-%left	ARG BLTIN CALL EXIT FUNC 
+%left	ARG BLTIN CALL EXIT
 %left	GSUB IF INDEX LSUBSTR MATCHFCN NUMBER
 %left	PRINT PRINTF SPLIT SPRINTF STRING SUB SUBSTR
 %left	REGEXPR VAR VARNF IVAR '('
@@ -113,11 +111,6 @@ comma:
 
 else:
 	  ELSE | else NL
-	;
-
-funcname:
-	  VAR	{ setfname($1); }
-	| CALL	{ setfname($1); }
 	;
 
 if:
@@ -162,8 +155,6 @@ pa_stat:
 		{ beginloc = linkum(beginloc, $3); $$ = 0; }
 	| XEND lbrace stmtlist '}'
 		{ endloc = linkum(endloc, $3); $$ = 0; }
-	| FUNC funcname '(' varlist rparen {infunc++;} lbrace stmtlist '}'
-		{ infunc--; curfname=0; defn((Cell *)$2, $4, $8); $$ = 0; }
 	;
 
 pa_stats:
@@ -374,14 +365,6 @@ var:
 	| IVAR				{ $$ = op1(INDIRECT, celltonode($1, CVAR)); }
 	| INDIRECT term	 		{ $$ = op1(INDIRECT, $2); }
 	;	
-
-varlist:
-	  /* nothing */		{ arglist = $$ = 0; }
-	| VAR			{ arglist = $$ = celltonode($1,CVAR); }
-	| varlist comma VAR	{
-			checkdup($1, $3);
-			arglist = $$ = linkum($1,celltonode($3,CVAR)); }
-	;
 
 varname:
 	  VAR			{ $$ = celltonode($1, CVAR); }

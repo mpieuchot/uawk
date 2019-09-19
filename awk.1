@@ -393,19 +393,7 @@ function.
 Separates multiple subscripts (default 034).
 .El
 .Sh FUNCTIONS
-The awk language has a variety of built-in functions:
-arithmetic, string, input/output, general, and bit-operation.
-.Pp
-Functions may be defined (at the position of a pattern-action statement)
-thusly:
-.Pp
-.Dl function foo(a, b, c) { ...; return x }
-.Pp
-Parameters are passed by value if scalar, and by reference if array name;
-functions may be called recursively.
-Parameters are local to the function; all other variables are global.
-Thus local variables may be created by providing excess parameters in
-the function definition.
+The awk language has a variety of built-in functions.
 .Ss String Functions
 .Bl -tag -width "split(s, a, fs)"
 .It Fn gsub r t s
@@ -606,6 +594,3 @@ To force an expression to be treated as a number add 0 to it;
 to force it to be treated as a string concatenate
 .Li \&""
 to it.
-.Pp
-The scope rules for variables in functions are a botch;
-the syntax is worse.

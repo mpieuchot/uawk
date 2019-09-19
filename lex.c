@@ -31,7 +31,6 @@ THIS SOFTWARE.
 #include "ytab.h"
 
 extern YYSTYPE	yylval;
-extern int	infunc;
 
 int	lineno	= 1;
 int	bracecnt = 0;
@@ -50,8 +49,6 @@ Keyword keywords[] ={	/* keep sorted: binary searched */
 	{ "NF",		VARNF,		VARNF },
 	{ "else",	ELSE,		ELSE },
 	{ "exit",	EXIT,		EXIT },
-	{ "func",	FUNC,		FUNC },
-	{ "function",	FUNC,		FUNC },
 	{ "gsub",	GSUB,		GSUB },
 	{ "if",		IF,		IF },
 	{ "in",		IN,		IN },
@@ -291,7 +288,7 @@ int yylex(void)
 					RET(INDIRECT);
 				}
 				c = peek();
-				if (c == '(' || c == '[' || (infunc && isarg(buf) >= 0)) {
+				if (c == '(' || c == '[' ) {
 					unputstr(buf);
 					RET(INDIRECT);
 				}
@@ -448,10 +445,6 @@ int word(char *w)
 		switch (kp->type) {	/* special handling */
 		case BLTIN:
 			RET(kp->type);
-		case FUNC:
-			if (infunc)
-				SYNTAX( "illegal nested function" );
-			RET(kp->type);
 		case VARNF:
 			yylval.cp = setsymtab("NF", "", 0.0, NUM, symtab);
 			RET(VARNF);
@@ -460,16 +453,11 @@ int word(char *w)
 		}
 	}
 	c = peek();	/* look for '(' */
-	if (c != '(' && infunc && (n=isarg(w)) >= 0) {
-		yylval.i = n;
-		RET(ARG);
+	yylval.cp = setsymtab(w, "", 0.0, STR|NUM|DONTFREE, symtab);
+	if (c == '(') {
+		RET(CALL);
 	} else {
-		yylval.cp = setsymtab(w, "", 0.0, STR|NUM|DONTFREE, symtab);
-		if (c == '(') {
-			RET(CALL);
-		} else {
-			RET(VAR);
-		}
+		RET(VAR);
 	}
 }
 

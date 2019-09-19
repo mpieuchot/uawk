@@ -231,41 +231,6 @@ Node *linkum(Node *a, Node *b)
 	return(a);
 }
 
-void defn(Cell *v, Node *vl, Node *st)	/* turn on FCN bit in definition, */
-{					/*   body of function, arglist */
-	Node *p;
-	int n;
-
-	if (isarr(v)) {
-		SYNTAX( "`%s' is an array name and a function name", v->nval );
-		return;
-	}
-	if (isarg(v->nval) != -1) {
-		SYNTAX( "`%s' is both function name and argument name", v->nval );
-		return;
-	}
-
-	v->tval = FCN;
-	v->sval = (char *) st;
-	n = 0;	/* count arguments */
-	for (p = vl; p; p = p->nnext)
-		n++;
-	v->fval = n;
-	DPRINTF( ("defining func %s (%d args)\n", v->nval, n) );
-}
-
-int isarg(const char *s)		/* is s in argument list for current function? */
-{			/* return -1 if not, otherwise arg # */
-	extern Node *arglist;
-	Node *p = arglist;
-	int n;
-
-	for (n = 0; p != 0; p = p->nnext, n++)
-		if (strcmp(((Cell *)(p->narg[0]))->nval, s) == 0)
-			return n;
-	return -1;
-}
-
 int ptoi(void *p)	/* convert pointer to integer */
 {
 	return (int) (long) p;	/* swearing that p fits, of course */
