@@ -1423,10 +1423,6 @@ Cell *bltin(Node **a, int n)	/* builtin functions. a[0] is type, a[1] is arg lis
 		tempfree(y);
 		nextarg = nextarg->nnext;
 		break;
-	case FSYSTEM:
-		fflush(stdout);		/* in case something is buffered already */
-		u = (Awkfloat) system(getsval(x)) / 256;   /* 256 is unix-dep */
-		break;
 	case FRAND:
 		u = (Awkfloat) (random() & RAND_MAX) / ((u_int)RAND_MAX + 1);
 		break;

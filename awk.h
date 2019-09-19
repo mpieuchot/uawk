@@ -118,7 +118,6 @@ extern Cell	*rlengthloc;	/* RLENGTH */
 #define	FEXP	3
 #define	FLOG	4
 #define	FINT	5
-#define	FSYSTEM	6
 #define	FRAND	7
 #define	FSRAND	8
 #define	FSIN	9

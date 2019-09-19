@@ -88,7 +88,6 @@ Disable file output
 process creation
 .Po
 .Ic print | ,
-.Ic system
 .Pc
 and access to the environment
 .Pf ( Va ENVIRON ;
@@ -589,10 +588,6 @@ or all open files or pipes if
 is omitted.
 .Fa expr
 should match the string that was used to open the file or pipe.
-.It Fn system cmd
-Executes
-.Fa cmd
-and returns its exit status.
 .El
 .Ss Bit-Operation Functions
 .Bl -tag -width "lshift(a, b)"

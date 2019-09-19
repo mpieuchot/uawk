@@ -81,7 +81,6 @@ Keyword keywords[] ={	/* keep sorted: binary searched */
 	{ "srand",	FSRAND,		BLTIN },
 	{ "sub",	SUB,		SUB },
 	{ "substr",	SUBSTR,		SUBSTR },
-	{ "system",	FSYSTEM,	BLTIN },
 	{ "tolower",	FTOLOWER,	BLTIN },
 	{ "toupper",	FTOUPPER,	BLTIN },
 	{ "xor",	FXOR,		BLTIN },
@@ -466,8 +465,6 @@ int word(char *w)
 		yylval.i = kp->sub;
 		switch (kp->type) {	/* special handling */
 		case BLTIN:
-			if (kp->sub == FSYSTEM && safe)
-				SYNTAX( "system is unsafe" );
 			RET(kp->type);
 		case FUNC:
 			if (infunc)
