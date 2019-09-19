@@ -76,10 +76,6 @@ static Cell	truecell	={ OBOOL, BTRUE, 0, 0, 1.0, NUM };
 Cell	*True	= &truecell;
 static Cell	falsecell	={ OBOOL, BFALSE, 0, 0, 0.0, NUM };
 Cell	*False	= &falsecell;
-static Cell	breakcell	={ OJUMP, JBREAK, 0, 0, 0.0, NUM };
-Cell	*jbreak	= &breakcell;
-static Cell	contcell	={ OJUMP, JCONT, 0, 0, 0.0, NUM };
-Cell	*jcont	= &contcell;
 static Cell	nextcell	={ OJUMP, JNEXT, 0, 0, 0.0, NUM };
 Cell	*jnext	= &nextcell;
 static Cell	nextfilecell	={ OJUMP, JNEXTFILE, 0, 0, 0.0, NUM };
@@ -200,8 +196,8 @@ Cell *program(Node **a, int n)	/* execute an awk program */
 		goto ex1;
 	if (a[2]) {		/* END */
 		x = execute(a[2]);
-		if (isbreak(x) || isnext(x) || iscont(x))
-			FATAL("illegal break, continue, next or nextfile from END");
+		if (isnext(x))
+			FATAL("illegal next or nextfile from END");
 		tempfree(x);
 	}
   ex1:
@@ -381,10 +377,6 @@ Cell *jump(Node **a, int n)	/* break, continue, next, nextfile, return */
 	case NEXTFILE:
 		nextfile();
 		return(jnextfile);
-	case BREAK:
-		return(jbreak);
-	case CONTINUE:
-		return(jcont);
 	default:	/* can't happen */
 		FATAL("illegal jump type %d", n);
 	}
@@ -1385,67 +1377,6 @@ Cell *ifstat(Node **a, int n)	/* if (a[0]) a[1]; else a[2] */
 	return(x);
 }
 
-Cell *whilestat(Node **a, int n)	/* while (a[0]) a[1] */
-{
-	Cell *x;
-
-	for (;;) {
-		x = execute(a[0]);
-		if (!istrue(x))
-			return(x);
-		tempfree(x);
-		x = execute(a[1]);
-		if (isbreak(x)) {
-			x = True;
-			return(x);
-		}
-		if (isnext(x) || isexit(x) || isret(x))
-			return(x);
-		tempfree(x);
-	}
-}
-
-Cell *dostat(Node **a, int n)	/* do a[0]; while(a[1]) */
-{
-	Cell *x;
-
-	for (;;) {
-		x = execute(a[0]);
-		if (isbreak(x))
-			return True;
-		if (isnext(x) || isexit(x) || isret(x))
-			return(x);
-		tempfree(x);
-		x = execute(a[1]);
-		if (!istrue(x))
-			return(x);
-		tempfree(x);
-	}
-}
-
-Cell *forstat(Node **a, int n)	/* for (a[0]; a[1]; a[2]) a[3] */
-{
-	Cell *x;
-
-	x = execute(a[0]);
-	tempfree(x);
-	for (;;) {
-		if (a[1]!=0) {
-			x = execute(a[1]);
-			if (!istrue(x)) return(x);
-			else tempfree(x);
-		}
-		x = execute(a[3]);
-		if (isbreak(x))		/* turn off break */
-			return True;
-		if (isnext(x) || isexit(x) || isret(x))
-			return(x);
-		tempfree(x);
-		x = execute(a[2]);
-		tempfree(x);
-	}
-}
-
 Cell *instat(Node **a, int n)	/* for (a[0] in a[1]) a[2] */
 {
 	Cell *x, *vp, *arrayp, *cp, *ncp;
@@ -1464,10 +1395,6 @@ Cell *instat(Node **a, int n)	/* for (a[0] in a[1]) a[2] */
 			setsval(vp, cp->nval);
 			ncp = cp->cnext;
 			x = execute(a[2]);
-			if (isbreak(x)) {
-				tempfree(vp);
-				return True;
-			}
 			if (isnext(x) || isexit(x) || isret(x)) {
 				tempfree(vp);
 				return(x);

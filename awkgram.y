@@ -34,7 +34,6 @@ int yywrap(void) { return(1); }
 Node	*beginloc = 0;
 Node	*endloc = 0;
 int	infunc	= 0;	/* = 1 if in arglist or body of func */
-int	inloop	= 0;	/* = 1 if in while, for, do */
 char	*curfname = 0;	/* current function name */
 Node	*arglist = 0;	/* list of args for current function */
 %}
@@ -53,7 +52,7 @@ Node	*arglist = 0;	/* list of args for current function */
 %token	<i>	MATCH NOTMATCH MATCHOP
 %token	<i>	FINAL DOT ALL CCL NCCL CHAR OR STAR QUEST PLUS EMPTYRE
 %token	<i>	AND BOR APPEND EQ GE GT LE LT NE IN
-%token	<i>	ARG BLTIN BREAK CLOSE CONTINUE DELETE DO EXIT FOR FUNC 
+%token	<i>	ARG BLTIN CLOSE DELETE EXIT FUNC 
 %token	<i>	SUB GSUB IF INDEX LSUBSTR MATCHFCN NEXT NEXTFILE
 %token	<i>	ADD MINUS MULT DIVIDE MOD
 %token	<i>	ASSIGN ASGNOP ADDEQ SUBEQ MULTEQ DIVEQ MODEQ POWEQ
@@ -66,10 +65,10 @@ Node	*arglist = 0;	/* list of args for current function */
 %type	<p>	pas pattern ppattern plist pplist patlist prarg term re
 %type	<p>	pa_pat pa_stat pa_stats
 %type	<s>	reg_expr
-%type	<p>	simple_stmt opt_simple_stmt stmt stmtlist
+%type	<p>	simple_stmt stmt stmtlist
 %type	<p>	var varname funcname varlist
-%type	<p>	for if else while
-%type	<i>	do st
+%type	<p>	if else
+%type	<i>	st
 %type	<i>	pst opt_pst lbrace rbrace rparen comma nl opt_nl and bor
 %type	<i>	subop print
 
@@ -80,10 +79,10 @@ Node	*arglist = 0;	/* list of args for current function */
 %left	AND
 %left	GETLINE
 %nonassoc APPEND EQ GE GT LE LT NE MATCHOP IN '|'
-%left	ARG BLTIN BREAK CALL CLOSE CONTINUE DELETE DO EXIT FOR FUNC 
+%left	ARG BLTIN CALL CLOSE DELETE EXIT FUNC 
 %left	GSUB IF INDEX LSUBSTR MATCHFCN NEXT NUMBER
 %left	PRINT PRINTF RETURN SPLIT SPRINTF STRING SUB SUBSTR
-%left	REGEXPR VAR VARNF IVAR WHILE '('
+%left	REGEXPR VAR VARNF IVAR '('
 %left	CAT
 %left	'+' '-'
 %left	'*' '/' '%'
@@ -113,21 +112,8 @@ comma:
 	  ',' | comma NL
 	;
 
-do:
-	  DO | do NL
-	;
-
 else:
 	  ELSE | else NL
-	;
-
-for:
-	  FOR '(' opt_simple_stmt ';' opt_nl pattern ';' opt_nl opt_simple_stmt rparen {inloop++;} stmt
-		{ --inloop; $$ = stat4(FOR, $3, notnull($6), $9, $12); }
-	| FOR '(' opt_simple_stmt ';'  ';' opt_nl opt_simple_stmt rparen {inloop++;} stmt
-		{ --inloop; $$ = stat4(FOR, $3, NIL, $7, $10); }
-	| FOR '(' varname IN varname rparen {inloop++;} stmt
-		{ --inloop; $$ = stat3(IN, $3, makearr($5), $8); }
 	;
 
 funcname:
@@ -157,11 +143,6 @@ opt_pst:
 	| pst
 	;
 
-
-opt_simple_stmt:
-	  /* empty */			{ $$ = 0; }
-	| simple_stmt
-	;
 
 pas:
 	  opt_pst			{ $$ = 0; }
@@ -315,15 +296,8 @@ st:
 	;
 
 stmt:
-	  BREAK st		{ if (!inloop) SYNTAX("break illegal outside of loops");
-				  $$ = stat1(BREAK, NIL); }
-	| CONTINUE st		{  if (!inloop) SYNTAX("continue illegal outside of loops");
-				  $$ = stat1(CONTINUE, NIL); }
-	| do {inloop++;} stmt {--inloop;} WHILE '(' pattern ')' st
-		{ $$ = stat2(DO, $3, notnull($7)); }
 	| EXIT pattern st	{ $$ = stat1(EXIT, $2); }
 	| EXIT st		{ $$ = stat1(EXIT, NIL); }
-	| for
 	| if stmt else stmt	{ $$ = stat3(IF, $1, $2, $4); }
 	| if stmt		{ $$ = stat3(IF, $1, $2, NIL); }
 	| lbrace stmtlist rbrace { $$ = $2; }
@@ -336,7 +310,6 @@ stmt:
 	| RETURN pattern st	{ $$ = stat1(RETURN, $2); }
 	| RETURN st		{ $$ = stat1(RETURN, NIL); }
 	| simple_stmt st
-	| while {inloop++;} stmt	{ --inloop; $$ = stat2(WHILE, $1, $3); }
 	| ';' opt_nl		{ $$ = 0; }
 	;
 
@@ -438,10 +411,6 @@ varname:
 	| VARNF			{ $$ = op1(VARNF, (Node *) $1); }
 	;
 
-
-while:
-	  WHILE '(' pattern rparen	{ $$ = notnull($3); }
-	;
 
 %%
 

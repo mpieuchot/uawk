@@ -186,10 +186,7 @@ or
 .Sq else
 keywords,
 or after the closing parenthesis of an
-.Sq if ,
-.Sq for ,
-or
-.Sq while
+.Sq if
 statement.
 Additionally, a backslash
 .Pq Sq \e
@@ -200,12 +197,6 @@ A statement can be one of the following:
 .Pp
 .Bl -tag -width Ds -offset indent -compact
 .It Ic if Ar ( expression ) Ar statement Op Ic else Ar statement
-.It Ic while Ar ( expression ) Ar statement
-.It Ic for Ar ( expression ; expression ; expression ) statement
-.It Ic for Ar ( var Ic in Ar array ) statement
-.It Ic do Ar statement Ic while Ar ( expression )
-.It Ic break
-.It Ic continue
 .It Xo Ic {
 .Op Ar statement ...
 .Ic }
