@@ -81,7 +81,7 @@ Node	*arglist = 0;	/* list of args for current function */
 %nonassoc APPEND EQ GE GT LE LT NE MATCHOP IN '|'
 %left	ARG BLTIN CALL CLOSE DELETE EXIT FUNC 
 %left	GSUB IF INDEX LSUBSTR MATCHFCN NUMBER
-%left	PRINT PRINTF RETURN SPLIT SPRINTF STRING SUB SUBSTR
+%left	PRINT PRINTF SPLIT SPRINTF STRING SUB SUBSTR
 %left	REGEXPR VAR VARNF IVAR '('
 %left	CAT
 %left	'+' '-'
@@ -301,8 +301,6 @@ stmt:
 	| if stmt else stmt	{ $$ = stat3(IF, $1, $2, $4); }
 	| if stmt		{ $$ = stat3(IF, $1, $2, NIL); }
 	| lbrace stmtlist rbrace { $$ = $2; }
-	| RETURN pattern st	{ $$ = stat1(RETURN, $2); }
-	| RETURN st		{ $$ = stat1(RETURN, NIL); }
 	| simple_stmt st
 	| ';' opt_nl		{ $$ = 0; }
 	;

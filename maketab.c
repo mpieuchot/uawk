@@ -91,7 +91,6 @@ struct xx
 	{ IF, "ifstat", "if(" },
 	{ IN, "instat", "instat" },
 	{ EXIT, "jump", "exit" },
-	{ RETURN, "jump", "ret" },
 	{ BLTIN, "bltin", "bltin" },
 	{ CALL, "call", "call" },
 	{ ARG, "arg", "arg" },

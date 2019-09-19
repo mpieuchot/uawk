@@ -74,7 +74,6 @@ Keyword keywords[] ={	/* keep sorted: binary searched */
 	{ "print",	PRINT,		PRINT },
 	{ "printf",	PRINTF,		PRINTF },
 	{ "rand",	FRAND,		BLTIN },
-	{ "return",	RETURN,		RETURN },
 	{ "rshift",	FRSHIFT,	BLTIN },
 	{ "sin",	FSIN,		BLTIN },
 	{ "split",	SPLIT,		SPLIT },
@@ -474,10 +473,6 @@ int word(char *w)
 		case FUNC:
 			if (infunc)
 				SYNTAX( "illegal nested function" );
-			RET(kp->type);
-		case RETURN:
-			if (!infunc)
-				SYNTAX( "return not in function" );
 			RET(kp->type);
 		case VARNF:
 			yylval.cp = setsymtab("NF", "", 0.0, NUM, symtab);

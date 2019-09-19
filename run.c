@@ -78,8 +78,6 @@ static Cell	falsecell	={ OBOOL, BFALSE, 0, 0, 0.0, NUM };
 Cell	*False	= &falsecell;
 static Cell	exitcell	={ OJUMP, JEXIT, 0, 0, 0.0, NUM };
 Cell	*jexit	= &exitcell;
-static Cell	retcell		={ OJUMP, JRET, 0, 0, 0.0, NUM };
-Cell	*jret	= &retcell;
 static Cell	tempcell	={ OCELL, CTEMP, 0, "", 0.0, NUM|STR|DONTFREE };
 
 Node	*curnode = NULL;	/* the node being executed, for debugging */
@@ -349,23 +347,6 @@ Cell *jump(Node **a, int n)	/* return */
 			tempfree(y);
 		}
 		longjmp(env, 1);
-	case RETURN:
-		if (a[0] != NULL) {
-			y = execute(a[0]);
-			if ((y->tval & (STR|NUM)) == (STR|NUM)) {
-				setsval(fp->retval, getsval(y));
-				fp->retval->fval = getfval(y);
-				fp->retval->tval |= NUM;
-			}
-			else if (y->tval & STR)
-				setsval(fp->retval, getsval(y));
-			else if (y->tval & NUM)
-				setfval(fp->retval, getfval(y));
-			else		/* can't happen */
-				FATAL("bad type variable %d", y->tval);
-			tempfree(y);
-		}
-		return(jret);
 	default:	/* can't happen */
 		FATAL("illegal jump type %d", n);
 	}
@@ -1384,7 +1365,7 @@ Cell *instat(Node **a, int n)	/* for (a[0] in a[1]) a[2] */
 			setsval(vp, cp->nval);
 			ncp = cp->cnext;
 			x = execute(a[2]);
-			if (isexit(x) || isret(x)) {
+			if (isexit(x)) {
 				tempfree(vp);
 				return(x);
 			}
