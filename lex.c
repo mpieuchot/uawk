@@ -53,7 +53,6 @@ Keyword keywords[] ={	/* keep sorted: binary searched */
 	{ "close",	CLOSE,		CLOSE },
 	{ "compl",	FCOMPL,		BLTIN },
 	{ "cos",	FCOS,		BLTIN },
-	{ "delete",	DELETE,		DELETE },
 	{ "else",	ELSE,		ELSE },
 	{ "exit",	EXIT,		EXIT },
 	{ "exp",	FEXP,		BLTIN },

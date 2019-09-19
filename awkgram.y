@@ -52,7 +52,7 @@ Node	*arglist = 0;	/* list of args for current function */
 %token	<i>	MATCH NOTMATCH MATCHOP
 %token	<i>	FINAL DOT ALL CCL NCCL CHAR OR STAR QUEST PLUS EMPTYRE
 %token	<i>	AND BOR APPEND EQ GE GT LE LT NE IN
-%token	<i>	ARG BLTIN CLOSE DELETE EXIT FUNC 
+%token	<i>	ARG BLTIN CLOSE EXIT FUNC 
 %token	<i>	SUB GSUB IF INDEX LSUBSTR MATCHFCN
 %token	<i>	ADD MINUS MULT DIVIDE MOD
 %token	<i>	ASSIGN ASGNOP ADDEQ SUBEQ MULTEQ DIVEQ MODEQ POWEQ
@@ -78,7 +78,7 @@ Node	*arglist = 0;	/* list of args for current function */
 %left	BOR
 %left	AND
 %nonassoc APPEND EQ GE GT LE LT NE MATCHOP IN '|'
-%left	ARG BLTIN CALL CLOSE DELETE EXIT FUNC 
+%left	ARG BLTIN CALL CLOSE EXIT FUNC 
 %left	GSUB IF INDEX LSUBSTR MATCHFCN NUMBER
 %left	PRINT PRINTF SPLIT SPRINTF STRING SUB SUBSTR
 %left	REGEXPR VAR VARNF IVAR '('
@@ -277,8 +277,6 @@ simple_stmt:
 			if (safe) SYNTAX("print > is unsafe");
 			else $$ = stat3($1, $2, itonp($3), $4); }
 	| print prarg			{ $$ = stat3($1, $2, NIL, NIL); }
-	| DELETE varname '[' patlist ']' { $$ = stat2(DELETE, makearr($2), $4); }
-	| DELETE varname		 { $$ = stat2(DELETE, makearr($2), 0); }
 	| pattern			{ $$ = exptostat($1); }
 	| error				{ yyclearin; SYNTAX("illegal statement"); }
 	;

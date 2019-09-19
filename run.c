@@ -400,44 +400,6 @@ Cell *array(Node **a, int n)	/* a[0] is symtab, a[1] is list of subscripts */
 	return(z);
 }
 
-Cell *awkdelete(Node **a, int n)	/* a[0] is symtab, a[1] is list of subscripts */
-{
-	Cell *x, *y;
-	Node *np;
-	char *s;
-	int nsub = strlen(*SUBSEP);
-
-	x = execute(a[0]);	/* Cell* for symbol table */
-	if (!isarr(x))
-		return True;
-	if (a[1] == 0) {	/* delete the elements, not the table */
-		freesymtab(x);
-		x->tval &= ~STR;
-		x->tval |= ARR;
-		x->sval = (char *) makesymtab(NSYMTAB);
-	} else {
-		int bufsz = recsize;
-		char *buf;
-		if ((buf = (char *) malloc(bufsz)) == NULL)
-			FATAL("out of memory in adelete");
-		buf[0] = 0;
-		for (np = a[1]; np; np = np->nnext) {
-			y = execute(np);	/* subscript */
-			s = getsval(y);
-			if (!adjbuf(&buf, &bufsz, strlen(buf)+strlen(s)+nsub+1, recsize, 0, "awkdelete"))
-				FATAL("out of memory deleting %s[%s...]", x->nval, buf);
-			strlcat(buf, s, bufsz);	
-			if (np->nnext)
-				strlcat(buf, *SUBSEP, bufsz);
-			tempfree(y);
-		}
-		freeelem(x, buf);
-		free(buf);
-	}
-	tempfree(x);
-	return True;
-}
-
 Cell *intest(Node **a, int n)	/* a[0] is index (list), a[1] is symtab */
 {
 	Cell *x, *ap, *k;
