@@ -517,22 +517,6 @@ Returns a copy of
 with all lower-case characters translated to their
 corresponding upper-case equivalents.
 .El
-.Ss Input/Output and General Functions
-.Bl -tag -width "fflush [expr]"
-.It Fn close expr
-Closes the file or pipe
-.Fa expr .
-.Fa expr
-should match the string that was used to open the file or pipe.
-.It Fn fflush [expr]
-Flushes any buffered output for the file or pipe
-.Fa expr ,
-or all open files or pipes if
-.Fa expr
-is omitted.
-.Fa expr
-should match the string that was used to open the file or pipe.
-.El
 .Ss Bit-Operation Functions
 .Bl -tag -width "lshift(a, b)"
 .It Fn compl x

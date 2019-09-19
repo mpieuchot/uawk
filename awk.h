@@ -116,7 +116,6 @@ extern Cell	*rlengthloc;	/* RLENGTH */
 #define	FLENGTH	1
 #define	FTOUPPER 12
 #define	FTOLOWER 13
-#define	FFLUSH	14
 #define FAND	15
 #define FFOR	16
 #define FXOR	17

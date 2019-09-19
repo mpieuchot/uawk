@@ -77,7 +77,6 @@ struct xx
 	{ INTEST, "intest", "intest" },
 	{ PRINTF, "awkprintf", "printf" },
 	{ PRINT, "printstat", "print" },
-	{ CLOSE, "closefile", "closefile" },
 	{ SPLIT, "split", "split" },
 	{ ASSIGN, "assign", " = " },
 	{ ADDEQ, "assign", " += " },

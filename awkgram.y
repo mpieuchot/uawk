@@ -52,7 +52,7 @@ Node	*arglist = 0;	/* list of args for current function */
 %token	<i>	MATCH NOTMATCH MATCHOP
 %token	<i>	FINAL DOT ALL CCL NCCL CHAR OR STAR QUEST PLUS EMPTYRE
 %token	<i>	AND BOR APPEND EQ GE GT LE LT NE IN
-%token	<i>	ARG BLTIN CLOSE EXIT FUNC 
+%token	<i>	ARG BLTIN EXIT FUNC 
 %token	<i>	SUB GSUB IF INDEX LSUBSTR MATCHFCN
 %token	<i>	ADD MINUS MULT DIVIDE MOD
 %token	<i>	ASSIGN ASGNOP ADDEQ SUBEQ MULTEQ DIVEQ MODEQ POWEQ
@@ -78,7 +78,7 @@ Node	*arglist = 0;	/* list of args for current function */
 %left	BOR
 %left	AND
 %nonassoc APPEND EQ GE GT LE LT NE MATCHOP IN '|'
-%left	ARG BLTIN CALL CLOSE EXIT FUNC 
+%left	ARG BLTIN CALL EXIT FUNC 
 %left	GSUB IF INDEX LSUBSTR MATCHFCN NUMBER
 %left	PRINT PRINTF SPLIT SPRINTF STRING SUB SUBSTR
 %left	REGEXPR VAR VARNF IVAR '('
@@ -321,7 +321,6 @@ term:
 	| BLTIN				{ $$ = op2(BLTIN, itonp($1), rectonode()); }
 	| CALL '(' ')'			{ $$ = op2(CALL, celltonode($1,CVAR), NIL); }
 	| CALL '(' patlist ')'		{ $$ = op2(CALL, celltonode($1,CVAR), $3); }
-	| CLOSE term			{ $$ = op1(CLOSE, $2); }
 	| DECR var			{ $$ = op1(PREDECR, $2); }
 	| INCR var			{ $$ = op1(PREINCR, $2); }
 	| var DECR			{ $$ = op1(POSTDECR, $1); }

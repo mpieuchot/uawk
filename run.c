@@ -1379,15 +1379,6 @@ Cell *bltin(Node **a, int n)	/* builtin functions. a[0] is type, a[1] is arg lis
 		setsval(x, buf);
 		free(buf);
 		return x;
-	case FFLUSH:
-		if (isrec(x) || strlen(getsval(x)) == 0) {
-			flush_all();	/* fflush() or fflush("") -> all */
-			u = 0;
-		} else if ((fp = openfile(FFLUSH, getsval(x))) == NULL)
-			u = EOF;
-		else
-			u = fflush(fp);
-		break;
 	default:	/* can't happen */
 		FATAL("illegal function type %d", t);
 		break;
@@ -1489,11 +1480,7 @@ FILE *openfile(int a, const char *us)
 		if (files[i].fname && strcmp(s, files[i].fname) == 0) {
 			if (a == files[i].mode || (a==APPEND && files[i].mode==GT))
 				return files[i].fp;
-			if (a == FFLUSH)
-				return files[i].fp;
 		}
-	if (a == FFLUSH)	/* didn't find it, so don't create it! */
-		return NULL;
 
 	for (i=0; i < nfiles; i++)
 		if (files[i].fp == 0)
@@ -1539,37 +1526,6 @@ const char *filename(FILE *fp)
 		if (fp == files[i].fp)
 			return files[i].fname;
 	return "???";
-}
-
-Cell *closefile(Node **a, int n)
-{
-	Cell *x;
-	int i, stat;
-
-	n = n;
-	x = execute(a[0]);
-	getsval(x);
-	stat = -1;
-	for (i = 0; i < nfiles; i++) {
-		if (files[i].fname && strcmp(x->sval, files[i].fname) == 0) {
-			if (ferror(files[i].fp))
-				WARNING( "i/o error occurred on %s", files[i].fname );
-			if (files[i].mode == '|' || files[i].mode == LE)
-				stat = pclose(files[i].fp);
-			else
-				stat = fclose(files[i].fp);
-			if (stat == EOF)
-				WARNING( "i/o error occurred closing %s", files[i].fname );
-			if (i > 2)	/* don't do /dev/std... */
-				xfree(files[i].fname);
-			files[i].fname = NULL;	/* watch out for ref thru this */
-			files[i].fp = NULL;
-		}
-	}
-	tempfree(x);
-	x = gettemp();
-	setfval(x, (Awkfloat) stat);
-	return(x);
 }
 
 void closeall(void)
