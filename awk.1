@@ -406,54 +406,6 @@ functions may be called recursively.
 Parameters are local to the function; all other variables are global.
 Thus local variables may be created by providing excess parameters in
 the function definition.
-.Ss Arithmetic Functions
-.Bl -tag -width "atan2(y, x)"
-.It Fn atan2 y x
-Return the arctangent of
-.Fa y Ns / Ns Fa x
-in radians.
-.It Fn cos x
-Return the cosine of
-.Fa x ,
-where
-.Fa x
-is in radians.
-.It Fn exp x
-Return the exponential of
-.Fa x .
-.It Fn int x
-Return
-.Fa x
-truncated to an integer value.
-.It Fn log x
-Return the natural logarithm of
-.Fa x .
-.It Fn rand
-Return a random number,
-.Fa n ,
-such that
-.Sm off
-.Pf 0 \*(Le Fa n No \*(Lt 1 .
-.Sm on
-.It Fn sin x
-Return the sine of
-.Fa x ,
-where
-.Fa x
-is in radians.
-.It Fn sqrt x
-Return the square root of
-.Fa x .
-.It Fn srand expr
-Sets seed for
-.Fn rand
-to
-.Fa expr
-and returns the previous seed.
-If
-.Fa expr
-is omitted, the time of day is used instead.
-.El
 .Ss String Functions
 .Bl -tag -width "split(s, a, fs)"
 .It Fn gsub r t s

@@ -114,15 +114,6 @@ extern Cell	*rlengthloc;	/* RLENGTH */
 
 /* function types */
 #define	FLENGTH	1
-#define	FSQRT	2
-#define	FEXP	3
-#define	FLOG	4
-#define	FINT	5
-#define	FRAND	7
-#define	FSRAND	8
-#define	FSIN	9
-#define	FCOS	10
-#define	FATAN	11
 #define	FTOUPPER 12
 #define	FTOLOWER 13
 #define	FFLUSH	14

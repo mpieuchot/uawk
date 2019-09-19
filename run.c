@@ -1304,29 +1304,6 @@ Cell *bltin(Node **a, int n)	/* builtin functions. a[0] is type, a[1] is arg lis
 		else
 			u = strlen(getsval(x));
 		break;
-	case FLOG:
-		u = errcheck(log(getfval(x)), "log"); break;
-	case FINT:
-		modf(getfval(x), &u); break;
-	case FEXP:
-		u = errcheck(exp(getfval(x)), "exp"); break;
-	case FSQRT:
-		u = errcheck(sqrt(getfval(x)), "sqrt"); break;
-	case FSIN:
-		u = sin(getfval(x)); break;
-	case FCOS:
-		u = cos(getfval(x)); break;
-	case FATAN:
-		if (nextarg == 0) {
-			WARNING("atan2 requires two arguments; returning 1.0");
-			u = 1.0;
-		} else {
-			y = execute(a[1]->nnext);
-			u = atan2(getfval(x), getfval(y));
-			tempfree(y);
-			nextarg = nextarg->nnext;
-		}
-		break;
 	case FCOMPL:
 		u = ~((int)getfval(x));
 		break;
@@ -1384,22 +1361,6 @@ Cell *bltin(Node **a, int n)	/* builtin functions. a[0] is type, a[1] is arg lis
 		u = ((int)getfval(x)) >> ((int)getfval(y));
 		tempfree(y);
 		nextarg = nextarg->nnext;
-		break;
-	case FRAND:
-		u = (Awkfloat) (random() & RAND_MAX) / ((u_int)RAND_MAX + 1);
-		break;
-	case FSRAND:
-		if (isrec(x)) {		/* no argument provided */
-			u = time(NULL);
-			tmp = u;
-			srandom((unsigned int) u);
-		} else {
-			u = getfval(x);
-			tmp = u;
-			srandom_deterministic((unsigned int) u);
-		}
-		u = srand_seed;
-		srand_seed = tmp;
 		break;
 	case FTOUPPER:
 	case FTOLOWER:

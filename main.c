@@ -41,7 +41,6 @@ extern	int	nfields;
 extern	char	*__progname;
 
 int	dbg	= 0;
-Awkfloat	srand_seed = 1;
 char	*cmdname;	/* gets argv[0] for error messages */
 extern	FILE	*yyin;	/* lex input file */
 char	*lexprog;	/* points to program argument if it exists */
