@@ -48,8 +48,6 @@ Keyword keywords[] ={	/* keep sorted: binary searched */
 	{ "BEGIN",	XBEGIN,		XBEGIN },
 	{ "END",	XEND,		XEND },
 	{ "NF",		VARNF,		VARNF },
-	{ "and",	FAND,		BLTIN },
-	{ "compl",	FCOMPL,		BLTIN },
 	{ "else",	ELSE,		ELSE },
 	{ "exit",	EXIT,		EXIT },
 	{ "func",	FUNC,		FUNC },
@@ -59,19 +57,15 @@ Keyword keywords[] ={	/* keep sorted: binary searched */
 	{ "in",		IN,		IN },
 	{ "index",	INDEX,		INDEX },
 	{ "length",	FLENGTH,	BLTIN },
-	{ "lshift",	FLSHIFT,	BLTIN },
 	{ "match",	MATCHFCN,	MATCHFCN },
-	{ "or",		FFOR,		BLTIN },
 	{ "print",	PRINT,		PRINT },
 	{ "printf",	PRINTF,		PRINTF },
-	{ "rshift",	FRSHIFT,	BLTIN },
 	{ "split",	SPLIT,		SPLIT },
 	{ "sprintf",	SPRINTF,	SPRINTF },
 	{ "sub",	SUB,		SUB },
 	{ "substr",	SUBSTR,		SUBSTR },
 	{ "tolower",	FTOLOWER,	BLTIN },
 	{ "toupper",	FTOUPPER,	BLTIN },
-	{ "xor",	FXOR,		BLTIN },
 };
 
 #define	RET(x)	{ if(dbg)printf("lex %s\n", tokname(x)); return(x); }

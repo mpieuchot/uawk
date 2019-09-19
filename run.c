@@ -1304,64 +1304,6 @@ Cell *bltin(Node **a, int n)	/* builtin functions. a[0] is type, a[1] is arg lis
 		else
 			u = strlen(getsval(x));
 		break;
-	case FCOMPL:
-		u = ~((int)getfval(x));
-		break;
-	case FAND:
-		if (nextarg == 0) {
-			WARNING("and requires two arguments; returning 0");
-			u = 0;
-			break;
-		}
-		y = execute(a[1]->nnext);
-		u = ((int)getfval(x)) & ((int)getfval(y));
-		tempfree(y);
-		nextarg = nextarg->nnext;
-		break;
-	case FFOR:
-		if (nextarg == 0) {
-			WARNING("or requires two arguments; returning 0");
-			u = 0;
-			break;
-		}
-		y = execute(a[1]->nnext);
-		u = ((int)getfval(x)) | ((int)getfval(y));
-		tempfree(y);
-		nextarg = nextarg->nnext;
-		break;
-	case FXOR:
-		if (nextarg == 0) {
-			WARNING("xor requires two arguments; returning 0");
-			u = 0;
-			break;
-		}
-		y = execute(a[1]->nnext);
-		u = ((int)getfval(x)) ^ ((int)getfval(y));
-		tempfree(y);
-		nextarg = nextarg->nnext;
-		break;
-	case FLSHIFT:
-		if (nextarg == 0) {
-			WARNING("lshift requires two arguments; returning 0");
-			u = 0;
-			break;
-		}
-		y = execute(a[1]->nnext);
-		u = ((int)getfval(x)) << ((int)getfval(y));
-		tempfree(y);
-		nextarg = nextarg->nnext;
-		break;
-	case FRSHIFT:
-		if (nextarg == 0) {
-			WARNING("rshift requires two arguments; returning 0");
-			u = 0;
-			break;
-		}
-		y = execute(a[1]->nnext);
-		u = ((int)getfval(x)) >> ((int)getfval(y));
-		tempfree(y);
-		nextarg = nextarg->nnext;
-		break;
 	case FTOUPPER:
 	case FTOLOWER:
 		buf = tostring(getsval(x));
