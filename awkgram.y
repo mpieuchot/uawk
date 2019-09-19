@@ -50,7 +50,7 @@ char	*curfname = 0;	/* current function name */
 %token	<i>	MATCH NOTMATCH MATCHOP
 %token	<i>	FINAL DOT ALL CCL NCCL CHAR OR STAR QUEST PLUS EMPTYRE
 %token	<i>	AND BOR APPEND EQ GE GT LE LT NE IN
-%token	<i>	ARG BLTIN EXIT
+%token	<i>	ARG EXIT
 %token	<i>	SUB GSUB IF INDEX LSUBSTR MATCHFCN
 %token	<i>	ADD MINUS MULT DIVIDE MOD
 %token	<i>	ASSIGN ASGNOP ADDEQ SUBEQ MULTEQ DIVEQ MODEQ POWEQ
@@ -76,7 +76,7 @@ char	*curfname = 0;	/* current function name */
 %left	BOR
 %left	AND
 %nonassoc APPEND EQ GE GT LE LT NE MATCHOP IN '|'
-%left	ARG BLTIN CALL EXIT
+%left	ARG CALL EXIT
 %left	GSUB IF INDEX LSUBSTR MATCHFCN NUMBER
 %left	PRINT PRINTF SPLIT SPRINTF STRING SUB SUBSTR
 %left	REGEXPR VAR VARNF IVAR '('
@@ -307,9 +307,6 @@ term:
 	| '-' term %prec UMINUS		{ $$ = op1(UMINUS, $2); }
 	| '+' term %prec UMINUS		{ $$ = $2; }
 	| NOT term %prec UMINUS		{ $$ = op1(NOT, notnull($2)); }
-	| BLTIN '(' ')'			{ $$ = op2(BLTIN, itonp($1), rectonode()); }
-	| BLTIN '(' patlist ')'		{ $$ = op2(BLTIN, itonp($1), $3); }
-	| BLTIN				{ $$ = op2(BLTIN, itonp($1), rectonode()); }
 	| CALL '(' ')'			{ $$ = op2(CALL, celltonode($1,CVAR), NIL); }
 	| CALL '(' patlist ')'		{ $$ = op2(CALL, celltonode($1,CVAR), $3); }
 	| DECR var			{ $$ = op1(PREDECR, $2); }

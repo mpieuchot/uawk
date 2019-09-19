@@ -408,10 +408,6 @@ The position in
 where the string
 .Fa t
 occurs, or 0 if it does not.
-.It Fn length s
-The length of
-.Fa s
-taken as a string,
 or of
 .Va $0
 if no argument is given.
@@ -494,16 +490,6 @@ is omitted, or if
 specifies more characters than are left in the string,
 the length of the substring is limited by the length of
 .Fa s .
-.It Fn tolower str
-Returns a copy of
-.Fa str
-with all upper-case characters translated to their
-corresponding lower-case equivalents.
-.It Fn toupper str
-Returns a copy of
-.Fa str
-with all lower-case characters translated to their
-corresponding upper-case equivalents.
 .El
 .Sh EXIT STATUS
 .Ex -std awk
@@ -512,10 +498,6 @@ But note that the
 .Ic exit
 expression can modify the exit status.
 .Sh EXAMPLES
-Print lines longer than 72 characters:
-.Pp
-.Dl length($0) > 72
-.Pp
 Print first two fields in opposite order:
 .Pp
 .Dl { print $2, $1 }

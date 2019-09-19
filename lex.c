@@ -53,7 +53,6 @@ Keyword keywords[] ={	/* keep sorted: binary searched */
 	{ "if",		IF,		IF },
 	{ "in",		IN,		IN },
 	{ "index",	INDEX,		INDEX },
-	{ "length",	FLENGTH,	BLTIN },
 	{ "match",	MATCHFCN,	MATCHFCN },
 	{ "print",	PRINT,		PRINT },
 	{ "printf",	PRINTF,		PRINTF },
@@ -61,8 +60,6 @@ Keyword keywords[] ={	/* keep sorted: binary searched */
 	{ "sprintf",	SPRINTF,	SPRINTF },
 	{ "sub",	SUB,		SUB },
 	{ "substr",	SUBSTR,		SUBSTR },
-	{ "tolower",	FTOLOWER,	BLTIN },
-	{ "toupper",	FTOUPPER,	BLTIN },
 };
 
 #define	RET(x)	{ if(dbg)printf("lex %s\n", tokname(x)); return(x); }
@@ -443,8 +440,6 @@ int word(char *w)
 	if (n != -1) {	/* found in table */
 		yylval.i = kp->sub;
 		switch (kp->type) {	/* special handling */
-		case BLTIN:
-			RET(kp->type);
 		case VARNF:
 			yylval.cp = setsymtab("NF", "", 0.0, NUM, symtab);
 			RET(VARNF);

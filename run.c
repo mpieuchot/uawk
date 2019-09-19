@@ -1284,58 +1284,6 @@ Cell *instat(Node **a, int n)	/* for (a[0] in a[1]) a[2] */
 	return True;
 }
 
-Cell *bltin(Node **a, int n)	/* builtin functions. a[0] is type, a[1] is arg list */
-{
-	Cell *x, *y;
-	Awkfloat u;
-	int t;
-	Awkfloat tmp;
-	char *p, *buf;
-	Node *nextarg;
-	FILE *fp;
-
-	t = ptoi(a[0]);
-	x = execute(a[1]);
-	nextarg = a[1]->nnext;
-	switch (t) {
-	case FLENGTH:
-		if (isarr(x))
-			u = ((Array *) x->sval)->nelem;	/* GROT.  should be function*/
-		else
-			u = strlen(getsval(x));
-		break;
-	case FTOUPPER:
-	case FTOLOWER:
-		buf = tostring(getsval(x));
-		if (t == FTOUPPER) {
-			for (p = buf; *p; p++)
-				if (islower((uschar) *p))
-					*p = toupper((uschar)*p);
-		} else {
-			for (p = buf; *p; p++)
-				if (isupper((uschar) *p))
-					*p = tolower((uschar)*p);
-		}
-		tempfree(x);
-		x = gettemp();
-		setsval(x, buf);
-		free(buf);
-		return x;
-	default:	/* can't happen */
-		FATAL("illegal function type %d", t);
-		break;
-	}
-	tempfree(x);
-	x = gettemp();
-	setfval(x, u);
-	if (nextarg != 0) {
-		WARNING("warning: function has too many arguments");
-		for ( ; nextarg; nextarg = nextarg->nnext)
-			execute(nextarg);
-	}
-	return(x);
-}
-
 Cell *printstat(Node **a, int n)	/* print a[0] */
 {
 	Node *x;

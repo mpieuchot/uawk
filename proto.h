@@ -173,7 +173,6 @@ extern	Cell	*split(Node **, int);
 extern	Cell	*condexpr(Node **, int);
 extern	Cell	*ifstat(Node **, int);
 extern	Cell	*instat(Node **, int);
-extern	Cell	*bltin(Node **, int);
 extern	Cell	*printstat(Node **, int);
 extern	Cell	*nullproc(Node **, int);
 extern	FILE	*redirect(int, Node *);

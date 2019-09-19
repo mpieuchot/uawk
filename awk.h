@@ -112,11 +112,6 @@ extern Cell	*rlengthloc;	/* RLENGTH */
 #define	REC	0200	/* this is $0 */
 
 
-/* function types */
-#define	FLENGTH	1
-#define	FTOUPPER 12
-#define	FTOLOWER 13
-
 /* Node:  parse tree is made of nodes, with Cell's at bottom */
 
 typedef struct Node {
