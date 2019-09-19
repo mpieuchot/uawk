@@ -60,7 +60,6 @@ Keyword keywords[] ={	/* keep sorted: binary searched */
 	{ "fflush",	FFLUSH,		BLTIN },
 	{ "func",	FUNC,		FUNC },
 	{ "function",	FUNC,		FUNC },
-	{ "getline",	GETLINE,	GETLINE },
 	{ "gsub",	GSUB,		GSUB },
 	{ "if",		IF,		IF },
 	{ "in",		IN,		IN },

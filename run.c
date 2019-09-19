@@ -353,59 +353,6 @@ Cell *jump(Node **a, int n)	/* return */
 	return 0;	/* not reached */
 }
 
-Cell *awkgetline(Node **a, int n)	/* get next line from specific input */
-{		/* a[0] is variable, a[1] is operator, a[2] is filename */
-	Cell *r, *x;
-	extern Cell **fldtab;
-	FILE *fp;
-	char *buf;
-	int bufsize = recsize;
-	int mode;
-
-	if ((buf = (char *) malloc(bufsize)) == NULL)
-		FATAL("out of memory in getline");
-
-	fflush(stdout);	/* in case someone is waiting for a prompt */
-	r = gettemp();
-	if (a[1] != NULL) {		/* getline < file */
-		x = execute(a[2]);		/* filename */
-		mode = ptoi(a[1]);
-		if (mode == '|')		/* input pipe */
-			mode = LE;	/* arbitrary flag */
-		fp = openfile(mode, getsval(x));
-		tempfree(x);
-		if (fp == NULL)
-			n = -1;
-		else
-			n = readrec(&buf, &bufsize, fp);
-		if (n <= 0) {
-			;
-		} else if (a[0] != NULL) {	/* getline var <file */
-			x = execute(a[0]);
-			setsval(x, buf);
-			tempfree(x);
-		} else {			/* getline <file */
-			setsval(fldtab[0], buf);
-			if (is_number(fldtab[0]->sval)) {
-				fldtab[0]->fval = atof(fldtab[0]->sval);
-				fldtab[0]->tval |= NUM;
-			}
-		}
-	} else {			/* bare getline; use current input */
-		if (a[0] == NULL)	/* getline */
-			n = getrec(&record, &recsize, 1);
-		else {			/* getline var */
-			n = getrec(&buf, &bufsize, 0);
-			x = execute(a[0]);
-			setsval(x, buf);
-			tempfree(x);
-		}
-	}
-	setfval(r, (Awkfloat) n);
-	free(buf);
-	return r;
-}
-
 Cell *getnf(Node **a, int n)	/* get NF */
 {
 	if (donefld == 0)

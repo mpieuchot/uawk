@@ -87,7 +87,6 @@ Disable file output
 .Ic print No >> ) ,
 process creation
 .Po
-.Ar cmd | Ic getline ,
 .Ic print | ,
 .Ic system
 .Pc
@@ -576,32 +575,12 @@ with all lower-case characters translated to their
 corresponding upper-case equivalents.
 .El
 .Ss Input/Output and General Functions
-.Bl -tag -width "getline [var] < file"
+.Bl -tag -width "fflush [expr]"
 .It Fn close expr
 Closes the file or pipe
 .Fa expr .
 .Fa expr
 should match the string that was used to open the file or pipe.
-.It Ar cmd | Ic getline Op Va var
-Read a record of input from a stream piped from the output of
-.Ar cmd .
-If
-.Va var
-is omitted, the variables
-.Va $0
-and
-.Va NF
-are set.
-Otherwise
-.Va var
-is set.
-If the stream is not open, it is opened.
-As long as the stream remains open, subsequent calls
-will read subsequent records from the stream.
-The stream remains open until explicitly closed with a call to
-.Fn close .
-.Ic getline
-returns 1 for a successful input, 0 for end of file, and \-1 for an error.
 .It Fn fflush [expr]
 Flushes any buffered output for the file or pipe
 .Fa expr ,
@@ -610,59 +589,6 @@ or all open files or pipes if
 is omitted.
 .Fa expr
 should match the string that was used to open the file or pipe.
-.It Ic getline
-Sets
-.Va $0
-to the next input record from the current input file.
-This form of
-.Ic getline
-sets the variables
-.Va NF ,
-.Va NR ,
-and
-.Va FNR .
-.Ic getline
-returns 1 for a successful input, 0 for end of file, and \-1 for an error.
-.It Ic getline Va var
-Sets
-.Va $0
-to variable
-.Va var .
-This form of
-.Ic getline
-sets the variables
-.Va NR
-and
-.Va FNR .
-.Ic getline
-returns 1 for a successful input, 0 for end of file, and \-1 for an error.
-.It Xo
-.Ic getline Op Va var
-.Pf \ \&< Ar file
-.Xc
-Sets
-.Va $0
-to the next record from
-.Ar file .
-If
-.Va var
-is omitted, the variables
-.Va $0
-and
-.Va NF
-are set.
-Otherwise
-.Va var
-is set.
-If
-.Ar file
-is not open, it is opened.
-As long as the stream remains open, subsequent calls will read subsequent
-records from
-.Ar file .
-.Ar file
-remains open until explicitly closed with a call to
-.Fn close .
 .It Fn system cmd
 Executes
 .Fa cmd

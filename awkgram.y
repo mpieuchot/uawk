@@ -77,7 +77,6 @@ Node	*arglist = 0;	/* list of args for current function */
 %right	':'
 %left	BOR
 %left	AND
-%left	GETLINE
 %nonassoc APPEND EQ GE GT LE LT NE MATCHOP IN '|'
 %left	ARG BLTIN CALL CLOSE DELETE EXIT FUNC 
 %left	GSUB IF INDEX LSUBSTR MATCHFCN NUMBER
@@ -220,12 +219,6 @@ pattern:
 			$$ = op3($2, (Node *)1, $1, $3); }
 	| pattern IN varname		{ $$ = op2(INTEST, $1, makearr($3)); }
 	| '(' plist ')' IN varname	{ $$ = op2(INTEST, $2, makearr($5)); }
-	| pattern '|' GETLINE var	{ 
-			if (safe) SYNTAX("cmd | getline is unsafe");
-			else $$ = op3(GETLINE, $4, itonp($2), $1); }
-	| pattern '|' GETLINE		{ 
-			if (safe) SYNTAX("cmd | getline is unsafe");
-			else $$ = op3(GETLINE, (Node*)0, itonp($2), $1); }
 	| pattern term %prec CAT	{ $$ = op2(CAT, $1, $2); }
 	| re
 	| term
@@ -335,10 +328,6 @@ term:
 	| INCR var			{ $$ = op1(PREINCR, $2); }
 	| var DECR			{ $$ = op1(POSTDECR, $1); }
 	| var INCR			{ $$ = op1(POSTINCR, $1); }
-	| GETLINE var LT term		{ $$ = op3(GETLINE, $2, itonp($3), $4); }
-	| GETLINE LT term		{ $$ = op3(GETLINE, NIL, itonp($2), $3); }
-	| GETLINE var			{ $$ = op3(GETLINE, $2, NIL, NIL); }
-	| GETLINE			{ $$ = op3(GETLINE, NIL, NIL, NIL); }
 	| INDEX '(' pattern comma pattern ')'
 		{ $$ = op2(INDEX, $3, $5); }
 	| INDEX '(' pattern comma reg_expr ')'
