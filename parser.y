@@ -96,7 +96,7 @@ bor:
 	;
 
 comma:
-	  ',' | comma NL
+	  ','
 	;
 
 else:
