@@ -69,7 +69,7 @@ int main(int argc, char *argv[])
 	}
 
 	if (argc == 1) {
-		fprintf(stderr, "usage: %s [-safe] [-V] [-d[n]] "
+		fprintf(stderr, "usage: %s [-safe] [-d[n]] "
 		    "[-v var=value] [prog | -f progfile]\n\tfile ...\n",
 		    cmdname);
 		exit(1);
@@ -124,10 +124,6 @@ int main(int argc, char *argv[])
 			if (dbg == 0)
 				dbg = 1;
 			printf("awk %s\n", version);
-			break;
-		case 'V':	/* added for exptools "standard" */
-			printf("awk %s\n", version);
-			exit(0);
 			break;
 		default:
 			WARNING("unknown option %s ignored", argv[1]);

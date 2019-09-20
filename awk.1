@@ -31,7 +31,6 @@
 .Sh SYNOPSIS
 .Nm awk
 .Op Fl safe
-.Op Fl V
 .Op Fl d Ns Op Ar n
 .Op Fl v Ar var Ns = Ns Ar value
 .Op Ar prog | Fl f Ar progfile
@@ -89,10 +88,6 @@ approximation to a
 .Dq safe
 version of
 .Nm .
-.It Fl V
-Print the version number of
-.Nm
-to standard output and exit.
 .It Fl v Ar var Ns = Ns Ar value
 Assign
 .Ar value
@@ -396,7 +391,7 @@ except
 does not support {n,m} pattern matching.
 .Pp
 The flags
-.Op Fl \&dV
+.Op Fl \&d
 and
 .Op Fl safe
 are extensions to that specification.
