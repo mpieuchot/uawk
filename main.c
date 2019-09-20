@@ -23,8 +23,6 @@ ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF
 THIS SOFTWARE.
 ****************************************************************/
 
-const char	*version = "version 20110810";
-
 #define DEBUG
 #include <stdio.h>
 #include <ctype.h>
@@ -100,7 +98,6 @@ int main(int argc, char *argv[])
 			dbg = atoi(&argv[1][2]);
 			if (dbg == 0)
 				dbg = 1;
-			printf("awk %s\n", version);
 			break;
 		default:
 			WARNING("unknown option %s ignored", argv[1]);
