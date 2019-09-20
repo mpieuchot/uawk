@@ -29,11 +29,96 @@ THIS SOFTWARE.
 #include "awk.h"
 #include "ytab.h"
 
+void		 nodeinit(int, Node *);
 Node		*nodealloc(int);
 Node		*node1(int, Node *);
 Node		*node2(int, Node *, Node *);
 Node		*node3(int, Node *, Node *, Node *);
 Node		*node4(int, Node *, Node *, Node *, Node *);
+
+struct
+{	int value;
+	Cell *(*func)(Node **, int);
+	const char *name;
+} tokens[] = {
+	{ XBEGIN, nullproc, "XBEGIN" },
+	{ XEND, nullproc, "XEND" },
+	{ NL, nullproc, "NL" },
+	{ ASGNOP, nullproc, "ASGNOP" },
+	{ VAR, nullproc, "VAR" },
+	{ IVAR, nullproc, "IVAR" },
+	{ NUMBER, nullproc, "NUMBER" },
+	{ STRING, nullproc, "STRING" },
+	{ NOT, nullproc, "NOT" },
+	{ PROGRAM, program,  "PROGRAM" },
+	{ BOR, boolop,  "BOR" },
+	{ AND, boolop,  "AND" },
+	{ NOT, boolop,  "NOT" },
+	{ NE, relop,  "NE" },
+	{ EQ, relop,  "EQ" },
+	{ LE, relop,  "LE" },
+	{ LT, relop,  "LT" },
+	{ GE, relop,  "GE" },
+	{ GT, relop,  "GT" },
+	{ INDIRECT, indirect,  "INDIRECT" },
+	{ ADD, arith,  "ADD" },
+	{ MINUS, arith,  "MINUS" },
+	{ MULT, arith,  "MULT" },
+	{ DIVIDE, arith,  "DIVIDE" },
+	{ MOD, arith,  "MOD" },
+	{ UMINUS, arith,  "UMINUS" },
+	{ POWER, arith,  "POWER" },
+	{ PREINCR, incrdecr,  "PREINCR" },
+	{ POSTINCR, incrdecr,  "POSTINCR" },
+	{ PREDECR, incrdecr,  "PREDECR" },
+	{ POSTDECR, incrdecr,  "POSTDECR" },
+	{ PASTAT, pastat,  "PASTAT" },
+	{ PASTAT2, dopa2,  "PASTAT2" },
+	{ PRINTF, awkprintf,  "PRINTF" },
+	{ PRINT, printstat,  "PRINT" },
+	{ ASSIGN, assign,  "ASSIGN" },
+	{ ADDEQ, assign,  "ADDEQ" },
+	{ SUBEQ, assign,  "SUBEQ" },
+	{ MULTEQ, assign,  "MULTEQ" },
+	{ DIVEQ, assign,  "DIVEQ" },
+	{ MODEQ, assign,  "MODEQ" },
+	{ POWEQ, assign,  "POWEQ" },
+	{ CONDEXPR, condexpr,  "CONDEXPR" },
+	{ IF, ifstat,  "IFSTAT" },
+	{ EXIT, jump,  "exit" },
+};
+
+const char *
+tokname(int a)
+{
+	static char buf[100];
+	int i;
+
+	for (i = 0; i < (sizeof(tokens) / sizeof(tokens[0])); i++) {
+		if (a == tokens[i].value)
+			return tokens[i].name;
+	}
+
+	snprintf(buf, sizeof(buf), "token %d", a);
+	return buf;
+}
+
+void
+nodeinit(int a, Node *x)
+{
+	Cell *(*xproc)(Node **, int) = nullproc;
+	int i;
+
+	for (i = 0; i < (sizeof(tokens) / sizeof(tokens[0])); i++) {
+		if (a == tokens[i].value) {
+			xproc = tokens[i].func;
+			break;
+		}
+	}
+
+	x->nobj = a;
+	x->proc = xproc;
+}
 
 Node *nodealloc(int n)
 {
@@ -58,7 +143,7 @@ Node *node1(int a, Node *b)
 	Node *x;
 
 	x = nodealloc(1);
-	x->nobj = a;
+	nodeinit(a, x);
 	x->narg[0]=b;
 	return(x);
 }
@@ -68,7 +153,7 @@ Node *node2(int a, Node *b, Node *c)
 	Node *x;
 
 	x = nodealloc(2);
-	x->nobj = a;
+	nodeinit(a, x);
 	x->narg[0] = b;
 	x->narg[1] = c;
 	return(x);
@@ -79,7 +164,7 @@ Node *node3(int a, Node *b, Node *c, Node *d)
 	Node *x;
 
 	x = nodealloc(3);
-	x->nobj = a;
+	nodeinit(a, x);
 	x->narg[0] = b;
 	x->narg[1] = c;
 	x->narg[2] = d;
@@ -91,7 +176,7 @@ Node *node4(int a, Node *b, Node *c, Node *d, Node *e)
 	Node *x;
 
 	x = nodealloc(4);
-	x->nobj = a;
+	nodeinit(a, x);
 	x->narg[0] = b;
 	x->narg[1] = c;
 	x->narg[2] = d;

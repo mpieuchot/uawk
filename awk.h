@@ -110,6 +110,7 @@ typedef struct Node {
 	struct	Node *nnext;
 	int	lineno;
 	int	nobj;
+	Cell *(*proc)(struct Node **, int);
 	struct	Node *narg[1];	/* variable: actual size set by calling malloc */
 } Node;
 
@@ -149,7 +150,6 @@ extern Node	*nullnode;
 
 extern	int	pairstack[], paircnt;
 
-#define notlegal(n)	(n <= FIRSTTOKEN || n >= LASTTOKEN || proctab[n-FIRSTTOKEN] == nullproc)
 #define isvalue(n)	((n)->ntype == NVALUE)
 #define isexpr(n)	((n)->ntype == NEXPR)
 #define isexit(n)	((n)->csub == JEXIT)
@@ -221,7 +221,7 @@ extern	Node	*celltonode(Cell *, int);
 extern	Node	*rectonode(void);
 extern	Node	*pa2stat(Node *, Node *, Node *);
 extern	Node	*linkum(Node *, Node *);
-extern	char	*tokname(int);
+extern	const char *tokname(int);
 extern	Cell	*(*proctab[])(Node **, int);
 extern	int	ptoi(void *);
 extern	Node	*itonp(int);

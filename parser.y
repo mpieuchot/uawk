@@ -42,7 +42,6 @@ char	*curfname = 0;	/* current function name */
 	char	*s;
 }
 
-%token	<i>	FIRSTTOKEN	/* must be first */
 %token	<p>	PROGRAM PASTAT PASTAT2 XBEGIN XEND
 %token	<i>	NL ',' '{' '(' '|' ';' '/' ')' '}' '[' ']'
 %token	<i>	AND BOR APPEND EQ GE GT LE LT NE
@@ -79,7 +78,6 @@ char	*curfname = 0;	/* current function name */
 %right	POWER
 %right	DECR INCR
 %left	INDIRECT
-%token	LASTTOKEN	/* must be last */
 
 %%
 

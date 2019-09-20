@@ -35,6 +35,9 @@ THIS SOFTWARE.
 #include "ytab.h"
 
 
+
+void		 stdinit(void);
+void		 flush_all(void);
 void		 tfree(Cell *);
 Cell		*gettemp(void);
 int		 format(char **, int *, const char *, Node *);
@@ -75,9 +78,6 @@ Cell	*jexit	= &exitcell;
 static Cell	tempcell	={ OCELL, CTEMP, 0, "", 0.0, NUM|STR|DONTFREE };
 
 Node	*curnode = NULL;	/* the node being executed, for debugging */
-
-void	stdinit(void);
-void	flush_all(void);
 
 /* buffer memory management */
 int adjbuf(char **pbuf, int *psiz, int minlen, int quantum, char **pbptr,
@@ -121,9 +121,10 @@ void run(Node *a)	/* execution of parse tree starts here */
 	closeall();
 }
 
+#define notlegal(a)	(a->proc == nullproc)
+
 Cell *execute(Node *u)	/* execute a node of the parse tree */
 {
-	Cell *(*proc)(Node **, int);
 	Cell *x;
 	Node *a;
 
@@ -139,10 +140,10 @@ Cell *execute(Node *u)	/* execute a node of the parse tree */
 				recbld();
 			return(x);
 		}
-		if (notlegal(a->nobj))	/* probably a Cell* but too risky to print */
+		/* probably a Cell* but too risky to print */
+		if (notlegal(a))
 			FATAL("illegal statement");
-		proc = proctab[a->nobj-FIRSTTOKEN];
-		x = (*proc)(a->narg, a->nobj);
+		x = (*a->proc)(a->narg, a->nobj);
 		if (isfld(x) && !donefld)
 			fldbld();
 		else if (isrec(x) && !donerec)
