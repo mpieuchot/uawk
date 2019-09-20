@@ -24,8 +24,6 @@ THIS SOFTWARE.
 ****************************************************************/
 
 extern	int	yywrap(void);
-extern	int	constnode(Node *);
-extern	char	*strnode(Node *);
 extern	Node	*notnull(Node *);
 extern	int	yyparse(void);
 

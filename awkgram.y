@@ -28,7 +28,6 @@ THIS SOFTWARE.
 #include <string.h>
 #include "awk.h"
 
-void checkdup(Node *list, Cell *item);
 int yywrap(void) { return(1); }
 
 Node	*beginloc = 0;
@@ -295,16 +294,6 @@ varname:
 
 %%
 
-int constnode(Node *p)
-{
-	return isvalue(p) && ((Cell *) (p->narg[0]))->csub == CCON;
-}
-
-char *strnode(Node *p)
-{
-	return ((Cell *)(p->narg[0]))->sval;
-}
-
 Node *notnull(Node *n)
 {
 	switch (n->nobj) {
@@ -313,16 +302,5 @@ Node *notnull(Node *n)
 		return n;
 	default:
 		return op2(NE, n, nullnode);
-	}
-}
-
-void checkdup(Node *vl, Cell *cp)	/* check if name already in list */
-{
-	char *s = cp->nval;
-	for ( ; vl; vl = vl->nnext) {
-		if (strcmp(s, ((Cell *)(vl->narg[0]))->nval) == 0) {
-			SYNTAX("duplicate argument %s", s);
-			break;
-		}
 	}
 }
