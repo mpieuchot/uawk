@@ -53,7 +53,7 @@ char	*curfname = 0;	/* current function name */
 %token	<i>	ADD MINUS MULT DIVIDE MOD
 %token	<i>	ASSIGN ASGNOP ADDEQ SUBEQ MULTEQ DIVEQ MODEQ POWEQ
 %token	<i>	PRINT PRINTF
-%token	<p>	ELSE INTEST CONDEXPR
+%token	<p>	ELSE CONDEXPR
 %token	<i>	POSTINCR PREINCR POSTDECR PREDECR
 %token	<cp>	VAR IVAR VARNF CALL NUMBER STRING
 
@@ -170,8 +170,6 @@ ppattern:
 		{ $$ = op2(BOR, notnull($1), notnull($3)); }
 	| ppattern and ppattern %prec AND
 		{ $$ = op2(AND, notnull($1), notnull($3)); }
-	| ppattern IN varname		{ $$ = op2(INTEST, $1, makearr($3)); }
-	| '(' plist ')' IN varname	{ $$ = op2(INTEST, $2, makearr($5)); }
 	| term
 	;
 
@@ -189,8 +187,6 @@ pattern:
 	| pattern LE pattern		{ $$ = op2($2, $1, $3); }
 	| pattern LT pattern		{ $$ = op2($2, $1, $3); }
 	| pattern NE pattern		{ $$ = op2($2, $1, $3); }
-	| pattern IN varname		{ $$ = op2(INTEST, $1, makearr($3)); }
-	| '(' plist ')' IN varname	{ $$ = op2(INTEST, $2, makearr($5)); }
 	| term
 	;
 

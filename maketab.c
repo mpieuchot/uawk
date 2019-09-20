@@ -64,7 +64,6 @@ struct xx
 	{ POSTDECR, "incrdecr", "--" },
 	{ PASTAT, "pastat", NULL },
 	{ PASTAT2, "dopa2", NULL },
-	{ INTEST, "intest", "intest" },
 	{ PRINTF, "awkprintf", "printf" },
 	{ PRINT, "printstat", "print" },
 	{ ASSIGN, "assign", " = " },

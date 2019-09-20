@@ -183,23 +183,6 @@ Node *rectonode(void)	/* make $0 into a Node */
 	return op1(INDIRECT, celltonode(literal0, CUNK));
 }
 
-Node *makearr(Node *p)
-{
-	Cell *cp;
-
-	if (isvalue(p)) {
-		cp = (Cell *) (p->narg[0]);
-		if (isfcn(cp))
-			SYNTAX( "%s is a function, not an array", cp->nval );
-		else if (!isarr(cp)) {
-			xfree(cp->sval);
-			cp->sval = (char *) makesymtab(NSYMTAB);
-			cp->tval = ARR;
-		}
-	}
-	return p;
-}
-
 #define PA2NUM	50	/* max number of pat,pat patterns allowed */
 int	paircnt;		/* number of them in use */
 int	pairstack[PA2NUM];	/* state of each pat,pat */
