@@ -45,7 +45,7 @@ char	*curfname = 0;	/* current function name */
 
 %token	<p>	PROGRAM PASTAT PASTAT2 XBEGIN XEND
 %token	<i>	NL ',' '{' '(' '|' ';' '/' ')' '}' '[' ']'
-%token	<i>	AND BOR APPEND EQ GE GT LE LT NE
+%token	<i>	APPEND EQ GE GT LE LT NE
 %token	<i>	EXIT IF
 %token	<i>	ADD MINUS MULT DIVIDE MOD
 %token	<i>	ASSIGN ASGNOP ADDEQ SUBEQ MULTEQ DIVEQ MODEQ
@@ -60,14 +60,12 @@ char	*curfname = 0;	/* current function name */
 %type	<p>	var
 %type	<p>	if else
 %type	<i>	st
-%type	<i>	pst opt_pst lbrace rbrace rparen nl opt_nl and bor
+%type	<i>	pst opt_pst lbrace rbrace rparen nl opt_nl
 %type	<i>	print
 
 %right	ASGNOP
 %right	'?'
 %right	':'
-%left	BOR
-%left	AND
 %nonassoc APPEND EQ GE GT LE LT NE '|'
 %left	EXIT
 %left	IF NUMBER
@@ -75,7 +73,7 @@ char	*curfname = 0;	/* current function name */
 %left	VAR IVAR '('
 %left	'+' '-'
 %left	'*' '/' '%'
-%left	NOT UMINUS
+%left	UMINUS
 %right	DECR INCR
 %left	INDIRECT
 
@@ -85,14 +83,6 @@ program:
 	  pas	{ if (errorflag==0)
 			winner = (Node *)stat3(PROGRAM, beginloc, $1, endloc); }
 	| error	{ yyclearin; bracecheck(); SYNTAX("bailing out"); }
-	;
-
-and:
-	  AND | and NL
-	;
-
-bor:
-	  BOR | bor NL
 	;
 
 else:
@@ -152,10 +142,6 @@ pattern:
 	  var ASGNOP pattern		{ $$ = op2($2, $1, $3); }
 	| pattern '?' pattern ':' pattern %prec '?'
 	 	{ $$ = op3(CONDEXPR, notnull($1), $3, $5); }
-	| pattern bor pattern %prec BOR
-		{ $$ = op2(BOR, notnull($1), notnull($3)); }
-	| pattern and pattern %prec AND
-		{ $$ = op2(AND, notnull($1), notnull($3)); }
 	| pattern EQ pattern		{ $$ = op2($2, $1, $3); }
 	| pattern GE pattern		{ $$ = op2($2, $1, $3); }
 	| pattern GT pattern		{ $$ = op2($2, $1, $3); }
@@ -221,7 +207,6 @@ term:
 	| term '%' term			{ $$ = op2(MOD, $1, $3); }
 	| '-' term %prec UMINUS		{ $$ = op1(UMINUS, $2); }
 	| '+' term %prec UMINUS		{ $$ = $2; }
-	| NOT term %prec UMINUS		{ $$ = op1(NOT, notnull($2)); }
 	| DECR var			{ $$ = op1(PREDECR, $2); }
 	| INCR var			{ $$ = op1(PREINCR, $2); }
 	| var DECR			{ $$ = op1(POSTDECR, $1); }
@@ -391,20 +376,14 @@ int yylex(void)
 			}
 			break;
 		case '&':
-			if (peek() == '&') {
-				input(); RET(AND);
-			} else 
-				RET('&');
+			RET('&');
 		case '|':
-			if (peek() == '|') {
-				input(); RET(BOR);
-			} else
-				RET('|');
+			RET('|');
 		case '!':
 			if (peek() == '=') {
 				input(); yylval.i = NE; RET(NE);
 			} else
-				RET(NOT);
+				RET('!');
 		case '<':
 			if (peek() == '=') {
 				input(); yylval.i = LE; RET(LE);
@@ -652,7 +631,6 @@ Node *notnull(Node *n)
 {
 	switch (n->nobj) {
 	case LE: case LT: case EQ: case NE: case GT: case GE:
-	case BOR: case AND: case NOT:
 		return n;
 	default:
 		return op2(NE, n, nullnode);

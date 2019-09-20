@@ -274,7 +274,6 @@ extern	void	run(Node *);
 extern	Cell	*execute(Node *);
 extern	Cell	*program(Node **, int);
 extern	Cell	*jump(Node **, int);
-extern	Cell	*boolop(Node **, int);
 extern	Cell	*relop(Node **, int);
 extern	Cell	*indirect(Node **, int);
 extern	Cell	*awkprintf(Node **, int);

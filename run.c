@@ -207,38 +207,6 @@ Cell *jump(Node **a, int n)	/* return */
 	return 0;	/* not reached */
 }
 
-Cell *boolop(Node **a, int n)	/* a[0] || a[1], a[0] && a[1], !a[0] */
-{
-	Cell *x, *y;
-	int i;
-
-	x = execute(a[0]);
-	i = istrue(x);
-	tempfree(x);
-	switch (n) {
-	case BOR:
-		if (i) return(True);
-		y = execute(a[1]);
-		i = istrue(y);
-		tempfree(y);
-		if (i) return(True);
-		else return(False);
-	case AND:
-		if ( !i ) return(False);
-		y = execute(a[1]);
-		i = istrue(y);
-		tempfree(y);
-		if (i) return(True);
-		else return(False);
-	case NOT:
-		if (i) return(False);
-		else return(True);
-	default:	/* can't happen */
-		FATAL("unknown boolean operator %d", n);
-	}
-	return 0;	/*NOTREACHED*/
-}
-
 Cell *relop(Node **a, int n)	/* a[0 < a[1], etc. */
 {
 	int i;

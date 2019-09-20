@@ -170,10 +170,7 @@ statement formats its expression list according to the format
 (see
 .Xr printf 1 ) .
 .Pp
-Patterns are arbitrary Boolean combinations
-(with
-.Ic "\&! || &&" )
-of relational expressions.
+Patterns are relational expressions.
 .Pp
 A pattern may consist of two patterns separated by a comma;
 in this case, the action is performed for all lines
@@ -190,10 +187,8 @@ A relational expression is as follow:
 where a
 .Ar relop
 is any of the six relational operators in C,
-A conditional is an arithmetic expression,
-a relational expression,
-or a Boolean combination
-of these.
+A conditional is an arithmetic expression or
+a relational expression.
 .Pp
 The special patterns
 .Ic BEGIN
