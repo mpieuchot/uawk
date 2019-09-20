@@ -654,34 +654,6 @@ Cell *assign(Node **a, int n)	/* a[0] = a[1], a[0] += a[1], etc. */
 	return(x);
 }
 
-Cell *cat(Node **a, int q)	/* a[0] cat a[1] */
-{
-	Cell *x, *y, *z;
-	int n1, n2;
-	char *s;
-	size_t len;
-
-	x = execute(a[0]);
-	y = execute(a[1]);
-	getsval(x);
-	getsval(y);
-	n1 = strlen(x->sval);
-	n2 = strlen(y->sval);
-	len = n1 + n2 + 1;
-	s = (char *) malloc(len);
-	if (s == NULL)
-		FATAL("out of space concatenating %.15s... and %.15s...",
-			x->sval, y->sval);
-	strlcpy(s, x->sval, len);
-	strlcpy(s+n1, y->sval, len - n1);
-	tempfree(x);
-	tempfree(y);
-	z = gettemp();
-	z->sval = s;
-	z->tval = STR;
-	return(z);
-}
-
 Cell *pastat(Node **a, int n)	/* a[0] { a[1] } */
 {
 	Cell *x;
