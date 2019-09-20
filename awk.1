@@ -99,34 +99,13 @@ is null, then any number of blank lines are used as the record separator,
 and newlines are used as field separators.
 This is convenient when working with multi-line records.
 .Pp
-An input line is normally made up of fields separated by whitespace.
+An input line is made up of fields separated by whitespace.
 The fields are denoted
 .Va $1 , $2 , ... ,
 while
 .Va $0
 refers to the entire line.
 The input line is split into one field per character.
-.Pp
-Normally, any number of blanks separate fields.
-In order to set the field separator to a single blank, use the
-.Fl F
-option with a value of
-.Sq [\ \&] .
-If a field separator of
-.Sq t
-is specified,
-.Nm
-treats it as if
-.Sq \et
-had been specified and uses
-.Aq TAB
-as the field separator.
-In order to use a literal
-.Sq t
-as the field separator, use the
-.Fl F
-option with a value of
-.Sq [t] .
 .Pp
 A pattern-action statement has the form
 .Pp
