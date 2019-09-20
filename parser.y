@@ -218,12 +218,6 @@ rparen:
 	;
 
 simple_stmt:
-	  print prarg '|' term		{ 
-			$$ = stat3($1, $2, itonp($3), $4); }
-	| print prarg APPEND term	{
-			$$ = stat3($1, $2, itonp($3), $4); }
-	| print prarg GT term		{
-			$$ = stat3($1, $2, itonp($3), $4); }
 	| print prarg			{ $$ = stat3($1, $2, NIL, NIL); }
 	| pattern			{ $$ = exptostat($1); }
 	| error				{ yyclearin; SYNTAX("illegal statement"); }

@@ -35,6 +35,7 @@ Node		*node1(int, Node *);
 Node		*node2(int, Node *, Node *);
 Node		*node3(int, Node *, Node *, Node *);
 Node		*node4(int, Node *, Node *, Node *, Node *);
+Node		*itonp(int);
 
 struct
 {	int value;
