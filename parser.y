@@ -508,10 +508,6 @@ int yylex(void)
 			/* BUG: awkward, if not wrong */
 			c = gettok(&buf, &bufsize);
 			if (isalpha(c)) {
-				if (strcmp(buf, "NF") == 0) {	/* very special */
-					unputstr("(NF)");
-					RET(INDIRECT);
-				}
 				c = peek();
 				if (c == '(' || c == '[' ) {
 					unputstr(buf);
