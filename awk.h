@@ -49,9 +49,10 @@ extern int	compile_time;	/* 1 if compiling, 0 if running */
 extern int	recsize;	/* size of current record, orig RECSIZE */
 
 extern char	**RS;
-extern char	**ORS;
-extern char	**OFS;
-extern char	**OFMT;
+#define	ORS	"\n"		/* Output record separator */
+#define	OFS	" "		/* Output field separator */
+#define OFMT	"%.6g"		/* Output format for numbers */
+#define	CONVFMT "%.6g"		/* Conversion format when converting numbers */
 extern Awkfloat *NR;
 extern Awkfloat *FNR;
 extern Awkfloat *NF;

@@ -736,9 +736,9 @@ Cell *printstat(Node **a, int n)	/* print a[0] */
 		fputs(getpssval(y), fp);
 		tempfree(y);
 		if (x->nnext == NULL)
-			fputs(*ORS, fp);
+			fputs(ORS, fp);
 		else
-			fputs(*OFS, fp);
+			fputs(OFS, fp);
 	}
 	if (a[1] != 0)
 		fflush(fp);

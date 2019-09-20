@@ -38,10 +38,6 @@ THIS SOFTWARE.
 Array	*symtab;	/* main symbol table */
 
 char	**RS;		/* initial record sep */
-char	**OFS;		/* output field sep */
-char	**ORS;		/* output record sep */
-char	**OFMT;		/* output format for numbers */
-char	**CONVFMT;	/* format for conversions in getsval */
 Awkfloat *NF;		/* number of fields in current record */
 Awkfloat *NR;		/* number of current record */
 Awkfloat *FNR;		/* number of current record in current file */
@@ -68,10 +64,6 @@ void syminit(void)	/* initialize symbol table with builtin vars */
 	nullnode = celltonode(nullloc, CCON);
 
 	RS = &setsymtab("RS", "\n", 0.0, STR|DONTFREE, symtab)->sval;
-	OFS = &setsymtab("OFS", " ", 0.0, STR|DONTFREE, symtab)->sval;
-	ORS = &setsymtab("ORS", "\n", 0.0, STR|DONTFREE, symtab)->sval;
-	OFMT = &setsymtab("OFMT", "%.6g", 0.0, STR|DONTFREE, symtab)->sval;
-	CONVFMT = &setsymtab("CONVFMT", "%.6g", 0.0, STR|DONTFREE, symtab)->sval;
 	FILENAME = &setsymtab("FILENAME", "", 0.0, STR|DONTFREE, symtab)->sval;
 	nfloc = setsymtab("NF", "", 0.0, NUM, symtab);
 	NF = &nfloc->fval;
@@ -324,7 +316,7 @@ Awkfloat getfval(Cell *vp)	/* get float val of a Cell */
 	return(vp->fval);
 }
 
-static char *get_str_val(Cell *vp, char **fmt)        /* get string val of a Cell */
+static char *get_str_val(Cell *vp, char *fmt)        /* get string val of a Cell */
 {
 	int n;
 	double dtemp;
@@ -341,7 +333,7 @@ static char *get_str_val(Cell *vp, char **fmt)        /* get string val of a Cel
 		if (modf(vp->fval, &dtemp) == 0)	/* it's integral */
 			n = asprintf(&vp->sval, "%.30g", vp->fval);
 		else
-			n = asprintf(&vp->sval, *fmt, vp->fval);
+			n = asprintf(&vp->sval, fmt, vp->fval);
 		if (n == -1)
 			FATAL("out of space in get_str_val");
 		vp->tval &= ~DONTFREE;
