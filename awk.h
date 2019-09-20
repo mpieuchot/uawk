@@ -157,7 +157,6 @@ extern	int	pairstack[], paircnt;
 #define notlegal(n)	(n <= FIRSTTOKEN || n >= LASTTOKEN || proctab[n-FIRSTTOKEN] == nullproc)
 #define isvalue(n)	((n)->ntype == NVALUE)
 #define isexpr(n)	((n)->ntype == NEXPR)
-#define isjump(n)	((n)->ctype == OJUMP)
 #define isexit(n)	((n)->csub == JEXIT)
 #define isrec(n)	((n)->tval & REC)
 #define isfld(n)	((n)->tval & FLD)

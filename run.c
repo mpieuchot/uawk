@@ -154,7 +154,7 @@ Cell *execute(Node *u)	/* execute a node of the parse tree */
 			recbld();
 		if (isexpr(a))
 			return(x);
-		if (isjump(x))
+		if (isexit(x))
 			return(x);
 		if (a->nnext == NULL)
 			return(x);
@@ -173,8 +173,6 @@ Cell *program(Node **a, int n)	/* execute an awk program */
 		x = execute(a[0]);
 		if (isexit(x))
 			return(True);
-		if (isjump(x))
-			FATAL("illegal break, continue, next or nextfile from BEGIN");
 		tempfree(x);
 	}
 	if (a[1] || a[2])
