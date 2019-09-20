@@ -26,6 +26,7 @@ THIS SOFTWARE.
 %{
 #include <ctype.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include "awk.h"
 
 int yywrap(void) { return(1); }
@@ -611,34 +612,18 @@ int string(void)
 	RET(STRING);
 }
 
-
-int binsearch(char *w, Keyword *kp, int n)
+int kcmp(const void *w, const void *kp)
 {
-	int cond, low, mid, high;
-
-	low = 0;
-	high = n - 1;
-	while (low <= high) {
-		mid = (low + high) / 2;
-		if ((cond = strcmp(w, kp[mid].word)) < 0)
-			high = mid - 1;
-		else if (cond > 0)
-			low = mid + 1;
-		else
-			return mid;
-	}
-	return -1;
+	return strcmp(w, ((const Keyword *)kp)->word);
 }
 
 int word(char *w) 
 {
 	Keyword *kp;
-	int n;
 
-	n = binsearch(w, keywords, sizeof(keywords)/sizeof(keywords[0]));
-/* BUG: this ought to be inside the if; in theory could fault (daniel barrett) */
-	kp = keywords + n;
-	if (n != -1) {	/* found in table */
+	kp = bsearch(w, keywords, sizeof(keywords)/sizeof(keywords[0]),
+	    sizeof(keywords[0]), kcmp);
+	if (kp != NULL) {
 		yylval.i = kp->sub;
 		RET(kp->type);
 	}
