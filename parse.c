@@ -30,6 +30,12 @@ THIS SOFTWARE.
 #include "awk.h"
 #include "ytab.h"
 
+Node		*nodealloc(int);
+Node		*node1(int, Node *);
+Node		*node2(int, Node *, Node *);
+Node		*node3(int, Node *, Node *, Node *);
+Node		*node4(int, Node *, Node *, Node *, Node *);
+
 Node *nodealloc(int n)
 {
 	Node *x;
@@ -121,15 +127,6 @@ Node *stat3(int a, Node *b, Node *c, Node *d)
 	return(x);
 }
 
-Node *stat4(int a, Node *b, Node *c, Node *d, Node *e)
-{
-	Node *x;
-
-	x = node4(a,b,c,d,e);
-	x->ntype = NSTAT;
-	return(x);
-}
-
 Node *op1(int a, Node *b)
 {
 	Node *x;
@@ -153,15 +150,6 @@ Node *op3(int a, Node *b, Node *c, Node *d)
 	Node *x;
 
 	x = node3(a,b,c,d);
-	x->ntype = NEXPR;
-	return(x);
-}
-
-Node *op4(int a, Node *b, Node *c, Node *d, Node *e)
-{
-	Node *x;
-
-	x = node4(a,b,c,d,e);
 	x->ntype = NEXPR;
 	return(x);
 }

@@ -23,35 +23,28 @@ ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF
 THIS SOFTWARE.
 ****************************************************************/
 
-extern	int	yywrap(void);
+/* awkgram.y */
 extern	Node	*notnull(Node *);
 extern	int	yyparse(void);
 
+/* lex.c */
 extern	int	yylex(void);
 extern	int	input(void);
 extern	void	unput(int);
 extern	void	unputstr(const char *);
-extern	int	yylook(void);
-extern	int	yyback(int *, int);
-extern	int	yyinput(void);
 
+/* main.c */
 extern	int	pgetc(void);
 extern	char	*cursource(void);
 
-extern	Node	*nodealloc(int);
+/* parse.c */
 extern	Node	*exptostat(Node *);
-extern	Node	*node1(int, Node *);
-extern	Node	*node2(int, Node *, Node *);
-extern	Node	*node3(int, Node *, Node *, Node *);
-extern	Node	*node4(int, Node *, Node *, Node *, Node *);
 extern	Node	*stat3(int, Node *, Node *, Node *);
 extern	Node	*op2(int, Node *, Node *);
 extern	Node	*op1(int, Node *);
 extern	Node	*stat1(int, Node *);
 extern	Node	*op3(int, Node *, Node *, Node *);
-extern	Node	*op4(int, Node *, Node *, Node *, Node *);
 extern	Node	*stat2(int, Node *, Node *);
-extern	Node	*stat4(int, Node *, Node *, Node *, Node *);
 extern	Node	*celltonode(Cell *, int);
 extern	Node	*rectonode(void);
 extern	Node	*pa2stat(Node *, Node *, Node *);
@@ -61,11 +54,11 @@ extern	Cell	*(*proctab[])(Node **, int);
 extern	int	ptoi(void *);
 extern	Node	*itonp(int);
 
+/* tran.c */
 extern	void	syminit(void);
 extern	void	arginit(int, char **);
 extern	Array	*makesymtab(int);
 extern	void	freesymtab(Cell *);
-extern	void	freeelem(Cell *, const char *);
 extern	Cell	*setsymtab(const char *, const char *, double, unsigned int, Array *);
 extern	int	hash(const char *, int);
 extern	void	rehash(Array *);
@@ -79,6 +72,7 @@ extern	char	*getpssval(Cell *);     /* for print */
 extern	char	*tostring(const char *);
 extern	char	*qstring(const char *, int);
 
+/* lib.c */
 extern	void	recinit(unsigned int);
 extern	void	initgetrec(void);
 extern	void	makefields(int, int);
@@ -106,19 +100,15 @@ extern	double	errcheck(double, const char *);
 extern	int	isclvar(const char *);
 extern	int	is_number(const char *);
 
+/* run.c */
 extern	int	adjbuf(char **pb, int *sz, int min, int q, char **pbp, const char *what);
 extern	void	run(Node *);
 extern	Cell	*execute(Node *);
 extern	Cell	*program(Node **, int);
-extern	Cell	*arg(Node **, int);
 extern	Cell	*jump(Node **, int);
 extern	Cell	*boolop(Node **, int);
 extern	Cell	*relop(Node **, int);
-extern	void	tfree(Cell *);
-extern	Cell	*gettemp(void);
-extern	Cell	*field(Node **, int);
 extern	Cell	*indirect(Node **, int);
-extern	int	format(char **, int *, const char *, Node *);
 extern	Cell	*awkprintf(Node **, int);
 extern	Cell	*arith(Node **, int);
 extern	double	ipow(double, int);
@@ -130,10 +120,3 @@ extern	Cell	*condexpr(Node **, int);
 extern	Cell	*ifstat(Node **, int);
 extern	Cell	*printstat(Node **, int);
 extern	Cell	*nullproc(Node **, int);
-extern	FILE	*redirect(int, Node *);
-extern	FILE	*openfile(int, const char *);
-extern	const char	*filename(FILE *);
-extern	void	closeall(void);
-
-extern	FILE	*popen(const char *, const char *);
-extern	int	pclose(FILE *);

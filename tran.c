@@ -136,29 +136,6 @@ void freesymtab(Cell *ap)	/* free a symbol table */
 	free(tp);
 }
 
-void freeelem(Cell *ap, const char *s)	/* free elem s from ap (i.e., ap["s"] */
-{
-	Array *tp;
-	Cell *p, *prev = NULL;
-	int h;
-	
-	tp = (Array *) ap->sval;
-	h = hash(s, tp->size);
-	for (p = tp->tab[h]; p != NULL; prev = p, p = p->cnext)
-		if (strcmp(s, p->nval) == 0) {
-			if (prev == NULL)	/* 1st one */
-				tp->tab[h] = p->cnext;
-			else			/* middle somewhere */
-				prev->cnext = p->cnext;
-			if (freeable(p))
-				xfree(p->sval);
-			free(p->nval);
-			free(p);
-			tp->nelem--;
-			return;
-		}
-}
-
 Cell *setsymtab(const char *n, const char *s, Awkfloat f, unsigned t, Array *tp)
 {
 	int h;

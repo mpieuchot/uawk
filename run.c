@@ -35,6 +35,17 @@ THIS SOFTWARE.
 #include "awk.h"
 #include "ytab.h"
 
+
+void		 tfree(Cell *);
+Cell		*gettemp(void);
+int		 format(char **, int *, const char *, Node *);
+FILE		*redirect(int, Node *);
+FILE		*openfile(int, const char *);
+const char	*filename(FILE *);
+void		 closeall(void);
+int		 pclose(FILE *);
+FILE		*popen(const char *, const char *);
+
 #define tempfree(x)	if (istemp(x)) tfree(x); else
 
 /*
