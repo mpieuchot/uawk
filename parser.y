@@ -173,6 +173,7 @@ rparen:
 	;
 
 simple_stmt:
+	| print '(' pattern ')'		{ $$ = stat3($1, $3, NIL, NIL); }
 	| print '(' plist ')'		{ $$ = stat3($1, $3, NIL, NIL); }
 	| pattern			{ $$ = exptostat($1); }
 	| error				{ yyclearin; SYNTAX("illegal statement"); }
