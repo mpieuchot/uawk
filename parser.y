@@ -54,13 +54,13 @@ char	*curfname = 0;	/* current function name */
 %token	<i>	POSTINCR PREINCR POSTDECR PREDECR
 %token	<cp>	VAR IVAR NUMBER STRING
 
-%type	<p>	pas pattern ppattern plist pplist patlist prarg term
+%type	<p>	pas pattern plist term
 %type	<p>	pa_pat pa_stat pa_stats
 %type	<p>	simple_stmt stmt stmtlist
 %type	<p>	var
 %type	<p>	if else
 %type	<i>	st
-%type	<i>	pst opt_pst lbrace rbrace rparen comma nl opt_nl and bor
+%type	<i>	pst opt_pst lbrace rbrace rparen nl opt_nl and bor
 %type	<i>	print
 
 %right	ASGNOP
@@ -93,10 +93,6 @@ and:
 
 bor:
 	  BOR | bor NL
-	;
-
-comma:
-	  ','
 	;
 
 else:
@@ -152,22 +148,6 @@ pa_stats:
 	| pa_stats opt_pst pa_stat	{ $$ = linkum($1, $3); }
 	;
 
-patlist:
-	  pattern
-	| patlist comma pattern		{ $$ = linkum($1, $3); }
-	;
-
-ppattern:
-	  var ASGNOP ppattern		{ $$ = op2($2, $1, $3); }
-	| ppattern '?' ppattern ':' ppattern %prec '?'
-	 	{ $$ = op3(CONDEXPR, notnull($1), $3, $5); }
-	| ppattern bor ppattern %prec BOR
-		{ $$ = op2(BOR, notnull($1), notnull($3)); }
-	| ppattern and ppattern %prec AND
-		{ $$ = op2(AND, notnull($1), notnull($3)); }
-	| term
-	;
-
 pattern:
 	  var ASGNOP pattern		{ $$ = op2($2, $1, $3); }
 	| pattern '?' pattern ':' pattern %prec '?'
@@ -186,19 +166,8 @@ pattern:
 	;
 
 plist:
-	  pattern comma pattern		{ $$ = linkum($1, $3); }
-	| plist comma pattern		{ $$ = linkum($1, $3); }
-	;
-
-pplist:
-	  ppattern
-	| pplist comma ppattern		{ $$ = linkum($1, $3); }
-	;
-
-prarg:
-	  /* empty */			{ $$ = rectonode(); }
-	| pplist
-	| '(' plist ')'			{ $$ = $2; }
+	  pattern ',' pattern		{ $$ = linkum($1, $3); }
+	| plist ',' pattern		{ $$ = linkum($1, $3); }
 	;
 
 print:
@@ -218,7 +187,7 @@ rparen:
 	;
 
 simple_stmt:
-	| print prarg			{ $$ = stat3($1, $2, NIL, NIL); }
+	| print '(' plist ')'		{ $$ = stat3($1, $3, NIL, NIL); }
 	| pattern			{ $$ = exptostat($1); }
 	| error				{ yyclearin; SYNTAX("illegal statement"); }
 	;
