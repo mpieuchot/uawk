@@ -54,8 +54,6 @@ char	*pfile[MAX_PFILE];	/* program filenames from -f's */
 int	npfile = 0;	/* number of filenames */
 int	curpfile = 0;	/* current filename */
 
-int	safe	= 0;	/* 1 => "safe" mode */
-
 int main(int argc, char *argv[])
 {
 	setlocale(LC_ALL, "");
@@ -69,7 +67,7 @@ int main(int argc, char *argv[])
 	}
 
 	if (argc == 1) {
-		fprintf(stderr, "usage: %s [-safe] [-d[n]] "
+		fprintf(stderr, "usage: %s [-d[n]] "
 		    "[-v var=value] [prog | -f progfile]\n\tfile ...\n",
 		    cmdname);
 		exit(1);
@@ -85,10 +83,6 @@ int main(int argc, char *argv[])
 			break;
 		}
 		switch (argv[1][1]) {
-		case 's':
-			if (strcmp(argv[1], "-safe") == 0)
-				safe = 1;
-			break;
 		case 'f':	/* next argument is program filename */
 			if (argv[1][2] != 0) {  /* arg is -fsomething */
 				if (npfile >= MAX_PFILE - 1)
@@ -131,14 +125,6 @@ int main(int argc, char *argv[])
 		}
 		argc--;
 		argv++;
-	}
-
-	if (safe) {
-		if (pledge("stdio rpath", NULL) == -1) {
-			fprintf(stderr, "%s: pledge: incorrect arguments\n",
-			    cmdname);
-			exit(1);
-		}
 	}
 
 	/* argv[1] is now the first argument */

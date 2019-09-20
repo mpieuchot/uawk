@@ -30,7 +30,6 @@
 .Nd pattern-directed scanning and processing language
 .Sh SYNOPSIS
 .Nm awk
-.Op Fl safe
 .Op Fl d Ns Op Ar n
 .Op Fl v Ar var Ns = Ns Ar value
 .Op Ar prog | Fl f Ar progfile
@@ -61,7 +60,7 @@ is treated as an assignment, not a filename,
 and is executed at the time it would have been opened if it were a filename.
 .Pp
 The options are as follows:
-.Bl -tag -width "-safe "
+.Bl -tag -width "-v var=value"
 .It Fl d Ns Op Ar n
 Debug mode.
 Set debug level to
@@ -77,17 +76,6 @@ to dump core on fatal errors.
 Read program code from the specified file
 .Ar progfile
 instead of from the command line.
-.It Fl safe
-Disable file output
-.Pf ( Ic print No > ,
-.Ic print No >> ) 
-and process creation.
-This is a first
-.Pq and not very reliable
-approximation to a
-.Dq safe
-version of
-.Nm .
 .It Fl v Ar var Ns = Ns Ar value
 Assign
 .Ar value

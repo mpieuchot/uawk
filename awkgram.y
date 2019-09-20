@@ -223,14 +223,11 @@ rparen:
 
 simple_stmt:
 	  print prarg '|' term		{ 
-			if (safe) SYNTAX("print | is unsafe");
-			else $$ = stat3($1, $2, itonp($3), $4); }
+			$$ = stat3($1, $2, itonp($3), $4); }
 	| print prarg APPEND term	{
-			if (safe) SYNTAX("print >> is unsafe");
-			else $$ = stat3($1, $2, itonp($3), $4); }
+			$$ = stat3($1, $2, itonp($3), $4); }
 	| print prarg GT term		{
-			if (safe) SYNTAX("print > is unsafe");
-			else $$ = stat3($1, $2, itonp($3), $4); }
+			$$ = stat3($1, $2, itonp($3), $4); }
 	| print prarg			{ $$ = stat3($1, $2, NIL, NIL); }
 	| pattern			{ $$ = exptostat($1); }
 	| error				{ yyclearin; SYNTAX("illegal statement"); }
