@@ -56,7 +56,6 @@ extern Awkfloat *NR;
 extern Awkfloat *FNR;
 extern Awkfloat *NF;
 extern char	**FILENAME;
-extern char	**SUBSEP;
 
 extern char	*record;	/* points to $0 */
 extern int	lineno;		/* line number in awk program */

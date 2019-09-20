@@ -47,7 +47,6 @@ Awkfloat *NR;		/* number of current record */
 Awkfloat *FNR;		/* number of current record in current file */
 char	**FILENAME;	/* current filename argument */
 Awkfloat *ARGC;		/* number of arguments from command line */
-char	**SUBSEP;	/* subscript separator for a[i,j,k]; default \034 */
 
 Cell	*nrloc;		/* NR */
 Cell	*nfloc;		/* NF */
@@ -80,7 +79,6 @@ void syminit(void)	/* initialize symbol table with builtin vars */
 	NR = &nrloc->fval;
 	fnrloc = setsymtab("FNR", "", 0.0, NUM, symtab);
 	FNR = &fnrloc->fval;
-	SUBSEP = &setsymtab("SUBSEP", "\034", 0.0, STR|DONTFREE, symtab)->sval;
 	symtabloc = setsymtab("SYMTAB", "", 0.0, ARR, symtab);
 	symtabloc->sval = (char *) symtab;
 }

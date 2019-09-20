@@ -207,20 +207,9 @@ The operators
 .Ic \&! ++ \-\- += \-= *= /= %= ^=
 .Ic > >= < <= == != ?:
 are also available in expressions.
-Variables may be scalars, array elements
-(denoted
-.Li x[i] )
+Variables may be scalars
 or fields.
 Variables are initialized to the null string.
-Array subscripts may be any string,
-not necessarily numeric;
-this allows for a form of associative memory.
-Multiple subscripts such as
-.Li [i,j,k]
-are permitted; the constituents are concatenated,
-separated by the value of
-.Va SUBSEP
-.Pq see the section on variables below .
 .Pp
 The
 .Ic print
@@ -312,8 +301,6 @@ Output field separator (default blank).
 Output record separator (default newline).
 .It Va RS
 Input record separator (default newline).
-.It Va SUBSEP
-Separates multiple subscripts (default 034).
 .El
 .Sh EXIT STATUS
 .Ex -std awk
