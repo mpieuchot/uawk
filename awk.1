@@ -102,10 +102,8 @@ a logical AND
 a logical OR
 .Pq Sq || ,
 after the
-.Sq do
-or
 .Sq else
-keywords,
+keyword
 or after the closing parenthesis of an
 .Sq if
 statement.
@@ -154,12 +152,11 @@ with the usual C escapes recognized within
 for a complete list of these).
 Expressions take on string or numeric values as appropriate,
 and are built using the operators
-.Ic + \- * / % ^
-.Pq exponentiation ,
+.Ic + \- * / %
 and concatenation
 .Pq indicated by whitespace .
 The operators
-.Ic \&! ++ \-\- += \-= *= /= %= ^=
+.Ic \&! ++ \-\- += \-= *= /= %=
 .Ic > >= < <= == != ?:
 are also available in expressions.
 Variables may be scalars
@@ -169,20 +166,6 @@ Variables are initialized to the null string.
 The
 .Ic print
 statement prints its arguments on the standard output
-(or on a file if
-.Pf > Ar file
-or
-.Pf >> Ar file
-is present or on a pipe if
-.Pf |\ \& Ar cmd
-is present), separated by the current output field separator,
-and terminated by the output record separator.
-.Ar file
-and
-.Ar cmd
-may be literal names or parenthesized expressions;
-identical string values in different statements denote
-the same open file.
 The
 .Ic printf
 statement formats its expression list according to the format
@@ -199,14 +182,10 @@ in this case, the action is performed for all lines
 from an occurrence of the first pattern
 through an occurrence of the second.
 .Pp
-A relational expression is one of the following:
+A relational expression is as follow:
 .Pp
 .Bl -tag -width Ds -offset indent -compact
 .It Ar expression relop expression
-.It Ar expression Ic in Ar array-name
-.It Xo Ic \&( Ns
-.Ar expr , expr , \&... Ns Ic \&) in
-.Ar array-name
 .Xc
 .El
 .Pp
@@ -243,7 +222,6 @@ The name of the current input file.
 Ordinal number of the current record in the current file.
 .It Va NR
 Ordinal number of the current record.
-.Qq Li %.6g ) .
 .El
 .Sh EXIT STATUS
 .Ex -std awk
@@ -262,10 +240,6 @@ Add up first column, print sum and average:
 END { print "sum is", s, " average is", s/NR }
 .Ed
 .Pp
-Print all lines between start/stop pairs:
-.Pp
-.Dl /start/, /stop/
-.Pp
 Simulate
 .Xr echo 1 :
 .Bd -literal -offset indent
@@ -275,9 +249,9 @@ BEGIN { # Simulate echo(1)
         exit }
 .Ed
 .Pp
-Print an error message to standard error:
+Print a message:
 .Bd -literal -offset indent
-{ print "error!" > "/dev/stderr" }
+{ print "hello there!" }
 .Ed
 .Sh SEE ALSO
 .Xr cut 1 ,

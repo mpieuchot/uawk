@@ -539,30 +539,11 @@ Cell *arith(Node **a, int n)	/* a[0] + a[1], etc.  also -a[0] */
 	case UMINUS:
 		i = -i;
 		break;
-	case POWER:
-		if (j >= 0 && modf(j, &v) == 0.0)	/* pos integer exponent */
-			i = ipow(i, (int) j);
-		else
-			i = errcheck(pow(i, j), "pow");
-		break;
 	default:	/* can't happen */
 		FATAL("illegal arithmetic operator %d", n);
 	}
 	setfval(z, i);
 	return(z);
-}
-
-double ipow(double x, int n)	/* x**n.  ought to be done by pow, but isn't always */
-{
-	double v;
-
-	if (n <= 0)
-		return 1;
-	v = ipow(x, n/2);
-	if (n % 2 == 0)
-		return v * v;
-	else
-		return x * v * v;
 }
 
 Cell *incrdecr(Node **a, int n)		/* a[0]++, etc. */
@@ -632,12 +613,6 @@ Cell *assign(Node **a, int n)	/* a[0] = a[1], a[0] += a[1], etc. */
 			FATAL("division by zero in %%=");
 		modf(xf/yf, &v);
 		xf = xf - yf * v;
-		break;
-	case POWEQ:
-		if (yf >= 0 && modf(yf, &v) == 0.0)	/* pos integer exponent */
-			xf = ipow(xf, (int) yf);
-		else
-			xf = errcheck(pow(xf, yf), "pow");
 		break;
 	default:
 		FATAL("illegal assignment operator %d", n);

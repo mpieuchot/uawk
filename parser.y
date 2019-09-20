@@ -47,7 +47,7 @@ char	*curfname = 0;	/* current function name */
 %token	<i>	AND BOR APPEND EQ GE GT LE LT NE
 %token	<i>	EXIT IF
 %token	<i>	ADD MINUS MULT DIVIDE MOD
-%token	<i>	ASSIGN ASGNOP ADDEQ SUBEQ MULTEQ DIVEQ MODEQ POWEQ
+%token	<i>	ASSIGN ASGNOP ADDEQ SUBEQ MULTEQ DIVEQ MODEQ
 %token	<i>	PRINT PRINTF
 %token	<p>	ELSE CONDEXPR
 %token	<i>	POSTINCR PREINCR POSTDECR PREDECR
@@ -75,7 +75,6 @@ char	*curfname = 0;	/* current function name */
 %left	'+' '-'
 %left	'*' '/' '%'
 %left	NOT UMINUS
-%right	POWER
 %right	DECR INCR
 %left	INDIRECT
 
@@ -250,7 +249,6 @@ term:
 	| term '*' term			{ $$ = op2(MULT, $1, $3); }
 	| term '/' term			{ $$ = op2(DIVIDE, $1, $3); }
 	| term '%' term			{ $$ = op2(MOD, $1, $3); }
-	| term POWER term		{ $$ = op2(POWER, $1, $3); }
 	| '-' term %prec UMINUS		{ $$ = op1(UMINUS, $2); }
 	| '+' term %prec UMINUS		{ $$ = $2; }
 	| NOT term %prec UMINUS		{ $$ = op1(NOT, notnull($2)); }
@@ -474,13 +472,6 @@ int yylex(void)
 		case '*':
 			if (peek() == '=') {	/* *= */
 				input(); yylval.i = MULTEQ; RET(ASGNOP);
-			} else if (peek() == '*') {	/* ** or **= */
-				input();	/* eat 2nd * */
-				if (peek() == '=') {
-					input(); yylval.i = POWEQ; RET(ASGNOP);
-				} else {
-					RET(POWER);
-				}
 			} else
 				RET('*');
 		case '/':
@@ -490,12 +481,6 @@ int yylex(void)
 				input(); yylval.i = MODEQ; RET(ASGNOP);
 			} else
 				RET('%');
-		case '^':
-			if (peek() == '=') {
-				input(); yylval.i = POWEQ; RET(ASGNOP);
-			} else
-				RET(POWER);
-
 		case '$':
 			/* BUG: awkward, if not wrong */
 			c = gettok(&buf, &bufsize);

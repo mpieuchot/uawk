@@ -266,7 +266,6 @@ extern	void	WARNING(const char *, ...);
 extern	void	error(void);
 extern	void	eprint(void);
 extern	void	bclass(int);
-extern	double	errcheck(double, const char *);
 extern	int	is_number(const char *);
 
 /* run.c */

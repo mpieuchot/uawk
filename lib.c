@@ -592,21 +592,6 @@ void bclass(int c)
 	}
 }
 
-double errcheck(double x, const char *s)
-{
-
-	if (errno == EDOM) {
-		errno = 0;
-		WARNING("%s argument out of domain", s);
-		x = 1;
-	} else if (errno == ERANGE) {
-		errno = 0;
-		WARNING("%s result out of range", s);
-		x = 1;
-	}
-	return x;
-}
-
 /* strtod is supposed to be a proper test of what's a valid number */
 /* appears to be broken in gcc on linux: thinks 0x123 is a valid FP number */
 /* wrong: violates 4.10.1.4 of ansi C standard */
