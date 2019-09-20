@@ -120,8 +120,7 @@ int getrec(char **pbuf, int *pbufsize, int isrecord)	/* get next input record */
 		firsttime = 0;
 		initgetrec();
 	}
-	   DPRINTF( ("RS=<%s>, ARGC=%g, FILENAME=%s\n",
-		*RS, *ARGC, *FILENAME) );
+	   DPRINTF( ("ARGC=%g, FILENAME=%s\n", *ARGC, *FILENAME) );
 	if (isrecord) {
 		donefld = 0;
 		donerec = 1;
@@ -186,7 +185,7 @@ int readrec(char **pbuf, int *pbufsize, FILE *inf)	/* read one record into buf *
 	int bufsize = *pbufsize;
 
 	/*fflush(stdout); avoids some buffering problem but makes it 25% slower*/
-	if ((sep = **RS) == 0) {
+	if ((sep = *RS) == 0) {
 		sep = '\n';
 		while ((c=getc(inf)) == '\n' && c != EOF)	/* skip leading \n's */
 			;
@@ -200,7 +199,7 @@ int readrec(char **pbuf, int *pbufsize, FILE *inf)	/* read one record into buf *
 					FATAL("input record `%.30s...' too long", buf);
 			*rr++ = c;
 		}
-		if (**RS == sep || c == EOF)
+		if (*RS == sep || c == EOF)
 			break;
 		if ((c = getc(inf)) == '\n' || c == EOF) /* 2 in a row */
 			break;
@@ -314,7 +313,7 @@ void fldbld(void)	/* create fields from current record */
 		 * this variable is tested in the inner while loop.
 		 */
 		int rtest = '\n';  /* normal case */
-		if (strlen(*RS) > 0)
+		if (strlen(RS) > 0)
 			rtest = '\0';
 		for (;;) {
 			i++;

@@ -89,15 +89,9 @@ any number of
 options may be present.
 .El
 .Pp
-The input is normally made up of input lines
+The input is made up of input lines
 .Pq records
-separated by newlines, or by the value of
-.Va RS .
-If
-.Va RS
-is null, then any number of blank lines are used as the record separator,
-and newlines are used as field separators.
-This is convenient when working with multi-line records.
+separated by newlines.
 .Pp
 An input line is made up of fields separated by whitespace.
 The fields are denoted
@@ -268,8 +262,6 @@ Ordinal number of the current record in the current file.
 .It Va NR
 Ordinal number of the current record.
 .Qq Li %.6g ) .
-.It Va RS
-Input record separator (default newline).
 .El
 .Sh EXIT STATUS
 .Ex -std awk

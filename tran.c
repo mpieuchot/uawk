@@ -37,7 +37,6 @@ THIS SOFTWARE.
 
 Array	*symtab;	/* main symbol table */
 
-char	**RS;		/* initial record sep */
 Awkfloat *NF;		/* number of fields in current record */
 Awkfloat *NR;		/* number of current record */
 Awkfloat *FNR;		/* number of current record in current file */
@@ -63,7 +62,6 @@ void syminit(void)	/* initialize symbol table with builtin vars */
 	nullloc = setsymtab("$zero&null", "", 0.0, NUM|STR|CON|DONTFREE, symtab);
 	nullnode = celltonode(nullloc, CCON);
 
-	RS = &setsymtab("RS", "\n", 0.0, STR|DONTFREE, symtab)->sval;
 	FILENAME = &setsymtab("FILENAME", "", 0.0, STR|DONTFREE, symtab)->sval;
 	nfloc = setsymtab("NF", "", 0.0, NUM, symtab);
 	NF = &nfloc->fval;

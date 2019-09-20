@@ -48,7 +48,7 @@ extern int	compile_time;	/* 1 if compiling, 0 if running */
 #define	RECSIZE	(8 * 1024)	/* sets limit on records, fields, etc., etc. */
 extern int	recsize;	/* size of current record, orig RECSIZE */
 
-extern char	**RS;
+#define	RS	"\n"		/* Input record separator */
 #define	ORS	"\n"		/* Output record separator */
 #define	OFS	" "		/* Output field separator */
 #define OFMT	"%.6g"		/* Output format for numbers */
