@@ -67,7 +67,7 @@ int main(int argc, char *argv[])
 
 	if (argc == 1) {
 		fprintf(stderr, "usage: %s [-d[n]] "
-		    "[-v var=value] [prog | -f progfile]\n\tfile ...\n",
+		    "[prog | -f progfile]\n\tfile ...\n",
 		    cmdname);
 		exit(1);
 	}
@@ -94,22 +94,6 @@ int main(int argc, char *argv[])
 				if (npfile >= MAX_PFILE - 1)
 					FATAL("too many -f options"); 
 				pfile[npfile++] = argv[1];
-			}
-			break;
-		case 'v':	/* -v a=1 to be done NOW.  one -v for each */
-			if (argv[1][2] != 0) {  /* arg is -vsomething */
-				if (isclvar(&argv[1][2]))
-					setclvar(&argv[1][2]);
-				else
-					FATAL("invalid -v option argument: %s", &argv[1][2]);
-			} else {		/* arg is -v something */
-				argc--; argv++;
-				if (argc <= 1)
-					FATAL("no variable name");
-				if (isclvar(argv[1]))
-					setclvar(argv[1]);
-				else
-					FATAL("invalid -v option argument: %s", argv[1]);
 			}
 			break;
 		case 'd':

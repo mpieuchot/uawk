@@ -97,12 +97,8 @@ void initgetrec(void)
 			argno++;
 			continue;
 		}
-		if (!isclvar(p)) {
-			setsval(lookup("FILENAME", symtab), p);
-			return;
-		}
-		setclvar(p);	/* a commandline assignment before filename */
-		argno++;
+		setsval(lookup("FILENAME", symtab), p);
+		return;
 	}
 	infile = stdin;		/* no filenames, so use stdin */
 }
@@ -132,11 +128,6 @@ int getrec(char **pbuf, int *pbufsize, int isrecord)	/* get next input record */
 		if (infile == NULL) {	/* have to open a new file */
 			file = getargv(argno);
 			if (file == NULL || *file == '\0') {	/* deleted or zapped */
-				argno++;
-				continue;
-			}
-			if (isclvar(file)) {	/* a var=value arg */
-				setclvar(file);
 				argno++;
 				continue;
 			}
@@ -231,25 +222,6 @@ char *getargv(int n)	/* get ARGV[n] */
 	   DPRINTF( ("getargv(%d) returns |%s|\n", n, s) );
 	return s;
 }
-
-void setclvar(char *s)	/* set var=value from s */
-{
-	char *p;
-	Cell *q;
-
-	for (p=s; *p != '='; p++)
-		;
-	*p++ = 0;
-	p = qstring(p, '\0');
-	q = setsymtab(s, p, 0.0, STR, symtab);
-	setsval(q, p);
-	if (is_number(q->sval)) {
-		q->fval = atof(q->sval);
-		q->tval |= NUM;
-	}
-	   DPRINTF( ("command line set %s to |%s|\n", s, p) );
-}
-
 
 void fldbld(void)	/* create fields from current record */
 {
@@ -634,18 +606,6 @@ double errcheck(double x, const char *s)
 		x = 1;
 	}
 	return x;
-}
-
-int isclvar(const char *s)	/* is s of form var=something ? */
-{
-	const char *os = s;
-
-	if (!isalpha((uschar) *s) && *s != '_')
-		return 0;
-	for ( ; *s; s++)
-		if (!(isalnum((uschar) *s) || *s == '_'))
-			break;
-	return *s == '=' && s > os && *(s+1) != '=';
 }
 
 /* strtod is supposed to be a proper test of what's a valid number */

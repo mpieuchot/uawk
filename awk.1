@@ -31,7 +31,6 @@
 .Sh SYNOPSIS
 .Nm awk
 .Op Fl d Ns Op Ar n
-.Op Fl v Ar var Ns = Ns Ar value
 .Op Ar prog | Fl f Ar progfile
 .Ar
 .Sh DESCRIPTION
@@ -52,15 +51,9 @@ the associated action is performed for each matched pattern.
 The file name
 .Sq -
 means the standard input.
-Any
-.Ar file
-of the form
-.Ar var Ns = Ns Ar value
-is treated as an assignment, not a filename,
-and is executed at the time it would have been opened if it were a filename.
 .Pp
 The options are as follows:
-.Bl -tag -width "-v var=value"
+.Bl -tag -width "-f progfile"
 .It Fl d Ns Op Ar n
 Debug mode.
 Set debug level to
@@ -76,17 +69,6 @@ to dump core on fatal errors.
 Read program code from the specified file
 .Ar progfile
 instead of from the command line.
-.It Fl v Ar var Ns = Ns Ar value
-Assign
-.Ar value
-to variable
-.Ar var
-before
-.Ar prog
-is executed;
-any number of
-.Fl v
-options may be present.
 .El
 .Pp
 The input is made up of input lines

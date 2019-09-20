@@ -80,7 +80,6 @@ extern	void	growfldtab(int n);
 extern	int	getrec(char **, int *, int);
 extern	int	readrec(char **buf, int *bufsize, FILE *inf);
 extern	char	*getargv(int);
-extern	void	setclvar(char *);
 extern	void	fldbld(void);
 extern	void	cleanfld(int, int);
 extern	void	newfld(int);
@@ -97,7 +96,6 @@ extern	void	error(void);
 extern	void	eprint(void);
 extern	void	bclass(int);
 extern	double	errcheck(double, const char *);
-extern	int	isclvar(const char *);
 extern	int	is_number(const char *);
 
 /* run.c */
