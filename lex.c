@@ -412,7 +412,7 @@ int binsearch(char *w, Keyword *kp, int n)
 int word(char *w) 
 {
 	Keyword *kp;
-	int c, n;
+	int n;
 
 	n = binsearch(w, keywords, sizeof(keywords)/sizeof(keywords[0]));
 /* BUG: this ought to be inside the if; in theory could fault (daniel barrett) */
@@ -421,13 +421,8 @@ int word(char *w)
 		yylval.i = kp->sub;
 		RET(kp->type);
 	}
-	c = peek();	/* look for '(' */
 	yylval.cp = setsymtab(w, "", 0.0, STR|NUM|DONTFREE, symtab);
-	if (c == '(') {
-		RET(CALL);
-	} else {
-		RET(VAR);
-	}
+	RET(VAR);
 }
 
 /* low-level lexical stuff, sort of inherited from lex */

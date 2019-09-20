@@ -54,7 +54,7 @@ char	*curfname = 0;	/* current function name */
 %token	<i>	PRINT PRINTF
 %token	<p>	ELSE CONDEXPR
 %token	<i>	POSTINCR PREINCR POSTDECR PREDECR
-%token	<cp>	VAR IVAR CALL NUMBER STRING
+%token	<cp>	VAR IVAR NUMBER STRING
 
 %type	<p>	pas pattern ppattern plist pplist patlist prarg term
 %type	<p>	pa_pat pa_stat pa_stats
@@ -71,7 +71,7 @@ char	*curfname = 0;	/* current function name */
 %left	BOR
 %left	AND
 %nonassoc APPEND EQ GE GT LE LT NE '|'
-%left	ARG CALL EXIT
+%left	ARG EXIT
 %left	IF NUMBER
 %left	PRINT PRINTF STRING
 %left	VAR IVAR '('
@@ -267,8 +267,6 @@ term:
 	| '-' term %prec UMINUS		{ $$ = op1(UMINUS, $2); }
 	| '+' term %prec UMINUS		{ $$ = $2; }
 	| NOT term %prec UMINUS		{ $$ = op1(NOT, notnull($2)); }
-	| CALL '(' ')'			{ $$ = op2(CALL, celltonode($1,CVAR), NIL); }
-	| CALL '(' patlist ')'		{ $$ = op2(CALL, celltonode($1,CVAR), $3); }
 	| DECR var			{ $$ = op1(PREDECR, $2); }
 	| INCR var			{ $$ = op1(PREINCR, $2); }
 	| var DECR			{ $$ = op1(POSTDECR, $1); }
