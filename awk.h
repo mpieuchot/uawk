@@ -195,5 +195,98 @@ typedef struct fa {
 	struct	rrow re[1];	/* variable: actual size set by calling malloc */
 } fa;
 
+/* awkgram.y */
+extern	Node	*notnull(Node *);
+extern	int	yyparse(void);
 
-#include "proto.h"
+/* lex.c */
+extern	int	yylex(void);
+extern	int	input(void);
+extern	void	unput(int);
+extern	void	unputstr(const char *);
+
+/* main.c */
+extern	int	pgetc(void);
+extern	char	*cursource(void);
+
+/* parse.c */
+extern	Node	*exptostat(Node *);
+extern	Node	*stat3(int, Node *, Node *, Node *);
+extern	Node	*op2(int, Node *, Node *);
+extern	Node	*op1(int, Node *);
+extern	Node	*stat1(int, Node *);
+extern	Node	*op3(int, Node *, Node *, Node *);
+extern	Node	*stat2(int, Node *, Node *);
+extern	Node	*celltonode(Cell *, int);
+extern	Node	*rectonode(void);
+extern	Node	*pa2stat(Node *, Node *, Node *);
+extern	Node	*linkum(Node *, Node *);
+extern	char	*tokname(int);
+extern	Cell	*(*proctab[])(Node **, int);
+extern	int	ptoi(void *);
+extern	Node	*itonp(int);
+
+/* tran.c */
+extern	void	syminit(void);
+extern	void	arginit(int, char **);
+extern	Array	*makesymtab(int);
+extern	void	freesymtab(Cell *);
+extern	Cell	*setsymtab(const char *, const char *, double, unsigned int, Array *);
+extern	int	hash(const char *, int);
+extern	void	rehash(Array *);
+extern	Cell	*lookup(const char *, Array *);
+extern	double	setfval(Cell *, double);
+extern	void	funnyvar(Cell *, const char *);
+extern	char	*setsval(Cell *, const char *);
+extern	double	getfval(Cell *);
+extern	char	*getsval(Cell *);
+extern	char	*getpssval(Cell *);     /* for print */
+extern	char	*tostring(const char *);
+extern	char	*qstring(const char *, int);
+
+/* lib.c */
+extern	void	recinit(unsigned int);
+extern	void	initgetrec(void);
+extern	void	makefields(int, int);
+extern	void	growfldtab(int n);
+extern	int	getrec(char **, int *, int);
+extern	int	readrec(char **buf, int *bufsize, FILE *inf);
+extern	char	*getargv(int);
+extern	void	fldbld(void);
+extern	void	cleanfld(int, int);
+extern	void	newfld(int);
+extern	void	recbld(void);
+extern	Cell	*fieldadr(int);
+extern	void	yyerror(const char *);
+extern	void	fpecatch(int);
+extern	void	bracecheck(void);
+extern	void	bcheck2(int, int, int);
+extern	void	SYNTAX(const char *, ...);
+extern	__dead void	FATAL(const char *, ...);
+extern	void	WARNING(const char *, ...);
+extern	void	error(void);
+extern	void	eprint(void);
+extern	void	bclass(int);
+extern	double	errcheck(double, const char *);
+extern	int	is_number(const char *);
+
+/* run.c */
+extern	int	adjbuf(char **pb, int *sz, int min, int q, char **pbp, const char *what);
+extern	void	run(Node *);
+extern	Cell	*execute(Node *);
+extern	Cell	*program(Node **, int);
+extern	Cell	*jump(Node **, int);
+extern	Cell	*boolop(Node **, int);
+extern	Cell	*relop(Node **, int);
+extern	Cell	*indirect(Node **, int);
+extern	Cell	*awkprintf(Node **, int);
+extern	Cell	*arith(Node **, int);
+extern	double	ipow(double, int);
+extern	Cell	*incrdecr(Node **, int);
+extern	Cell	*assign(Node **, int);
+extern	Cell	*pastat(Node **, int);
+extern	Cell	*dopa2(Node **, int);
+extern	Cell	*condexpr(Node **, int);
+extern	Cell	*ifstat(Node **, int);
+extern	Cell	*printstat(Node **, int);
+extern	Cell	*nullproc(Node **, int);
