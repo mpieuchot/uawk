@@ -36,7 +36,6 @@ const char	*version = "version 20110810";
 #include "awk.h"
 #include "ytab.h"
 
-extern	char	**environ;
 extern	int	nfields;
 extern	char	*__progname;
 

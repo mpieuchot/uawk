@@ -76,7 +76,6 @@ struct xx
 	{ CONDEXPR, "condexpr", " ?: " },
 	{ IF, "ifstat", "if(" },
 	{ EXIT, "jump", "exit" },
-	{ ARG, "arg", "arg" },
 	{ 0, "", "" },
 };
 

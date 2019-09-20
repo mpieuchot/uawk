@@ -47,7 +47,7 @@ char	*curfname = 0;	/* current function name */
 %token	<i>	NL ',' '{' '(' '|' ';' '/' ')' '}' '[' ']'
 %token	<i>	FINAL DOT ALL CCL NCCL CHAR OR STAR QUEST PLUS EMPTYRE
 %token	<i>	AND BOR APPEND EQ GE GT LE LT NE
-%token	<i>	ARG EXIT
+%token	<i>	EXIT
 %token	<i>	IF
 %token	<i>	ADD MINUS MULT DIVIDE MOD
 %token	<i>	ASSIGN ASGNOP ADDEQ SUBEQ MULTEQ DIVEQ MODEQ POWEQ
@@ -59,7 +59,7 @@ char	*curfname = 0;	/* current function name */
 %type	<p>	pas pattern ppattern plist pplist patlist prarg term
 %type	<p>	pa_pat pa_stat pa_stats
 %type	<p>	simple_stmt stmt stmtlist
-%type	<p>	var varname
+%type	<p>	var
 %type	<p>	if else
 %type	<i>	st
 %type	<i>	pst opt_pst lbrace rbrace rparen comma nl opt_nl and bor
@@ -71,7 +71,7 @@ char	*curfname = 0;	/* current function name */
 %left	BOR
 %left	AND
 %nonassoc APPEND EQ GE GT LE LT NE '|'
-%left	ARG EXIT
+%left	EXIT
 %left	IF NUMBER
 %left	PRINT PRINTF STRING
 %left	VAR IVAR '('
@@ -275,16 +275,10 @@ term:
 	;
 
 var:
-	  varname
+	  VAR				{ $$ = celltonode($1, CVAR); }
 	| IVAR				{ $$ = op1(INDIRECT, celltonode($1, CVAR)); }
 	| INDIRECT term	 		{ $$ = op1(INDIRECT, $2); }
 	;	
-
-varname:
-	  VAR			{ $$ = celltonode($1, CVAR); }
-	| ARG 			{ $$ = op1(ARG, itonp($1)); }
-	;
-
 
 %%
 

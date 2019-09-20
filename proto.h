@@ -110,8 +110,6 @@ extern	int	adjbuf(char **pb, int *sz, int min, int q, char **pbp, const char *wh
 extern	void	run(Node *);
 extern	Cell	*execute(Node *);
 extern	Cell	*program(Node **, int);
-extern	Cell	*call(Node **, int);
-extern	Cell	*copycell(Cell *);
 extern	Cell	*arg(Node **, int);
 extern	Cell	*jump(Node **, int);
 extern	Cell	*matchop(Node **, int);
