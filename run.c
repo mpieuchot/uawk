@@ -353,13 +353,6 @@ Cell *jump(Node **a, int n)	/* return */
 	return 0;	/* not reached */
 }
 
-Cell *getnf(Node **a, int n)	/* get NF */
-{
-	if (donefld == 0)
-		fldbld();
-	return (Cell *) a[0];
-}
-
 Cell *boolop(Node **a, int n)	/* a[0] || a[1], a[0] && a[1], !a[0] */
 {
 	Cell *x, *y;

@@ -78,7 +78,6 @@ struct xx
 	{ EXIT, "jump", "exit" },
 	{ CALL, "call", "call" },
 	{ ARG, "arg", "arg" },
-	{ VARNF, "getnf", "NF" },
 	{ 0, "", "" },
 };
 

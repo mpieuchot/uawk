@@ -54,7 +54,7 @@ char	*curfname = 0;	/* current function name */
 %token	<i>	PRINT PRINTF
 %token	<p>	ELSE CONDEXPR
 %token	<i>	POSTINCR PREINCR POSTDECR PREDECR
-%token	<cp>	VAR IVAR VARNF CALL NUMBER STRING
+%token	<cp>	VAR IVAR CALL NUMBER STRING
 
 %type	<p>	pas pattern ppattern plist pplist patlist prarg term
 %type	<p>	pa_pat pa_stat pa_stats
@@ -74,7 +74,7 @@ char	*curfname = 0;	/* current function name */
 %left	ARG CALL EXIT
 %left	IF NUMBER
 %left	PRINT PRINTF STRING
-%left	VAR VARNF IVAR '('
+%left	VAR IVAR '('
 %left	'+' '-'
 %left	'*' '/' '%'
 %left	NOT UMINUS
@@ -288,7 +288,6 @@ var:
 varname:
 	  VAR			{ $$ = celltonode($1, CVAR); }
 	| ARG 			{ $$ = op1(ARG, itonp($1)); }
-	| VARNF			{ $$ = op1(VARNF, (Node *) $1); }
 	;
 
 

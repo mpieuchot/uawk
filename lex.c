@@ -46,7 +46,6 @@ typedef struct Keyword {
 Keyword keywords[] ={	/* keep sorted: binary searched */
 	{ "BEGIN",	XBEGIN,		XBEGIN },
 	{ "END",	XEND,		XEND },
-	{ "NF",		VARNF,		VARNF },
 	{ "else",	ELSE,		ELSE },
 	{ "exit",	EXIT,		EXIT },
 	{ "if",		IF,		IF },
@@ -420,13 +419,7 @@ int word(char *w)
 	kp = keywords + n;
 	if (n != -1) {	/* found in table */
 		yylval.i = kp->sub;
-		switch (kp->type) {	/* special handling */
-		case VARNF:
-			yylval.cp = setsymtab("NF", "", 0.0, NUM, symtab);
-			RET(VARNF);
-		default:
-			RET(kp->type);
-		}
+		RET(kp->type);
 	}
 	c = peek();	/* look for '(' */
 	yylval.cp = setsymtab(w, "", 0.0, STR|NUM|DONTFREE, symtab);

@@ -114,7 +114,6 @@ extern	Cell	*call(Node **, int);
 extern	Cell	*copycell(Cell *);
 extern	Cell	*arg(Node **, int);
 extern	Cell	*jump(Node **, int);
-extern	Cell	*getnf(Node **, int);
 extern	Cell	*matchop(Node **, int);
 extern	Cell	*boolop(Node **, int);
 extern	Cell	*relop(Node **, int);
