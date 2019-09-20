@@ -45,10 +45,8 @@ char	*curfname = 0;	/* current function name */
 %token	<i>	FIRSTTOKEN	/* must be first */
 %token	<p>	PROGRAM PASTAT PASTAT2 XBEGIN XEND
 %token	<i>	NL ',' '{' '(' '|' ';' '/' ')' '}' '[' ']'
-%token	<i>	FINAL DOT ALL CCL NCCL CHAR OR STAR QUEST PLUS EMPTYRE
 %token	<i>	AND BOR APPEND EQ GE GT LE LT NE
-%token	<i>	EXIT
-%token	<i>	IF
+%token	<i>	EXIT IF
 %token	<i>	ADD MINUS MULT DIVIDE MOD
 %token	<i>	ASSIGN ASGNOP ADDEQ SUBEQ MULTEQ DIVEQ MODEQ POWEQ
 %token	<i>	PRINT PRINTF
