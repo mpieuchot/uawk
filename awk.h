@@ -31,11 +31,8 @@ typedef	unsigned char uschar;
 
 #define	xfree(a)	{ if ((a) != NULL) { free((void *) (a)); (a) = NULL; } }
 
-#define	NN(p)	((p) ? (p) : "(null)")	/* guaranteed non-null for DPRINTF 
-*/
-#define	DEBUG
+#define	NN(p)	((p) ? (p) : "(null)")	/* guaranteed non-null for DPRINTF */
 #ifdef	DEBUG
-			/* uses have to be doubly parenthesized */
 #	define	DPRINTF(x)	if (dbg) printf x
 #else
 #	define	DPRINTF(x)

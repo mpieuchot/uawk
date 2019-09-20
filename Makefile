@@ -5,8 +5,8 @@ SRCS=	ytab.c main.c parse.c proctab.c tran.c lib.c run.c
 LDADD=	-lm
 DPADD=	${LIBM}
 CLEANFILES+=proctab.c maketab ytab.c ytab.h
-CFLAGS+=-I. -I${.CURDIR} -DHAS_ISBLANK -DNDEBUG
-HOSTCFLAGS+=-I. -I${.CURDIR} -DHAS_ISBLANK -DNDEBUG
+CFLAGS+=-I. -I${.CURDIR} -DDEBUG
+HOSTCFLAGS+=-I. -I${.CURDIR} -DDEBUG
 
 ytab.c ytab.h: parser.y
 	${YACC} -o ytab.c -d ${.CURDIR}/parser.y
