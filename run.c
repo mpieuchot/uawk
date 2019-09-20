@@ -61,21 +61,6 @@ void tempfree(Cell *p) {
 }
 */
 
-/* do we really need these? */
-/* #ifdef _NFILE */
-/* #ifndef FOPEN_MAX */
-/* #define FOPEN_MAX _NFILE */
-/* #endif */
-/* #endif */
-/*  */
-/* #ifndef	FOPEN_MAX */
-/* #define	FOPEN_MAX	40 */	/* max number of open files */
-/* #endif */
-/*  */
-/* #ifndef RAND_MAX */
-/* #define RAND_MAX	32767 */	/* all that ansi guarantees */
-/* #endif */
-
 jmp_buf env;
 extern	int	pairstack[];
 
