@@ -898,34 +898,6 @@ Cell *ifstat(Node **a, int n)	/* if (a[0]) a[1]; else a[2] */
 	return(x);
 }
 
-Cell *instat(Node **a, int n)	/* for (a[0] in a[1]) a[2] */
-{
-	Cell *x, *vp, *arrayp, *cp, *ncp;
-	Array *tp;
-	int i;
-
-	vp = execute(a[0]);
-	arrayp = execute(a[1]);
-	if (!isarr(arrayp)) {
-		return True;
-	}
-	tp = (Array *) arrayp->sval;
-	tempfree(arrayp);
-	for (i = 0; i < tp->size; i++) {	/* this routine knows too much */
-		for (cp = tp->tab[i]; cp != NULL; cp = ncp) {
-			setsval(vp, cp->nval);
-			ncp = cp->cnext;
-			x = execute(a[2]);
-			if (isexit(x)) {
-				tempfree(vp);
-				return(x);
-			}
-			tempfree(x);
-		}
-	}
-	return True;
-}
-
 Cell *printstat(Node **a, int n)	/* print a[0] */
 {
 	Node *x;

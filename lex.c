@@ -50,7 +50,6 @@ Keyword keywords[] ={	/* keep sorted: binary searched */
 	{ "else",	ELSE,		ELSE },
 	{ "exit",	EXIT,		EXIT },
 	{ "if",		IF,		IF },
-	{ "in",		IN,		IN },
 	{ "print",	PRINT,		PRINT },
 	{ "printf",	PRINTF,		PRINTF },
 };

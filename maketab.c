@@ -75,7 +75,6 @@ struct xx
 	{ POWEQ, "assign", " ^= " },
 	{ CONDEXPR, "condexpr", " ?: " },
 	{ IF, "ifstat", "if(" },
-	{ IN, "instat", "instat" },
 	{ EXIT, "jump", "exit" },
 	{ CALL, "call", "call" },
 	{ ARG, "arg", "arg" },

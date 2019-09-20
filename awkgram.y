@@ -46,7 +46,7 @@ char	*curfname = 0;	/* current function name */
 %token	<p>	PROGRAM PASTAT PASTAT2 XBEGIN XEND
 %token	<i>	NL ',' '{' '(' '|' ';' '/' ')' '}' '[' ']'
 %token	<i>	FINAL DOT ALL CCL NCCL CHAR OR STAR QUEST PLUS EMPTYRE
-%token	<i>	AND BOR APPEND EQ GE GT LE LT NE IN
+%token	<i>	AND BOR APPEND EQ GE GT LE LT NE
 %token	<i>	ARG EXIT
 %token	<i>	IF
 %token	<i>	ADD MINUS MULT DIVIDE MOD
@@ -70,7 +70,7 @@ char	*curfname = 0;	/* current function name */
 %right	':'
 %left	BOR
 %left	AND
-%nonassoc APPEND EQ GE GT LE LT NE IN '|'
+%nonassoc APPEND EQ GE GT LE LT NE '|'
 %left	ARG CALL EXIT
 %left	IF NUMBER
 %left	PRINT PRINTF STRING
