@@ -23,8 +23,6 @@ ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF
 THIS SOFTWARE.
 ****************************************************************/
 
-#include <assert.h>
-
 typedef double	Awkfloat;
 
 /* unsigned char is more trouble than it's worth */
