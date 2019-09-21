@@ -355,7 +355,7 @@ int yylex(void)
 			/* should this also have STR set? */
 			RET(NUMBER);
 		}
-	
+
 		yylval.i = c;
 		switch (c) {
 		case '\n':	/* {EOL} */

@@ -40,7 +40,6 @@ char	*fields;
 int	fieldssize = RECSIZE;
 
 Cell	**fldtab;	/* pointers to Cells */
-char	inputFS[100] = " ";
 
 #define	MAXFLD	2
 int	nfields	= MAXFLD;	/* last allocated slot for $i */
@@ -250,63 +249,24 @@ void fldbld(void)	/* create fields from current record */
 	}
 	fr = fields;
 	i = 0;	/* number of fields accumulated here */
-	if ((sep = *inputFS) == ' ') {	/* default whitespace */
-		for (i = 0; ; ) {
-			while (*r == ' ' || *r == '\t' || *r == '\n')
-				r++;
-			if (*r == 0)
-				break;
-			i++;
-			if (i > nfields)
-				growfldtab(i);
-			if (freeable(fldtab[i]))
-				xfree(fldtab[i]->sval);
-			fldtab[i]->sval = fr;
-			fldtab[i]->tval = FLD | STR | DONTFREE;
-			do
-				*fr++ = *r++;
-			while (*r != ' ' && *r != '\t' && *r != '\n' && *r != '\0');
-			*fr++ = 0;
-		}
-		*fr = 0;
-	} else if ((sep = *inputFS) == 0) {		/* new: FS="" => 1 char/field */
-		for (i = 0; *r != 0; r++) {
-			char buf[2];
-			i++;
-			if (i > nfields)
-				growfldtab(i);
-			if (freeable(fldtab[i]))
-				xfree(fldtab[i]->sval);
-			buf[0] = *r;
-			buf[1] = 0;
-			fldtab[i]->sval = xstrdup(buf);
-			fldtab[i]->tval = FLD | STR;
-		}
-		*fr = 0;
-	} else if (*r != 0) {	/* if 0, it's a null field */
-		/* subtlecase : if length(FS) == 1 && length(RS > 0)
-		 * \n is NOT a field separator (cf awk book 61,84).
-		 * this variable is tested in the inner while loop.
-		 */
-		int rtest = '\n';  /* normal case */
-		if (strlen(RS) > 0)
-			rtest = '\0';
-		for (;;) {
-			i++;
-			if (i > nfields)
-				growfldtab(i);
-			if (freeable(fldtab[i]))
-				xfree(fldtab[i]->sval);
-			fldtab[i]->sval = fr;
-			fldtab[i]->tval = FLD | STR | DONTFREE;
-			while (*r != sep && *r != rtest && *r != '\0')	/* \n is always a separator */
-				*fr++ = *r++;
-			*fr++ = 0;
-			if (*r++ == 0)
-				break;
-		}
-		*fr = 0;
+	for (i = 0; ; ) {
+		while (*r == ' ' || *r == '\t' || *r == '\n')
+			r++;
+		if (*r == 0)
+			break;
+		i++;
+		if (i > nfields)
+			growfldtab(i);
+		if (freeable(fldtab[i]))
+			xfree(fldtab[i]->sval);
+		fldtab[i]->sval = fr;
+		fldtab[i]->tval = FLD | STR | DONTFREE;
+		do
+			*fr++ = *r++;
+		while (*r != ' ' && *r != '\t' && *r != '\n' && *r != '\0');
+		*fr++ = 0;
 	}
+	*fr = 0;
 	if (i > nfields)
 		FATAL("record `%.30s...' has too many fields; can't happen", r);
 	cleanfld(i+1, lastfld);	/* clean out junk from previous record */
@@ -402,14 +362,14 @@ void recbld(void)	/* create $0 from $1..$NF if necessary */
 	if (!adjbuf(&record, &recsize, 2+r-record, recsize, &r, "recbld 3"))
 		FATAL("built giant record `%.30s...'", record);
 	*r = '\0';
-	   DPRINTF( ("in recbld inputFS=%s, fldtab[0]=%p\n", inputFS, (void*)fldtab[0]) );
+	   DPRINTF( ("in recbld fldtab[0]=%p\n", (void*)fldtab[0]) );
 
 	if (freeable(fldtab[0]))
 		xfree(fldtab[0]->sval);
 	fldtab[0]->tval = REC | STR | DONTFREE;
 	fldtab[0]->sval = record;
 
-	   DPRINTF( ("in recbld inputFS=%s, fldtab[0]=%p\n", inputFS, (void*)fldtab[0]) );
+	   DPRINTF( ("in recbld fldtab[0]=%p\n", (void*)fldtab[0]) );
 	   DPRINTF( ("recbld = |%s|\n", record) );
 	donerec = 1;
 }
