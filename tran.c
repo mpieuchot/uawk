@@ -48,7 +48,6 @@ Array	*ARGVtab;	/* symbol table containing ARGV[...] */
 Cell	*symtabloc;	/* SYMTAB */
 
 Cell	*nullloc;	/* a guaranteed empty cell */
-Node	*nullnode;	/* zero&null, converted into a node for comparisons */
 Cell	*literal0;
 
 extern Cell **fldtab;

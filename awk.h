@@ -112,8 +112,7 @@ typedef struct Node {
 	struct	Node *narg[1];	/* variable: actual size set by calling malloc */
 } Node;
 
-extern Node	*winner;
-extern Node	*nullstat;
+extern Node	*rootnode;
 extern Node	*nullnode;
 
 /* ctypes */

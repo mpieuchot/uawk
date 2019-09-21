@@ -112,7 +112,7 @@ int main(int argc, char *argv[])
 	   DPRINTF( ("errorflag=%d\n", errorflag) );
 	if (errorflag == 0) {
 		compile_time = 0;
-		run(winner);
+		run(rootnode);
 	} else
 		bracecheck();
 	return(errorflag);

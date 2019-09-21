@@ -81,7 +81,7 @@ char	*curfname = 0;	/* current function name */
 
 program:
 	  pas	{ if (errorflag==0)
-			winner = (Node *)stat3(PROGRAM, beginloc, $1, endloc); }
+			rootnode = stat3(PROGRAM, beginloc, $1, endloc); }
 	| error	{ yyclearin; bracecheck(); SYNTAX("bailing out"); }
 	;
 

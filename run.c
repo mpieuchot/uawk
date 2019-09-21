@@ -66,7 +66,6 @@ void tempfree(Cell *p) {
 jmp_buf env;
 extern	int	pairstack[];
 
-Node	*winner = NULL;	/* root of parse tree */
 Cell	*tmps;		/* free temporary cells for execution */
 
 static Cell	truecell	={ OBOOL, BTRUE, 0, 0, 1.0, NUM };

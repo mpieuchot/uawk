@@ -29,6 +29,9 @@ THIS SOFTWARE.
 #include "awk.h"
 #include "ytab.h"
 
+Node	*rootnode = NULL;	/* root of parse tree */
+Node	*nullnode;	/* zero&null, converted into a node for comparisons */
+
 void		 nodeinit(int, Node *);
 Node		*nodealloc(int);
 Node		*node1(int, Node *);
