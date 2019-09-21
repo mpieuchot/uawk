@@ -25,6 +25,7 @@ THIS SOFTWARE.
 
 %{
 #include <ctype.h>
+#include <stdarg.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include "awk.h"
@@ -223,6 +224,7 @@ var:
 
 %%
 
+int	errorflag = 0;
 int	lineno	= 1;
 int	bracecnt = 0;
 int	brackcnt  = 0;
@@ -246,9 +248,15 @@ Keyword keywords[] ={	/* keep sorted: binary searched */
 
 #define	RET(x)	{ if(dbg)printf("lex %s\n", tokname(x)); return(x); }
 
-int peek(void);
-int gettok(char **, int *);
-int binsearch(char *, Keyword *, int);
+int		 peek(void);
+int		 gettok(char **, int *);
+int		 binsearch(char *, Keyword *, int);
+int		 word(char *);
+int		 string(void);
+void		 eprint(void);
+void		 bclass(int);
+void		 bcheck2(int, int, int);
+void		 error(void);
 
 int peek(void)
 {
@@ -320,8 +328,6 @@ int gettok(char **pbuf, int *psz)	/* get next input token */
 	return retc;
 }
 
-int	word(char *);
-int	string(void);
 int	sc	= 0;	/* 1 => return a } right now */
 
 int yylex(void)
@@ -623,6 +629,155 @@ void unputstr(const char *s)	/* put a string back on input */
 
 	for (i = strlen(s)-1; i >= 0; i--)
 		unput(s[i]);
+}
+
+void yyerror(const char *s)
+{
+	SYNTAX("%s", s);
+}
+
+void SYNTAX(const char *fmt, ...)
+{
+	static int been_here = 0;
+	va_list varg;
+
+	if (been_here++ > 2)
+		return;
+	fprintf(stderr, "%s: ", getprogname());
+	va_start(varg, fmt);
+	vfprintf(stderr, fmt, varg);
+	va_end(varg);
+	fprintf(stderr, " at source line %d", lineno);
+	if (compile_time == 1 && cursource() != NULL)
+		fprintf(stderr, " source file %s", cursource());
+	fprintf(stderr, "\n");
+	errorflag = 2;
+	eprint();
+}
+
+
+void eprint(void)	/* try to print context around error */
+{
+	static int been_here = 0;
+	char *p, *q;
+	int c;
+
+	if (compile_time != 1)
+		return;
+
+	if (been_here++ > 0 || ebuf == ep)
+		return;
+	p = ep - 1;
+	if (p > ebuf && *p == '\n')
+		p--;
+	for ( ; p > ebuf && *p != '\n' && *p != '\0'; p--)
+		;
+	while (*p == '\n')
+		p++;
+	fprintf(stderr, " context is\n\t");
+	for (q=ep-1; q>=p && *q!=' ' && *q!='\t' && *q!='\n'; q--)
+		;
+	for ( ; p < q; p++)
+		if (*p)
+			putc(*p, stderr);
+	fprintf(stderr, " >>> ");
+	for ( ; p < ep; p++)
+		if (*p)
+			putc(*p, stderr);
+	fprintf(stderr, " <<< ");
+	if (*ep)
+		while ((c = input()) != '\n' && c != '\0' && c != EOF) {
+			putc(c, stderr);
+			bclass(c);
+		}
+	putc('\n', stderr);
+	ep = ebuf;
+}
+
+__dead void FATAL(const char *fmt, ...)
+{
+	va_list varg;
+
+	fflush(stdout);
+	fprintf(stderr, "%s: ", getprogname());
+	va_start(varg, fmt);
+	vfprintf(stderr, fmt, varg);
+	va_end(varg);
+	error();
+	if (dbg > 1)		/* core dump if serious debugging on */
+		abort();
+	exit(2);
+}
+
+void WARNING(const char *fmt, ...)
+{
+	va_list varg;
+
+	fflush(stdout);
+	fprintf(stderr, "%s: ", getprogname());
+	va_start(varg, fmt);
+	vfprintf(stderr, fmt, varg);
+	va_end(varg);
+	error();
+}
+
+void error()
+{
+	extern Node *curnode;
+
+	fprintf(stderr, "\n");
+	if (compile_time != 2 && NR && *NR > 0) {
+		fprintf(stderr, " input record number %d", (int) (*FNR));
+		if (strcmp(*FILENAME, "-") != 0)
+			fprintf(stderr, ", file %s", *FILENAME);
+		fprintf(stderr, "\n");
+	}
+	if (compile_time != 2 && curnode)
+		fprintf(stderr, " source line number %d", curnode->lineno);
+	else if (compile_time != 2 && lineno)
+		fprintf(stderr, " source line number %d", lineno);
+	if (compile_time == 1 && cursource() != NULL)
+		fprintf(stderr, " source file %s", cursource());
+	fprintf(stderr, "\n");
+	eprint();
+}
+
+void bracecheck(void)
+{
+	int c;
+	static int beenhere = 0;
+
+	if (beenhere++)
+		return;
+	while ((c = input()) != EOF && c != '\0')
+		bclass(c);
+	bcheck2(bracecnt, '{', '}');
+	bcheck2(brackcnt, '[', ']');
+	bcheck2(parencnt, '(', ')');
+}
+
+void bcheck2(int n, int c1, int c2)
+{
+	if (n == 1)
+		fprintf(stderr, "\tmissing %c\n", c2);
+	else if (n > 1)
+		fprintf(stderr, "\t%d missing %c's\n", n, c2);
+	else if (n == -1)
+		fprintf(stderr, "\textra %c\n", c2);
+	else if (n < -1)
+		fprintf(stderr, "\t%d extra %c's\n", -n, c2);
+}
+
+void bclass(int c)
+{
+	switch (c) {
+	case '{': bracecnt++; break;
+	case '}': bracecnt--; break;
+	case '[': brackcnt++; break;
+	case ']': brackcnt--; break;
+	case '(': parencnt++; break;
+	case ')': parencnt--; break;
+	}
 }
 
 Node *notnull(Node *n)

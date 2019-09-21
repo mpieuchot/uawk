@@ -96,19 +96,19 @@ int main(int argc, char *argv[])
 
 	yyin = NULL;
 	symtab = makesymtab(NSYMTAB);
-
 	recinit(recsize);
 	syminit();
-	compile_time = 1;
-
 	/* put prog name at front of arglist */
 	argc++;
 	argv--;
 	argv[0] = __progname;
 	arginit(argc, argv);
+
+	compile_time = 1;
 	yyparse();
-	setlocale(LC_NUMERIC, ""); /* back to whatever it is locally */
 	   DPRINTF( ("errorflag=%d\n", errorflag) );
+
+	setlocale(LC_NUMERIC, ""); /* back to whatever it is locally */
 	if (errorflag == 0) {
 		compile_time = 0;
 		execute(rootnode);
