@@ -182,7 +182,6 @@ extern	Cell	*(*proctab[])(Node **, int);
 
 /* tran.c */
 extern	void	syminit(void);
-extern	void	arginit(int, char **);
 extern	Array	*makesymtab(int);
 extern	void	freesymtab(Cell *);
 extern	Cell	*setsymtab(const char *, const char *, double, unsigned int, Array *);

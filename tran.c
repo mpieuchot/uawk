@@ -38,12 +38,10 @@ Array	*symtab;	/* main symbol table */
 Awkfloat *NF;		/* number of fields in current record */
 Awkfloat *NR;		/* number of current record */
 Awkfloat *FNR;		/* number of current record in current file */
-Awkfloat *ARGC;		/* number of arguments from command line */
 
 Cell	*nrloc;		/* NR */
 Cell	*nfloc;		/* NF */
 Cell	*fnrloc;	/* FNR */
-Array	*ARGVtab;	/* symbol table containing ARGV[...] */
 Cell	*symtabloc;	/* SYMTAB */
 
 Cell	*nullloc;	/* a guaranteed empty cell */
@@ -67,27 +65,6 @@ void syminit(void)	/* initialize symbol table with builtin vars */
 	FNR = &fnrloc->fval;
 	symtabloc = setsymtab("SYMTAB", "", 0.0, ARR, symtab);
 	symtabloc->sval = (char *) symtab;
-}
-
-void arginit(int ac, char **av)	/* set up ARGV and ARGC */
-{
-	Cell *cp;
-	int i;
-	char temp[50];
-
-	   DPRINTF( ("argc=%d, argv[0]=%s\n", ac, av[0]) );
-	ARGC = &setsymtab("ARGC", "", (Awkfloat) ac, NUM, symtab)->fval;
-	cp = setsymtab("ARGV", "", 0.0, ARR, symtab);
-	ARGVtab = makesymtab(NSYMTAB);	/* could be (int) ARGC as well */
-	cp->sval = (char *) ARGVtab;
-	for (i = 0; i < ac; i++) {
-		snprintf(temp, sizeof temp, "%d", i);
-		if (is_number(*av))
-			setsymtab(temp, *av, atof(*av), STR|NUM, ARGVtab);
-		else
-			setsymtab(temp, *av, 0.0, STR, ARGVtab);
-		av++;
-	}
 }
 
 Array *makesymtab(int n)	/* make a new symbol table */

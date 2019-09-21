@@ -50,13 +50,11 @@ int	donerec;	/* 1 = record is valid (no flds have changed) */
 
 int	lastfld	= 0;	/* last used field */
 int	argno	= 1;	/* current input argument number */
-extern	Awkfloat *ARGC;
 
 static Cell dollar0 = { OCELL, CFLD, NULL, "", 0.0, REC|STR|DONTFREE };
 static Cell dollar1 = { OCELL, CFLD, NULL, "", 0.0, FLD|STR|DONTFREE };
 
 void		 initgetrec(void);
-char		*getargv(int);
 void		 growfldtab(int n);
 int		 readrec(char **buf, int *bufsize, FILE *inf);
 void		 cleanfld(int, int);
@@ -169,21 +167,6 @@ int readrec(char **pbuf, int *pbufsize, FILE *inf)	/* read one record into buf *
 	*pbuf = buf;
 	*pbufsize = bufsize;
 	return c == EOF && rr == buf ? 0 : 1;
-}
-
-char *getargv(int n)	/* get ARGV[n] */
-{
-	Cell *x;
-	char *s, temp[50];
-	extern Array *ARGVtab;
-
-	snprintf(temp, sizeof temp, "%d", n);
-	if (lookup(temp, ARGVtab) == NULL)
-		return NULL;
-	x = setsymtab(temp, "", 0.0, STR, ARGVtab);
-	s = getsval(x);
-	   DPRINTF( ("getargv(%d) returns |%s|\n", n, s) );
-	return s;
 }
 
 void fldbld(void)	/* create fields from current record */

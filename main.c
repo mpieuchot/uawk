@@ -106,11 +106,6 @@ int main(int argc, char *argv[])
 	symtab = makesymtab(NSYMTAB);
 	recinit(recsize);
 	syminit();
-	/* put prog name at front of arglist */
-	argc++;
-	argv--;
-	argv[0] = __progname;
-	arginit(argc, argv);
 
 	compile_time = 1;
 	yyparse();
