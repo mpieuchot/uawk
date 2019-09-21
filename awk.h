@@ -160,36 +160,6 @@ extern	int	pairstack[], paircnt;
 /* #define freeable(p)	(!((p)->tval & DONTFREE)) */
 #define freeable(p)	( ((p)->tval & (STR|DONTFREE)) == STR )
 
-/* structures used by regular expression matching machinery, mostly b.c: */
-
-#define NCHARS	(256+3)		/* 256 handles 8-bit chars; 128 does 7-bit */
-				/* watch out in match(), etc. */
-#define NSTATES	32
-
-typedef struct rrow {
-	long	ltype;	/* long avoids pointer warnings on 64-bit */
-	union {
-		int i;
-		Node *np;
-		uschar *up;
-	} lval;		/* because Al stores a pointer in it! */
-	int	*lfollow;
-} rrow;
-
-typedef struct fa {
-	uschar	gototab[NSTATES][NCHARS];
-	uschar	out[NSTATES];
-	uschar	*restr;
-	int	*posns[NSTATES];
-	int	anchor;
-	int	use;
-	int	initstat;
-	int	curstat;
-	int	accept;
-	int	reset;
-	struct	rrow re[1];	/* variable: actual size set by calling malloc */
-} fa;
-
 /* awkgram.y */
 extern	Node	*notnull(Node *);
 extern	int	yyparse(void);
