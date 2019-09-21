@@ -182,7 +182,6 @@ extern	Node	*rectonode(void);
 extern	Node	*linkum(Node *, Node *);
 extern	const char *tokname(int);
 extern	Cell	*(*proctab[])(Node **, int);
-extern	int	ptoi(void *);
 
 /* tran.c */
 extern	void	syminit(void);

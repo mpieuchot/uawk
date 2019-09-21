@@ -38,7 +38,6 @@ Node		*node1(int, Node *);
 Node		*node2(int, Node *, Node *);
 Node		*node3(int, Node *, Node *, Node *);
 Node		*node4(int, Node *, Node *, Node *, Node *);
-Node		*itonp(int);
 
 struct
 {	int value;
@@ -266,14 +265,4 @@ Node *linkum(Node *a, Node *b)
 		;
 	c->nnext = b;
 	return(a);
-}
-
-int ptoi(void *p)	/* convert pointer to integer */
-{
-	return (int) (long) p;	/* swearing that p fits, of course */
-}
-
-Node *itonp(int i)	/* and vice versa */
-{
-	return (Node *) (long) i;
 }
