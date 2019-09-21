@@ -777,7 +777,7 @@ FILE *openfile(int a, const char *us)
 	} else	/* can't happen */
 		FATAL("illegal redirection %d", a);
 	if (fp != NULL) {
-		files[i].fname = tostring(s);
+		files[i].fname = xstrdup(s);
 		files[i].fp = fp;
 		files[i].mode = m;
 	}

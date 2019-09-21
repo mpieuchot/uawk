@@ -238,7 +238,7 @@ extern	char	*setsval(Cell *, const char *);
 extern	double	getfval(Cell *);
 extern	char	*getsval(Cell *);
 extern	char	*getpssval(Cell *);     /* for print */
-extern	char	*tostring(const char *);
+extern	char	*xstrdup(const char *);
 extern	char	*qstring(const char *, int);
 
 /* lib.c */

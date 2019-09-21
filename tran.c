@@ -23,13 +23,13 @@ ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF
 THIS SOFTWARE.
 ****************************************************************/
 
-#include <stdio.h>
-#include <math.h>
 #include <ctype.h>
+#include <errno.h>
 #include <string.h>
 #include <stdlib.h>
+#include <stdio.h>
+#include <math.h>
 #include "awk.h"
-#include "ytab.h"
 
 #define	FULLTAB	2	/* rehash when table gets this x full */
 #define	GROWTAB 4	/* grow table by this factor */
@@ -152,8 +152,8 @@ Cell *setsymtab(const char *n, const char *s, Awkfloat f, unsigned t, Array *tp)
 	p = (Cell *) malloc(sizeof(Cell));
 	if (p == NULL)
 		FATAL("out of space for symbol table at %s", n);
-	p->nval = tostring(n);
-	p->sval = s ? tostring(s) : tostring("");
+	p->nval = xstrdup(n);
+	p->sval = s ? xstrdup(s) : xstrdup("");
 	p->fval = f;
 	p->tval = t;
 	p->csub = CUNK;
@@ -265,7 +265,7 @@ char *setsval(Cell *vp, const char *s)	/* set string val of a Cell */
 		donefld = 0;	/* mark $1... invalid */
 		donerec = 1;
 	}
-	t = tostring(s);	/* in case it's self-assign */
+	t = xstrdup(s);	/* in case it's self-assign */
 	if (freeable(vp))
 		xfree(vp->sval);
 	vp->tval &= ~NUM;
@@ -333,13 +333,13 @@ char *getpssval(Cell *vp)     /* get string val of a Cell for print */
 }
 
 
-char *tostring(const char *s)	/* make a copy of string s */
+char *xstrdup(const char *s)
 {
 	char *p;
 
 	p = strdup(s);
 	if (p == NULL)
-		FATAL("out of space in tostring on %s", s);
+		FATAL("%s: %s", __func__, strerror(errno));
 	return p;
 }
 

@@ -76,7 +76,7 @@ void recinit(unsigned int n)
 	*record = '\0';
 	*fldtab[0] = dollar0;
 	fldtab[0]->sval = record;
-	fldtab[0]->nval = tostring("0");
+	fldtab[0]->nval = xstrdup("0");
 	makefields(1, nfields);
 }
 
@@ -91,7 +91,7 @@ void makefields(int n1, int n2)		/* create $n1..$n2 inclusive */
 			FATAL("out of space in makefields %d", i);
 		*fldtab[i] = dollar1;
 		snprintf(temp, sizeof temp, "%d", i);
-		fldtab[i]->nval = tostring(temp);
+		fldtab[i]->nval = xstrdup(temp);
 	}
 }
 
@@ -284,7 +284,7 @@ void fldbld(void)	/* create fields from current record */
 				xfree(fldtab[i]->sval);
 			buf[0] = *r;
 			buf[1] = 0;
-			fldtab[i]->sval = tostring(buf);
+			fldtab[i]->sval = xstrdup(buf);
 			fldtab[i]->tval = FLD | STR;
 		}
 		*fr = 0;

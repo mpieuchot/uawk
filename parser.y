@@ -346,7 +346,7 @@ int yylex(void)
 		if (isalpha(c) || c == '_')
 			return word(buf);
 		if (isdigit(c)) {
-			yylval.cp = setsymtab(buf, tostring(buf), atof(buf), CON|NUM, symtab);
+			yylval.cp = setsymtab(buf, xstrdup(buf), atof(buf), CON|NUM, symtab);
 			/* should this also have STR set? */
 			RET(NUMBER);
 		}
@@ -555,7 +555,7 @@ int string(void)
 		}
 	}
 	*bp = 0; 
-	s = tostring(buf);
+	s = xstrdup(buf);
 	*bp++ = ' '; *bp++ = 0;
 	yylval.cp = setsymtab(buf, s, 0.0, CON|STR|DONTFREE, symtab);
 	RET(STRING);
