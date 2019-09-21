@@ -428,7 +428,6 @@ void yyerror(const char *s)
 
 void SYNTAX(const char *fmt, ...)
 {
-	extern char *curfname;
 	static int been_here = 0;
 	va_list varg;
 
@@ -439,8 +438,6 @@ void SYNTAX(const char *fmt, ...)
 	vfprintf(stderr, fmt, varg);
 	va_end(varg);
 	fprintf(stderr, " at source line %d", lineno);
-	if (curfname != NULL)
-		fprintf(stderr, " in function %s", curfname);
 	if (compile_time == 1 && cursource() != NULL)
 		fprintf(stderr, " source file %s", cursource());
 	fprintf(stderr, "\n");

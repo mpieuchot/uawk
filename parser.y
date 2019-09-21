@@ -33,7 +33,6 @@ int yywrap(void) { return(1); }
 
 Node	*beginloc = 0;
 Node	*endloc = 0;
-char	*curfname = 0;	/* current function name */
 %}
 
 %union {
