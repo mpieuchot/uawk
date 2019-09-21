@@ -89,8 +89,6 @@ extern Array	*symtab;
 extern Cell	*nrloc;		/* NR */
 extern Cell	*fnrloc;	/* FNR */
 extern Cell	*nfloc;		/* NF */
-extern Cell	*rstartloc;	/* RSTART */
-extern Cell	*rlengthloc;	/* RLENGTH */
 
 /* Cell.tval values: */
 #define	NUM	01	/* number value is valid */
@@ -113,8 +111,6 @@ typedef struct Node {
 	Cell *(*proc)(struct Node **, int);
 	struct	Node *narg[1];	/* variable: actual size set by calling malloc */
 } Node;
-
-#define	NIL	((Node *) 0)
 
 extern Node	*winner;
 extern Node	*nullstat;

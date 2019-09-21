@@ -122,11 +122,11 @@ pa_pat:
 	;
 
 pa_stat:
-	  pa_pat			{ $$ = stat2(PASTAT, $1, stat2(PRINT, rectonode(), NIL)); }
+	  pa_pat			{ $$ = stat2(PASTAT, $1, stat2(PRINT, rectonode(), NULL)); }
 	| pa_pat lbrace stmtlist '}'	{ $$ = stat2(PASTAT, $1, $3); }
-	| pa_pat ',' opt_nl pa_pat		{ $$ = pa2stat($1, $4, stat2(PRINT, rectonode(), NIL)); }
+	| pa_pat ',' opt_nl pa_pat		{ $$ = pa2stat($1, $4, stat2(PRINT, rectonode(), NULL)); }
 	| pa_pat ',' opt_nl pa_pat lbrace stmtlist '}'	{ $$ = pa2stat($1, $4, $6); }
-	| lbrace stmtlist '}'		{ $$ = stat2(PASTAT, NIL, $2); }
+	| lbrace stmtlist '}'		{ $$ = stat2(PASTAT, NULL, $2); }
 	| XBEGIN lbrace stmtlist '}'
 		{ beginloc = linkum(beginloc, $3); $$ = 0; }
 	| XEND lbrace stmtlist '}'
@@ -173,8 +173,8 @@ rparen:
 	;
 
 simple_stmt:
-	| print '(' pattern ')'		{ $$ = stat3($1, $3, NIL, NIL); }
-	| print '(' plist ')'		{ $$ = stat3($1, $3, NIL, NIL); }
+	| print '(' pattern ')'		{ $$ = stat3($1, $3, NULL, NULL); }
+	| print '(' plist ')'		{ $$ = stat3($1, $3, NULL, NULL); }
 	| pattern			{ $$ = exptostat($1); }
 	| error				{ yyclearin; SYNTAX("illegal statement"); }
 	;
@@ -186,9 +186,9 @@ st:
 
 stmt:
 	| EXIT pattern st	{ $$ = stat1(EXIT, $2); }
-	| EXIT st		{ $$ = stat1(EXIT, NIL); }
+	| EXIT st		{ $$ = stat1(EXIT, NULL); }
 	| if stmt else stmt	{ $$ = stat3(IF, $1, $2, $4); }
-	| if stmt		{ $$ = stat3(IF, $1, $2, NIL); }
+	| if stmt		{ $$ = stat3(IF, $1, $2, NULL); }
 	| lbrace stmtlist rbrace { $$ = $2; }
 	| simple_stmt st
 	| ';' opt_nl		{ $$ = 0; }
