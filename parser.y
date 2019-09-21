@@ -171,8 +171,8 @@ rparen:
 	;
 
 simple_stmt:
-	| print '(' pattern ')'		{ $$ = stat3($1, $3, NULL, NULL); }
-	| print '(' plist ')'		{ $$ = stat3($1, $3, NULL, NULL); }
+	| print '(' pattern ')'		{ $$ = stat1($1, $3); }
+	| print '(' plist ')'		{ $$ = stat1($1, $3); }
 	| pattern			{ $$ = exptostat($1); }
 	| error				{ yyclearin; SYNTAX("illegal statement"); }
 	;
@@ -186,7 +186,7 @@ stmt:
 	| EXIT pattern st	{ $$ = stat1(EXIT, $2); }
 	| EXIT st		{ $$ = stat1(EXIT, NULL); }
 	| if stmt else stmt	{ $$ = stat3(IF, $1, $2, $4); }
-	| if stmt		{ $$ = stat3(IF, $1, $2, NULL); }
+	| if stmt		{ $$ = stat2(IF, $1, $2); }
 	| lbrace stmtlist rbrace { $$ = $2; }
 	| simple_stmt st
 	| ';' opt_nl		{ $$ = 0; }
