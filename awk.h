@@ -239,7 +239,6 @@ extern	double	getfval(Cell *);
 extern	char	*getsval(Cell *);
 extern	char	*getpssval(Cell *);     /* for print */
 extern	char	*xstrdup(const char *);
-extern	char	*qstring(const char *, int);
 
 /* lib.c */
 extern	void	recinit(unsigned int);

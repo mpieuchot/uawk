@@ -23,7 +23,6 @@ ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF
 THIS SOFTWARE.
 ****************************************************************/
 
-#include <ctype.h>
 #include <errno.h>
 #include <string.h>
 #include <stdlib.h>
@@ -341,53 +340,4 @@ char *xstrdup(const char *s)
 	if (p == NULL)
 		FATAL("%s: %s", __func__, strerror(errno));
 	return p;
-}
-
-char *qstring(const char *is, int delim)	/* collect string up to next delim */
-{
-	const char *os = is;
-	int c, n;
-	uschar *s = (uschar *) is;
-	uschar *buf, *bp;
-
-	if ((buf = (uschar *) malloc(strlen(is)+3)) == NULL)
-		FATAL( "out of space in qstring(%s)", s);
-	for (bp = buf; (c = *s) != delim; s++) {
-		if (c == '\n')
-			SYNTAX( "newline in string %.20s...", os );
-		else if (c != '\\')
-			*bp++ = c;
-		else {	/* \something */
-			c = *++s;
-			if (c == 0) {	/* \ at end */
-				*bp++ = '\\';
-				break;	/* for loop */
-			}	
-			switch (c) {
-			case '\\':	*bp++ = '\\'; break;
-			case 'n':	*bp++ = '\n'; break;
-			case 't':	*bp++ = '\t'; break;
-			case 'v':	*bp++ = '\v'; break;
-			case 'b':	*bp++ = '\b'; break;
-			case 'f':	*bp++ = '\f'; break;
-			case 'r':	*bp++ = '\r'; break;
-			case 'a':	*bp++ = '\007'; break;
-			default:
-				if (!isdigit(c)) {
-					*bp++ = c;
-					break;
-				}
-				n = c - '0';
-				if (isdigit(s[1])) {
-					n = 8 * n + *++s - '0';
-					if (isdigit(s[1]))
-						n = 8 * n + *++s - '0';
-				}
-				*bp++ = n;
-				break;
-			}
-		}
-	}
-	*bp++ = 0;
-	return (char *) buf;
 }
