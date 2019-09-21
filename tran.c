@@ -54,6 +54,9 @@ Cell	*literal0;
 
 extern Cell **fldtab;
 
+int		 hash(const char *, int);
+void		 rehash(Array *);
+
 void syminit(void)	/* initialize symbol table with builtin vars */
 {
 	literal0 = setsymtab("0", "0", 0.0, NUM|STR|CON|DONTFREE, symtab);

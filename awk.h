@@ -231,8 +231,6 @@ extern	void	arginit(int, char **);
 extern	Array	*makesymtab(int);
 extern	void	freesymtab(Cell *);
 extern	Cell	*setsymtab(const char *, const char *, double, unsigned int, Array *);
-extern	int	hash(const char *, int);
-extern	void	rehash(Array *);
 extern	Cell	*lookup(const char *, Array *);
 extern	double	setfval(Cell *, double);
 extern	void	funnyvar(Cell *, const char *);
@@ -245,27 +243,18 @@ extern	char	*qstring(const char *, int);
 
 /* lib.c */
 extern	void	recinit(unsigned int);
-extern	void	initgetrec(void);
 extern	void	makefields(int, int);
-extern	void	growfldtab(int n);
 extern	int	getrec(char **, int *, int);
-extern	int	readrec(char **buf, int *bufsize, FILE *inf);
-extern	char	*getargv(int);
 extern	void	fldbld(void);
-extern	void	cleanfld(int, int);
 extern	void	newfld(int);
 extern	void	recbld(void);
 extern	Cell	*fieldadr(int);
 extern	void	yyerror(const char *);
 extern	void	fpecatch(int);
 extern	void	bracecheck(void);
-extern	void	bcheck2(int, int, int);
 extern	void	SYNTAX(const char *, ...);
 extern	__dead void	FATAL(const char *, ...);
 extern	void	WARNING(const char *, ...);
-extern	void	error(void);
-extern	void	eprint(void);
-extern	void	bclass(int);
 extern	int	is_number(const char *);
 
 /* run.c */

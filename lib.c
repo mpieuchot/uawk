@@ -56,6 +56,16 @@ extern	Awkfloat *ARGC;
 static Cell dollar0 = { OCELL, CFLD, NULL, "", 0.0, REC|STR|DONTFREE };
 static Cell dollar1 = { OCELL, CFLD, NULL, "", 0.0, FLD|STR|DONTFREE };
 
+void		 initgetrec(void);
+char		*getargv(int);
+void		 growfldtab(int n);
+int		 readrec(char **buf, int *bufsize, FILE *inf);
+void		 cleanfld(int, int);
+void		 bcheck2(int, int, int);
+void		 error(void);
+void		 eprint(void);
+void		 bclass(int);
+
 void recinit(unsigned int n)
 {
 	if ( (record = (char *) malloc(n)) == NULL
