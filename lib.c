@@ -428,13 +428,13 @@ void yyerror(const char *s)
 
 void SYNTAX(const char *fmt, ...)
 {
-	extern char *cmdname, *curfname;
+	extern char *curfname;
 	static int been_here = 0;
 	va_list varg;
 
 	if (been_here++ > 2)
 		return;
-	fprintf(stderr, "%s: ", cmdname);
+	fprintf(stderr, "%s: ", getprogname());
 	va_start(varg, fmt);
 	vfprintf(stderr, fmt, varg);
 	va_end(varg);
@@ -505,11 +505,10 @@ void bcheck2(int n, int c1, int c2)
 
 __dead void FATAL(const char *fmt, ...)
 {
-	extern char *cmdname;
 	va_list varg;
 
 	fflush(stdout);
-	fprintf(stderr, "%s: ", cmdname);
+	fprintf(stderr, "%s: ", getprogname());
 	va_start(varg, fmt);
 	vfprintf(stderr, fmt, varg);
 	va_end(varg);
@@ -521,11 +520,10 @@ __dead void FATAL(const char *fmt, ...)
 
 void WARNING(const char *fmt, ...)
 {
-	extern char *cmdname;
 	va_list varg;
 
 	fflush(stdout);
-	fprintf(stderr, "%s: ", cmdname);
+	fprintf(stderr, "%s: ", getprogname());
 	va_start(varg, fmt);
 	vfprintf(stderr, fmt, varg);
 	va_end(varg);

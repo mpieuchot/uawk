@@ -34,7 +34,6 @@ THIS SOFTWARE.
 extern	char	*__progname;
 
 int	dbg	= 0;
-char	*cmdname;	/* gets argv[0] for error messages */
 extern	FILE	*yyin;	/* lex input file */
 char	*lexprog;	/* points to program argument if it exists */
 extern	int errorflag;	/* non-zero if any syntax errors; set by yyerror */
@@ -49,7 +48,7 @@ int	curpfile = 0;		/* current filename */
 __dead void usage(void)
 {
 	fprintf(stderr, "usage: %s [-d] [prog | -f progfile]\tfile ...\n",
-	    cmdname);
+	    getprogname());
 	exit(1);
 }
 
@@ -60,9 +59,9 @@ int main(int argc, char *argv[])
 	setlocale(LC_ALL, "");
 	setlocale(LC_NUMERIC, "C"); /* for parsing cmdline & prog */
 
-	cmdname = __progname;
 	if (pledge("stdio rpath wpath cpath proc exec", NULL) == -1) {
-		fprintf(stderr, "%s: pledge: incorrect arguments\n", cmdname);
+		fprintf(stderr, "%s: pledge: incorrect arguments\n",
+		    getprogname());
 		exit(1);
 	}
 
@@ -105,7 +104,7 @@ int main(int argc, char *argv[])
 	/* put prog name at front of arglist */
 	argc++;
 	argv--;
-	argv[0] = cmdname;
+	argv[0] = __progname;
 	arginit(argc, argv);
 	yyparse();
 	setlocale(LC_NUMERIC, ""); /* back to whatever it is locally */
