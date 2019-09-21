@@ -78,6 +78,7 @@ void arginit(int ac, char **av)	/* set up ARGV and ARGC */
 	int i;
 	char temp[50];
 
+	   DPRINTF( ("argc=%d, argv[0]=%s\n", ac, av[0]) );
 	ARGC = &setsymtab("ARGC", "", (Awkfloat) ac, NUM, symtab)->fval;
 	cp = setsymtab("ARGV", "", 0.0, ARR, symtab);
 	ARGVtab = makesymtab(NSYMTAB);	/* could be (int) ARGC as well */

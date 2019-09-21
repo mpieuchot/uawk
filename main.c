@@ -24,16 +24,13 @@ THIS SOFTWARE.
 ****************************************************************/
 
 #include <stdio.h>
-#include <ctype.h>
 #include <locale.h>
 #include <stdlib.h>
 #include <string.h>
 #include <signal.h>
 #include <unistd.h>
 #include "awk.h"
-#include "ytab.h"
 
-extern	int	nfields;
 extern	char	*__progname;
 
 int	dbg	= 0;
@@ -44,87 +41,71 @@ extern	int errorflag;	/* non-zero if any syntax errors; set by yyerror */
 int	compile_time = 2;	/* for error printing: */
 				/* 2 = cmdline, 1 = compile, 0 = running */
 
-#define	MAX_PFILE	20	/* max number of -f's */
-
-char	*pfile[MAX_PFILE];	/* program filenames from -f's */
-int	npfile = 0;	/* number of filenames */
-int	curpfile = 0;	/* current filename */
+#define	MAX_PFILE	20	/* max number of program files */
+char	*pfile[MAX_PFILE];	/* program filenames */
+int	npfile = 0;		/* number of filenames */
+int	curpfile = 0;		/* current filename */
 
 __dead void usage(void)
 {
-	fprintf(stderr, "usage: %s [-d[n]] [prog | -f progfile]\tfile ...\n",
+	fprintf(stderr, "usage: %s [-d] [prog | -f progfile]\tfile ...\n",
 	    cmdname);
 	exit(1);
 }
 
 int main(int argc, char *argv[])
 {
+	int ch;
+
 	setlocale(LC_ALL, "");
 	setlocale(LC_NUMERIC, "C"); /* for parsing cmdline & prog */
 
 	cmdname = __progname;
 	if (pledge("stdio rpath wpath cpath proc exec", NULL) == -1) {
-		fprintf(stderr, "%s: pledge: incorrect arguments\n",
-		    cmdname);
+		fprintf(stderr, "%s: pledge: incorrect arguments\n", cmdname);
 		exit(1);
 	}
 
-	if (argc == 1)
-		usage();
-	signal(SIGFPE, fpecatch);
-
-	yyin = NULL;
-	symtab = makesymtab(NSYMTAB);
-	while (argc > 1 && argv[1][0] == '-' && argv[1][1] != '\0') {
-		if (strcmp(argv[1], "--") == 0) {	/* explicit end of args */
-			argc--;
-			argv++;
-			break;
-		}
-		switch (argv[1][1]) {
-		case 'f':	/* next argument is program filename */
-			if (argv[1][2] != 0) {  /* arg is -fsomething */
-				if (npfile >= MAX_PFILE - 1)
-					FATAL("too many -f options"); 
-				pfile[npfile++] = &argv[1][2];
-			} else {		/* arg is -f something */
-				argc--; argv++;
-				if (argc <= 1)
-					FATAL("no program filename");
-				if (npfile >= MAX_PFILE - 1)
-					FATAL("too many -f options"); 
-				pfile[npfile++] = argv[1];
-			}
+	while ((ch = getopt(argc, argv, "f:d")) != -1) {
+		switch (ch) {
+		case 'f':
+			if (npfile >= MAX_PFILE - 1)
+				FATAL("too many -f options");
+			pfile[npfile++] = optarg;
 			break;
 		case 'd':
-			dbg = atoi(&argv[1][2]);
-			if (dbg == 0)
-				dbg = 1;
+			dbg++;
 			break;
 		default:
 			usage();
 		}
+	}
+
+	argc -= optind;
+	argv += optind;
+
+	if (npfile == 0) {	/* no -f; first argument is program */
+		if (argc <= 1)
+			usage();
+		   DPRINTF( ("program = |%s|\n", argv[0]) );
+		lexprog = argv[0];
 		argc--;
 		argv++;
 	}
 
-	/* argv[1] is now the first argument */
-	if (npfile == 0) {	/* no -f; first argument is program */
-		if (argc <= 1) {
-			if (dbg)
-				exit(0);
-			FATAL("no program given");
-		}
-		   DPRINTF( ("program = |%s|\n", argv[1]) );
-		lexprog = argv[1];
-		argc--;
-		argv++;
-	}
+	signal(SIGFPE, fpecatch);
+
+	yyin = NULL;
+	symtab = makesymtab(NSYMTAB);
+
 	recinit(recsize);
 	syminit();
 	compile_time = 1;
-	argv[0] = cmdname;	/* put prog name at front of arglist */
-	   DPRINTF( ("argc=%d, argv[0]=%s\n", argc, argv[0]) );
+
+	/* put prog name at front of arglist */
+	argc++;
+	argv--;
+	argv[0] = cmdname;
 	arginit(argc, argv);
 	yyparse();
 	setlocale(LC_NUMERIC, ""); /* back to whatever it is locally */
