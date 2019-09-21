@@ -34,17 +34,9 @@ THIS SOFTWARE.
 #include "awk.h"
 #include "ytab.h"
 
-
-
-void		 stdinit(void);
-void		 flush_all(void);
 void		 tfree(Cell *);
 Cell		*gettemp(void);
 int		 format(char **, int *, const char *, Node *);
-FILE		*redirect(int, Node *);
-FILE		*openfile(int, const char *);
-const char	*filename(FILE *);
-void		 closeall(void);
 int		 pclose(FILE *);
 FILE		*popen(const char *, const char *);
 
@@ -110,13 +102,6 @@ int adjbuf(char **pbuf, int *psiz, int minlen, int quantum, char **pbptr,
 			*pbptr = tbuf + boff;
 	}
 	return 1;
-}
-
-void run(Node *a)	/* execution of parse tree starts here */
-{
-	stdinit();
-	execute(a);
-	closeall();
 }
 
 #define notlegal(a)	(a->proc == nullproc)
@@ -434,8 +419,7 @@ int format(char **pbuf, int *pbufsize, const char *s, Node *a)	/* printf-like co
 
 Cell *awkprintf(Node **a, int n)		/* printf */
 {	/* a[0] is list of args, starting with format string */
-	/* a[1] is redirection operator, a[2] is redirection file */
-	FILE *fp;
+	FILE *fp = stdout;
 	Cell *x;
 	Node *y;
 	char *buf;
@@ -449,19 +433,9 @@ Cell *awkprintf(Node **a, int n)		/* printf */
 	if ((len = format(&buf, &bufsz, getsval(x), y)) == -1)
 		FATAL("printf string %.30s... too long.  can't happen.", buf);
 	tempfree(x);
-	if (a[1] == NULL) {
-		/* fputs(buf, stdout); */
-		fwrite(buf, len, 1, stdout);
-		if (ferror(stdout))
-			FATAL("write error on stdout");
-	} else {
-		fp = redirect(ptoi(a[1]), a[2]);
-		/* fputs(buf, fp); */
-		fwrite(buf, len, 1, fp);
-		fflush(fp);
-		if (ferror(fp))
-			FATAL("write error on %s", filename(fp));
-	}
+	fwrite(buf, len, 1, fp);
+	if (ferror(fp))
+		FATAL("write error");
 	free(buf);
 	return(True);
 }
@@ -637,14 +611,10 @@ Cell *ifstat(Node **a, int n)	/* if (a[0]) a[1]; else a[2] */
 
 Cell *printstat(Node **a, int n)	/* print a[0] */
 {
+	FILE *fp = stdout;
 	Node *x;
 	Cell *y;
-	FILE *fp;
 
-	if (a[1] == 0)	/* a[1] is redirection operator, a[2] is file */
-		fp = stdout;
-	else
-		fp = redirect(ptoi(a[1]), a[2]);
 	for (x = a[0]; x != NULL; x = x->nnext) {
 		y = execute(x);
 		fputs(getpssval(y), fp);
@@ -654,10 +624,8 @@ Cell *printstat(Node **a, int n)	/* print a[0] */
 		else
 			fputs(OFS, fp);
 	}
-	if (a[1] != 0)
-		fflush(fp);
 	if (ferror(fp))
-		FATAL("write error on %s", filename(fp));
+		FATAL("write error");
 	return(True);
 }
 
@@ -666,132 +634,4 @@ Cell *nullproc(Node **a, int n)
 	n = n;
 	a = a;
 	return 0;
-}
-
-
-FILE *redirect(int a, Node *b)	/* set up all i/o redirections */
-{
-	FILE *fp;
-	Cell *x;
-	char *fname;
-
-	x = execute(b);
-	fname = getsval(x);
-	fp = openfile(a, fname);
-	if (fp == NULL)
-		FATAL("can't open file %s", fname);
-	tempfree(x);
-	return fp;
-}
-
-struct files {
-	FILE	*fp;
-	const char	*fname;
-	int	mode;	/* '|', 'a', 'w' => LE/LT, GT */
-} *files;
-
-int nfiles;
-
-void stdinit(void)	/* in case stdin, etc., are not constants */
-{
-	nfiles = FOPEN_MAX;
-	files = calloc(nfiles, sizeof(*files));
-	if (files == NULL)
-		FATAL("can't allocate file memory for %u files", nfiles);
-        files[0].fp = stdin;
-	files[0].fname = "/dev/stdin";
-	files[0].mode = LT;
-        files[1].fp = stdout;
-	files[1].fname = "/dev/stdout";
-	files[1].mode = GT;
-        files[2].fp = stderr;
-	files[2].fname = "/dev/stderr";
-	files[2].mode = GT;
-}
-
-FILE *openfile(int a, const char *us)
-{
-	const char *s = us;
-	int i, m;
-	FILE *fp = 0;
-
-	if (*s == '\0')
-		FATAL("null file name in print or getline");
-	for (i=0; i < nfiles; i++)
-		if (files[i].fname && strcmp(s, files[i].fname) == 0) {
-			if (a == files[i].mode || (a==APPEND && files[i].mode==GT))
-				return files[i].fp;
-		}
-
-	for (i=0; i < nfiles; i++)
-		if (files[i].fp == 0)
-			break;
-	if (i >= nfiles) {
-		struct files *nf;
-		int nnf = nfiles + FOPEN_MAX;
-		nf = reallocarray(files, nnf, sizeof(*nf));
-		if (nf == NULL)
-			FATAL("cannot grow files for %s and %d files", s, nnf);
-		memset(&nf[nfiles], 0, FOPEN_MAX * sizeof(*nf));
-		nfiles = nnf;
-		files = nf;
-	}
-	fflush(stdout);	/* force a semblance of order */
-	m = a;
-	if (a == GT) {
-		fp = fopen(s, "w");
-	} else if (a == APPEND) {
-		fp = fopen(s, "a");
-		m = GT;	/* so can mix > and >> */
-	} else if (a == '|') {	/* output pipe */
-		fp = popen(s, "w");
-	} else if (a == LE) {	/* input pipe */
-		fp = popen(s, "r");
-	} else if (a == LT) {	/* getline <file */
-		fp = strcmp(s, "-") == 0 ? stdin : fopen(s, "r");	/* "-" is stdin */
-	} else	/* can't happen */
-		FATAL("illegal redirection %d", a);
-	if (fp != NULL) {
-		files[i].fname = xstrdup(s);
-		files[i].fp = fp;
-		files[i].mode = m;
-	}
-	return fp;
-}
-
-const char *filename(FILE *fp)
-{
-	int i;
-
-	for (i = 0; i < nfiles; i++)
-		if (fp == files[i].fp)
-			return files[i].fname;
-	return "???";
-}
-
-void closeall(void)
-{
-	int i, stat;
-
-	for (i = 0; i < FOPEN_MAX; i++) {
-		if (files[i].fp) {
-			if (ferror(files[i].fp))
-				WARNING( "i/o error occurred on %s", files[i].fname );
-			if (files[i].mode == '|' || files[i].mode == LE)
-				stat = pclose(files[i].fp);
-			else
-				stat = fclose(files[i].fp);
-			if (stat == EOF)
-				WARNING( "i/o error occurred while closing %s", files[i].fname );
-		}
-	}
-}
-
-void flush_all(void)
-{
-	int i;
-
-	for (i = 0; i < nfiles; i++)
-		if (files[i].fp)
-			fflush(files[i].fp);
 }

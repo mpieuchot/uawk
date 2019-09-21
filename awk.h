@@ -217,7 +217,6 @@ extern	int	is_number(const char *);
 
 /* run.c */
 extern	int	adjbuf(char **, int *, int, int, char **, const char *);
-extern	void	run(Node *);
 extern	Cell	*execute(Node *);
 extern	Cell	*program(Node **, int);
 extern	Cell	*jump(Node **, int);
