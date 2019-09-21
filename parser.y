@@ -24,6 +24,7 @@ THIS SOFTWARE.
 ****************************************************************/
 
 %{
+#include <assert.h>
 #include <ctype.h>
 #include <stdarg.h>
 #include <stdio.h>
@@ -175,7 +176,7 @@ simple_stmt:
 	| print '(' pattern ')'		{ $$ = stat1($1, $3); }
 	| print '(' plist ')'		{ $$ = stat1($1, $3); }
 	| pattern			{ $$ = exptostat($1); }
-	| error				{ yyclearin; yyerror("illegal statement"); }
+	| error				{ yyclearin; }
 	;
 
 st:
@@ -221,7 +222,7 @@ var:
 	  VAR				{ $$ = celltonode($1, CVAR); }
 	| IVAR				{ $$ = op1(INDIRECT, celltonode($1, CVAR)); }
 	| INDIRECT term	 		{ $$ = op1(INDIRECT, $2); }
-	;	
+	;
 
 %%
 
@@ -453,7 +454,7 @@ int yylex(void)
 				unputstr(buf);
 				RET(INDIRECT);
 			}
-	
+
 		case '}':
 			if (--bracecnt < 0)
 				yyerror( "extra }" );
@@ -476,10 +477,8 @@ int yylex(void)
 		case '(':
 			parencnt++;
 			RET('(');
-	
 		case '"':
 			return string();	/* BUG: should be like tran.c ? */
-	
 		default:
 			RET(c);
 		}
@@ -639,23 +638,22 @@ void yyerror(const char *fmt, ...)
 
 	if (been_here++ > 2)
 		return;
-	fprintf(stderr, "%s: ", getprogname());
+	fprintf(stderr, "%s:%d: ", cursource() ? cursource() : getprogname(),
+	    lineno);
 	va_start(varg, fmt);
 	vfprintf(stderr, fmt, varg);
 	va_end(varg);
-	fprintf(stderr, " at source line %d", lineno);
-	if (compile_time == 1 && cursource() != NULL)
-		fprintf(stderr, " source file %s", cursource());
 	fprintf(stderr, "\n");
 	errorflag = 2;
 	eprint();
 }
 
 
-void eprint(void)	/* try to print context around error */
+/* try to print context around error */
+void eprint(void)
 {
 	static int been_here = 0;
-	char *p, *q;
+	char *p, *recstart, *tokstart, *tokend;
 	int c;
 
 	if (compile_time != 1)
@@ -663,30 +661,50 @@ void eprint(void)	/* try to print context around error */
 
 	if (been_here++ > 0 || ebuf == ep)
 		return;
-	p = ep - 1;
+
+	tokend = ep - 1;
+
+	/* Rewind to beginning of record. */
+	p = tokend;
 	if (p > ebuf && *p == '\n')
 		p--;
-	for ( ; p > ebuf && *p != '\n' && *p != '\0'; p--)
-		;
+	while (p > ebuf && *p != '\n' && *p != '\0')
+		p--;
 	while (*p == '\n')
 		p++;
-	fprintf(stderr, " context is\n\t");
-	for (q=ep-1; q>=p && *q!=' ' && *q!='\t' && *q!='\n'; q--)
+	recstart = p;
+
+	/* Rewind to the space before the syntax error. */
+	for (p = tokend; p >= recstart && !isspace(*p); p--)
 		;
-	for ( ; p < q; p++)
+	tokstart = p + 1;
+
+	if (tokstart == tokend)
+		return;
+
+	/* Print read characters. */
+	for (p = recstart; p < ep; p++) {
 		if (*p)
 			putc(*p, stderr);
-	fprintf(stderr, " >>> ");
-	for ( ; p < ep; p++)
-		if (*p)
-			putc(*p, stderr);
-	fprintf(stderr, " <<< ");
-	if (*ep)
-		while ((c = input()) != '\n' && c != '\0' && c != EOF) {
-			putc(c, stderr);
-			bclass(c);
-		}
+	}
+
+	/* Print rest of the line. */
+	while ((c = input()) != '\n' && c != '\0' && c != EOF) {
+		putc(c, stderr);
+		bclass(c);
+	}
 	putc('\n', stderr);
+
+	for (p = recstart; p < tokstart; p++)
+		putc(' ', stderr);
+
+	/* Underline the incorrect token. */
+	putc('^', stderr);
+	for (; p < tokend; p++)
+		putc('~', stderr);
+	putc('\n', stderr);
+
+	/* Prevent printing this message twice. */
 	ep = ebuf;
 }
 

@@ -5,7 +5,9 @@ SRCS=	ytab.c main.c node.c tran.c lib.c run.c
 LDADD=	-lm
 DPADD=	${LIBM}
 CLEANFILES+=ytab.c ytab.h
-CFLAGS+=-I. -I${.CURDIR} -DDEBUG
+CFLAGS+=-I. -I${.CURDIR}
+
+DEBUG=-g -DDEBUG -DYYDEBUG
 
 ytab.c ytab.h: parser.y
 	${YACC} -o ytab.c -d ${.CURDIR}/parser.y
