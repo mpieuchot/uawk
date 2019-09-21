@@ -32,7 +32,8 @@ THIS SOFTWARE.
 #include "awk.h"
 #include "ytab.h"
 
-FILE	*infile	= NULL;
+#define	RECSIZE	(8 * 1024)	/* sets limit on records, fields, etc., etc. */
+
 char	*file	= "";
 char	*record;
 int	recsize	= RECSIZE;
@@ -89,83 +90,42 @@ void makefields(int n1, int n2)		/* create $n1..$n2 inclusive */
 	}
 }
 
-void initgetrec(void)
-{
-	int i;
-	char *p;
-
-	for (i = 1; i < *ARGC; i++) {
-		p = getargv(i); /* find 1st real filename */
-		if (p == NULL || *p == '\0') {  /* deleted or zapped */
-			argno++;
-			continue;
-		}
-		setsval(lookup("FILENAME", symtab), p);
-		return;
-	}
-	infile = stdin;		/* no filenames, so use stdin */
-}
-
-static int firsttime = 1;
-
 int getrec(char **pbuf, int *pbufsize, int isrecord)	/* get next input record */
 {			/* note: cares whether buf == record */
 	int c;
 	char *buf = *pbuf;
 	uschar saveb0;
 	int bufsize = *pbufsize, savebufsize = bufsize;
+	extern FILE *infile;
 
-	if (firsttime) {
-		firsttime = 0;
-		initgetrec();
-	}
-	   DPRINTF( ("ARGC=%g, FILENAME=%s\n", *ARGC, *FILENAME) );
 	if (isrecord) {
 		donefld = 0;
 		donerec = 1;
 	}
 	saveb0 = buf[0];
 	buf[0] = 0;
-	while (argno < *ARGC || infile == stdin) {
-		   DPRINTF( ("argno=%d, file=|%s|\n", argno, file) );
-		if (infile == NULL) {	/* have to open a new file */
-			file = getargv(argno);
-			if (file == NULL || *file == '\0') {	/* deleted or zapped */
-				argno++;
-				continue;
+	setfval(fnrloc, 0.0);
+	c = readrec(&buf, &bufsize, infile);
+	if (c != 0 || buf[0] != '\0') {	/* normal record */
+		if (isrecord) {
+			if (freeable(fldtab[0]))
+				xfree(fldtab[0]->sval);
+			fldtab[0]->sval = buf;	/* buf == record */
+			fldtab[0]->tval = REC | STR | DONTFREE;
+			if (is_number(fldtab[0]->sval)) {
+				fldtab[0]->fval = atof(fldtab[0]->sval);
+				fldtab[0]->tval |= NUM;
 			}
-			*FILENAME = file;
-			   DPRINTF( ("opening file %s\n", file) );
-			if (*file == '-' && *(file+1) == '\0')
-				infile = stdin;
-			else if ((infile = fopen(file, "r")) == NULL)
-				FATAL("can't open file %s", file);
-			setfval(fnrloc, 0.0);
 		}
-		c = readrec(&buf, &bufsize, infile);
-		if (c != 0 || buf[0] != '\0') {	/* normal record */
-			if (isrecord) {
-				if (freeable(fldtab[0]))
-					xfree(fldtab[0]->sval);
-				fldtab[0]->sval = buf;	/* buf == record */
-				fldtab[0]->tval = REC | STR | DONTFREE;
-				if (is_number(fldtab[0]->sval)) {
-					fldtab[0]->fval = atof(fldtab[0]->sval);
-					fldtab[0]->tval |= NUM;
-				}
-			}
-			setfval(nrloc, nrloc->fval+1);
-			setfval(fnrloc, fnrloc->fval+1);
-			*pbuf = buf;
-			*pbufsize = bufsize;
-			return 1;
-		}
-		/* EOF arrived on this file; set up next */
-		if (infile != stdin)
-			fclose(infile);
-		infile = NULL;
-		argno++;
+		setfval(nrloc, nrloc->fval+1);
+		setfval(fnrloc, fnrloc->fval+1);
+		*pbuf = buf;
+		*pbufsize = bufsize;
+		return 1;
 	}
+	/* EOF arrived on this file; set up next */
+	if (infile != stdin)
+		fclose(infile);
 	buf[0] = saveb0;
 	*pbuf = buf;
 	*pbufsize = savebufsize;
@@ -382,9 +342,6 @@ void fpecatch(int sig)
 
 	if (compile_time != 2 && NR && *NR > 0) {
 		dprintf(STDERR_FILENO, " input record number %d", (int) (*FNR));
-		if (strcmp(*FILENAME, "-") != 0) {
-			dprintf(STDERR_FILENO, ", file %s", *FILENAME);
-		}
 		dprintf(STDERR_FILENO, "\n");
 	}
 	if (compile_time != 2 && curnode) {

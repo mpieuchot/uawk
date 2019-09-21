@@ -34,6 +34,7 @@ THIS SOFTWARE.
 extern	char	*__progname;
 
 int	dbg	= 0;
+FILE	*infile	= NULL;
 extern	FILE	*yyin;	/* lex input file */
 char	*lexprog;	/* points to program argument if it exists */
 extern	int errorflag;	/* non-zero if any syntax errors; set by yyerror */
@@ -54,6 +55,7 @@ __dead void usage(void)
 
 int main(int argc, char *argv[])
 {
+	char *file;
 	int ch;
 
 	setlocale(LC_ALL, "");
@@ -83,7 +85,8 @@ int main(int argc, char *argv[])
 	argc -= optind;
 	argv += optind;
 
-	if (npfile == 0) {	/* no -f; first argument is program */
+	/* no -f; first argument is program */
+	if (npfile == 0) {
 		if (argc <= 1)
 			usage();
 		   DPRINTF( ("program = |%s|\n", argv[0]) );
@@ -91,6 +94,11 @@ int main(int argc, char *argv[])
 		argc--;
 		argv++;
 	}
+
+	if (argc != 1)
+		usage();
+
+	file = argv[0];
 
 	signal(SIGFPE, fpecatch);
 
@@ -107,6 +115,11 @@ int main(int argc, char *argv[])
 	compile_time = 1;
 	yyparse();
 	   DPRINTF( ("errorflag=%d\n", errorflag) );
+
+	if (*file == '-' && *(file+1) == '\0')
+		infile = stdin;
+	else if ((infile = fopen(file, "r")) == NULL)
+		FATAL("can't open file %s", file);
 
 	setlocale(LC_NUMERIC, ""); /* back to whatever it is locally */
 	if (errorflag == 0) {

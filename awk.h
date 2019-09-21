@@ -40,7 +40,6 @@ typedef	unsigned char uschar;
 
 extern int	compile_time;	/* 1 if compiling, 0 if running */
 
-#define	RECSIZE	(8 * 1024)	/* sets limit on records, fields, etc., etc. */
 extern int	recsize;	/* size of current record, orig RECSIZE */
 
 #define	RS	"\n"		/* Input record separator */
@@ -51,7 +50,6 @@ extern int	recsize;	/* size of current record, orig RECSIZE */
 extern Awkfloat *NR;
 extern Awkfloat *FNR;
 extern Awkfloat *NF;
-extern char	**FILENAME;
 
 extern char	*record;	/* points to $0 */
 extern int	lineno;		/* line number in awk program */
