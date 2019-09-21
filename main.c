@@ -50,6 +50,13 @@ char	*pfile[MAX_PFILE];	/* program filenames from -f's */
 int	npfile = 0;	/* number of filenames */
 int	curpfile = 0;	/* current filename */
 
+__dead void usage(void)
+{
+	fprintf(stderr, "usage: %s [-d[n]] [prog | -f progfile]\tfile ...\n",
+	    cmdname);
+	exit(1);
+}
+
 int main(int argc, char *argv[])
 {
 	setlocale(LC_ALL, "");
@@ -62,12 +69,8 @@ int main(int argc, char *argv[])
 		exit(1);
 	}
 
-	if (argc == 1) {
-		fprintf(stderr, "usage: %s [-d[n]] "
-		    "[prog | -f progfile]\n\tfile ...\n",
-		    cmdname);
-		exit(1);
-	}
+	if (argc == 1)
+		usage();
 	signal(SIGFPE, fpecatch);
 
 	yyin = NULL;
@@ -99,8 +102,7 @@ int main(int argc, char *argv[])
 				dbg = 1;
 			break;
 		default:
-			WARNING("unknown option %s ignored", argv[1]);
-			break;
+			usage();
 		}
 		argc--;
 		argv++;
