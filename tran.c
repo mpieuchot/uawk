@@ -50,8 +50,6 @@ Cell	*symtabloc;	/* SYMTAB */
 Cell	*nullloc;	/* a guaranteed empty cell */
 Cell	*literal0;
 
-extern Cell **fldtab;
-
 int		 hash(const char *, int);
 void		 rehash(Array *);
 

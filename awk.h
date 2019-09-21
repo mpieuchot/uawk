@@ -197,7 +197,7 @@ extern	char	*getsval(Cell *);
 extern	char	*getpssval(Cell *);     /* for print */
 extern	char	*xstrdup(const char *);
 
-/* lib.c */
+/* record.c */
 extern	void	recinit(unsigned int);
 extern	void	makefields(int, int);
 extern	int	getrec(char **, int *, int);
