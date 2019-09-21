@@ -31,6 +31,7 @@ THIS SOFTWARE.
 #include "awk.h"
 
 int yywrap(void) { return(1); }
+void	yyerror(const char *, ...);
 
 Node	*beginloc = 0;
 Node	*endloc = 0;
@@ -82,7 +83,7 @@ Node	*endloc = 0;
 program:
 	  pas	{ if (errorflag==0)
 			rootnode = stat3(PROGRAM, beginloc, $1, endloc); }
-	| error	{ yyclearin; bracecheck(); SYNTAX("bailing out"); }
+	| error	{ yyclearin; bracecheck(); yyerror("bailing out"); }
 	;
 
 else:
@@ -174,7 +175,7 @@ simple_stmt:
 	| print '(' pattern ')'		{ $$ = stat1($1, $3); }
 	| print '(' plist ')'		{ $$ = stat1($1, $3); }
 	| pattern			{ $$ = exptostat($1); }
-	| error				{ yyclearin; SYNTAX("illegal statement"); }
+	| error				{ yyclearin; yyerror("illegal statement"); }
 	;
 
 st:
@@ -446,7 +447,7 @@ int yylex(void)
 				yylval.cp = setsymtab(buf, "", 0.0, STR|NUM, symtab);
 				RET(IVAR);
 			} else if (c == 0) {	/*  */
-				SYNTAX( "unexpected end of input after $" );
+				yyerror( "unexpected end of input after $" );
 				RET(';');
 			} else {
 				unputstr(buf);
@@ -455,16 +456,16 @@ int yylex(void)
 	
 		case '}':
 			if (--bracecnt < 0)
-				SYNTAX( "extra }" );
+				yyerror( "extra }" );
 			sc = 1;
 			RET(';');
 		case ']':
 			if (--brackcnt < 0)
-				SYNTAX( "extra ]" );
+				yyerror( "extra ]" );
 			RET(']');
 		case ')':
 			if (--parencnt < 0)
-				SYNTAX( "extra )" );
+				yyerror( "extra )" );
 			RET(')');
 		case '{':
 			bracecnt++;
@@ -501,7 +502,7 @@ int string(void)
 		case '\n':
 		case '\r':
 		case 0:
-			SYNTAX( "non-terminated string %.10s...", buf );
+			yyerror( "non-terminated string %.10s...", buf );
 			lineno++;
 			if (c == 0)	/* hopeless */
 				FATAL( "giving up" );
@@ -631,12 +632,7 @@ void unputstr(const char *s)	/* put a string back on input */
 		unput(s[i]);
 }
 
-void yyerror(const char *s)
-{
-	SYNTAX("%s", s);
-}
-
-void SYNTAX(const char *fmt, ...)
+void yyerror(const char *fmt, ...)
 {
 	static int been_here = 0;
 	va_list varg;
