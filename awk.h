@@ -142,9 +142,6 @@ extern Node	*nullnode;
 #define NSTAT	2
 #define NEXPR	3
 
-
-extern	int	pairstack[], paircnt;
-
 #define isvalue(n)	((n)->ntype == NVALUE)
 #define isexpr(n)	((n)->ntype == NEXPR)
 #define isexit(n)	((n)->csub == JEXIT)
@@ -160,11 +157,9 @@ extern	int	pairstack[], paircnt;
 /* #define freeable(p)	(!((p)->tval & DONTFREE)) */
 #define freeable(p)	( ((p)->tval & (STR|DONTFREE)) == STR )
 
-/* awkgram.y */
+/* parser.y */
 extern	Node	*notnull(Node *);
 extern	int	yyparse(void);
-
-/* lex.c */
 extern	int	yylex(void);
 extern	int	input(void);
 extern	void	unput(int);
@@ -174,7 +169,7 @@ extern	void	unputstr(const char *);
 extern	int	pgetc(void);
 extern	char	*cursource(void);
 
-/* parse.c */
+/* node.c */
 extern	Node	*exptostat(Node *);
 extern	Node	*stat3(int, Node *, Node *, Node *);
 extern	Node	*op2(int, Node *, Node *);
@@ -184,7 +179,6 @@ extern	Node	*op3(int, Node *, Node *, Node *);
 extern	Node	*stat2(int, Node *, Node *);
 extern	Node	*celltonode(Cell *, int);
 extern	Node	*rectonode(void);
-extern	Node	*pa2stat(Node *, Node *, Node *);
 extern	Node	*linkum(Node *, Node *);
 extern	const char *tokname(int);
 extern	Cell	*(*proctab[])(Node **, int);
@@ -222,7 +216,7 @@ extern	void	WARNING(const char *, ...);
 extern	int	is_number(const char *);
 
 /* run.c */
-extern	int	adjbuf(char **pb, int *sz, int min, int q, char **pbp, const char *what);
+extern	int	adjbuf(char **, int *, int, int, char **, const char *);
 extern	void	run(Node *);
 extern	Cell	*execute(Node *);
 extern	Cell	*program(Node **, int);
@@ -231,11 +225,9 @@ extern	Cell	*relop(Node **, int);
 extern	Cell	*indirect(Node **, int);
 extern	Cell	*awkprintf(Node **, int);
 extern	Cell	*arith(Node **, int);
-extern	double	ipow(double, int);
 extern	Cell	*incrdecr(Node **, int);
 extern	Cell	*assign(Node **, int);
 extern	Cell	*pastat(Node **, int);
-extern	Cell	*dopa2(Node **, int);
 extern	Cell	*condexpr(Node **, int);
 extern	Cell	*ifstat(Node **, int);
 extern	Cell	*printstat(Node **, int);

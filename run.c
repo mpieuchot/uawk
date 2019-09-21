@@ -64,7 +64,6 @@ void tempfree(Cell *p) {
 */
 
 jmp_buf env;
-extern	int	pairstack[];
 
 Cell	*tmps;		/* free temporary cells for execution */
 
@@ -604,29 +603,6 @@ Cell *pastat(Node **a, int n)	/* a[0] { a[1] } */
 		}
 	}
 	return x;
-}
-
-Cell *dopa2(Node **a, int n)	/* a[0], a[1] { a[2] } */
-{
-	Cell *x;
-	int pair;
-
-	pair = ptoi(a[3]);
-	if (pairstack[pair] == 0) {
-		x = execute(a[0]);
-		if (istrue(x))
-			pairstack[pair] = 1;
-		tempfree(x);
-	}
-	if (pairstack[pair] == 1) {
-		x = execute(a[1]);
-		if (istrue(x))
-			pairstack[pair] = 0;
-		tempfree(x);
-		x = execute(a[2]);
-		return(x);
-	}
-	return(False);
 }
 
 Cell *condexpr(Node **a, int n)	/* a[0] ? a[1] : a[2] */

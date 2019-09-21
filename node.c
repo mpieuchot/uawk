@@ -72,7 +72,6 @@ struct
 	{ PREDECR, incrdecr,  "PREDECR" },
 	{ POSTDECR, incrdecr,  "POSTDECR" },
 	{ PASTAT, pastat,  "PASTAT" },
-	{ PASTAT2, dopa2,  "PASTAT2" },
 	{ PRINTF, awkprintf,  "PRINTF" },
 	{ PRINT, printstat,  "PRINT" },
 	{ ASSIGN, assign,  "ASSIGN" },
@@ -251,21 +250,6 @@ Node *rectonode(void)	/* make $0 into a Node */
 {
 	extern Cell *literal0;
 	return op1(INDIRECT, celltonode(literal0, CUNK));
-}
-
-#define PA2NUM	50	/* max number of pat,pat patterns allowed */
-int	paircnt;		/* number of them in use */
-int	pairstack[PA2NUM];	/* state of each pat,pat */
-
-Node *pa2stat(Node *a, Node *b, Node *c)	/* pat, pat {...} */
-{
-	Node *x;
-
-	x = node4(PASTAT2, a, b, c, itonp(paircnt));
-	if (paircnt++ >= PA2NUM)
-		SYNTAX( "limited to %d pat,pat statements", PA2NUM );
-	x->ntype = NSTAT;
-	return(x);
 }
 
 Node *linkum(Node *a, Node *b)

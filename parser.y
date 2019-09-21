@@ -43,7 +43,7 @@ char	*curfname = 0;	/* current function name */
 	char	*s;
 }
 
-%token	<p>	PROGRAM PASTAT PASTAT2 XBEGIN XEND
+%token	<p>	PROGRAM PASTAT XBEGIN XEND
 %token	<i>	NL ',' '{' '(' '|' ';' '/' ')' '}' '[' ']'
 %token	<i>	APPEND EQ GE GT LE LT NE
 %token	<i>	EXIT IF
@@ -124,8 +124,6 @@ pa_pat:
 pa_stat:
 	  pa_pat			{ $$ = stat2(PASTAT, $1, stat2(PRINT, rectonode(), NULL)); }
 	| pa_pat lbrace stmtlist '}'	{ $$ = stat2(PASTAT, $1, $3); }
-	| pa_pat ',' opt_nl pa_pat		{ $$ = pa2stat($1, $4, stat2(PRINT, rectonode(), NULL)); }
-	| pa_pat ',' opt_nl pa_pat lbrace stmtlist '}'	{ $$ = pa2stat($1, $4, $6); }
 	| lbrace stmtlist '}'		{ $$ = stat2(PASTAT, NULL, $2); }
 	| XBEGIN lbrace stmtlist '}'
 		{ beginloc = linkum(beginloc, $3); $$ = 0; }
