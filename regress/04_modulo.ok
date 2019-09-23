@@ -1,0 +1,13 @@
+Below is an example license to be used for new code in OpenBSD,
+
+should be separated by a comma, e.g.
+
+add further restrictions.
+/*
+ *
+ * purpose with or without fee is hereby granted, provided that the above
+ *
+ * WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
+ * ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
+ * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
+ */

@@ -1,0 +1,27 @@
+01: Below is an example license to be used for new code in OpenBSD,
+02: modeled after the ISC license.
+03: 
+04: It is important to specify the year of the copyright.  Additional years
+05: should be separated by a comma, e.g.
+06:     Copyright (c) 2003, 2004
+07: 
+08: If you add extra text to the body of the license, be careful not to
+09: add further restrictions.
+10: 
+11: /*
+12:  * Copyright (c) YYYY YOUR NAME HERE <user@your.dom.ain>
+13:  *
+14:  * Permission to use, copy, modify, and distribute this software for any
+15:  * purpose with or without fee is hereby granted, provided that the above
+16:  * copyright notice and this permission notice appear in all copies.
+17:  *
+18:  * THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
+19:  * WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
+20:  * MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
+21:  * ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
+22:  * WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
+23:  * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
+24:  * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+25:  */
+
+...read 25 records
