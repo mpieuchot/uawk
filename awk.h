@@ -139,7 +139,6 @@ extern Node	*nullnode;
 #define isarr(n)	((n)->tval & ARR)
 #define isfcn(n)	((n)->tval & FCN)
 #define istrue(n)	((n)->csub == BTRUE)
-#define istemp(n)	((n)->csub == CTEMP)
 #define	isargument(n)	((n)->nobj == ARG)
 /* #define freeable(p)	(!((p)->tval & DONTFREE)) */
 #define freeable(p)	( ((p)->tval & (STR|DONTFREE)) == STR )

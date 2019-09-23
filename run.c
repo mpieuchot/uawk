@@ -34,26 +34,13 @@ THIS SOFTWARE.
 #include "awk.h"
 #include "ytab.h"
 
-void		 tfree(Cell *);
-Cell		*gettemp(void);
+#define istemp(n)	((n)->csub == CTEMP)
+
+Cell		*tcell_get(void);
+void		 tcell_put(Cell *);
 int		 format(char **, int *, const char *, Node *);
 int		 pclose(FILE *);
 FILE		*popen(const char *, const char *);
-
-#define tempfree(x)	if (istemp(x)) tfree(x); else
-
-/*
-#undef tempfree
-
-void tempfree(Cell *p) {
-	if (p->ctype == OCELL && (p->csub < CUNK || p->csub > CFREE)) {
-		WARNING("bad csub %d in Cell %d %s",
-			p->csub, p->ctype, p->sval);
-	}
-	if (istemp(p))
-		tfree(p);
-}
-*/
 
 jmp_buf env;
 
@@ -128,7 +115,7 @@ execute(Node *u)
 			return x;
 		if (a->nnext == NULL)
 			return x;
-		tempfree(x);
+		tcell_put(x);
 	}
 }
 
@@ -144,19 +131,19 @@ f_program(Node **a, int n)
 		goto ex;
 	if (a[0]) {		/* BEGIN */
 		x = execute(a[0]);
-		tempfree(x);
+		tcell_put(x);
 	}
 	if (a[1] || a[2])
 		while (record_get() > 0) {
 			x = execute(a[1]);
-			tempfree(x);
+			tcell_put(x);
 		}
   ex:
 	if (setjmp(env) != 0)	/* handles exit within END */
 		goto ex1;
 	if (a[2]) {		/* END */
 		x = execute(a[2]);
-		tempfree(x);
+		tcell_put(x);
 	}
   ex1:
 	return True;
@@ -173,7 +160,7 @@ f_jump(Node **a, int n)
 		if (a[0] != NULL) {
 			y = execute(a[0]);
 			errorflag = (int) fval_get(y);
-			tempfree(y);
+			tcell_put(y);
 		}
 		longjmp(env, 1);
 	default:	/* can't happen */
@@ -198,8 +185,8 @@ f_relop(Node **a, int n)
 	} else {
 		i = strcmp(sval_get(x), sval_get(y));
 	}
-	tempfree(x);
-	tempfree(y);
+	tcell_put(x);
+	tcell_put(y);
 	switch (n) {
 	case LT:	if (i<0) return True;
 			else return False;
@@ -221,8 +208,10 @@ f_relop(Node **a, int n)
 
 /* free a tempcell */
 void
-tfree(Cell *a)
+tcell_put(Cell *a)
 {
+	if (!istemp(a))
+		return;
 	if (freeable(a)) {
 		   DPRINTF( ("freeing %s %s %o\n", NN(a->nval), NN(a->sval), a->tval) );
 		xfree(a->sval);
@@ -235,7 +224,7 @@ tfree(Cell *a)
 
 /* get a tempcell */
 Cell *
-gettemp(void)
+tcell_get(void)
 {	int i;
 	Cell *x;
 
@@ -268,7 +257,7 @@ f_indirect(Node **a, int n)
 	if (m == 0 && !is_number(s = sval_get(x)))	/* suspicion! */
 		FATAL("illegal field $(%s), name \"%s\"", s, x->nval);
 		/* BUG: can x->nval ever be null??? */
-	tempfree(x);
+	tcell_put(x);
 	x = field_get(m);
 	x->ctype = OCELL;	/* BUG?  why are these needed? */
 	x->csub = CFLD;
@@ -325,7 +314,7 @@ format(char **pbuf, int *pbufsize, const char *s, Node *a)
 					fmtwd = -fmtwd;
 				adjbuf(&buf, &bufsize, fmtwd+1+p-buf, recsize, &p, "format");
 				t = fmt + strlen(fmt);
-				tempfree(x);
+				tcell_put(x);
 			}
 		}
 		*t = '\0';
@@ -403,7 +392,7 @@ format(char **pbuf, int *pbufsize, const char *s, Node *a)
 		default:
 			FATAL("can't happen: bad conversion %c in format()", flag);
 		}
-		tempfree(x);
+		tcell_put(x);
 		p += strlen(p);
 		s++;
 	}
@@ -433,7 +422,7 @@ f_printf(Node **a, int n)
 	x = execute(a[0]);
 	if ((len = format(&buf, &bufsz, sval_get(x), y)) == -1)
 		FATAL("printf string %.30s... too long.  can't happen.", buf);
-	tempfree(x);
+	tcell_put(x);
 	fwrite(buf, len, 1, fp);
 	if (ferror(fp))
 		FATAL("write error");
@@ -451,13 +440,13 @@ f_arith(Node **a, int n)
 
 	x = execute(a[0]);
 	i = fval_get(x);
-	tempfree(x);
+	tcell_put(x);
 	if (n != UMINUS) {
 		y = execute(a[1]);
 		j = fval_get(y);
-		tempfree(y);
+		tcell_put(y);
 	}
-	z = gettemp();
+	z = tcell_get();
 	switch (n) {
 	case ADD:
 		i += j;
@@ -504,10 +493,10 @@ f_incrdecr(Node **a, int n)
 		fval_set(x, xf + k);
 		return x;
 	}
-	z = gettemp();
+	z = tcell_get();
 	fval_set(z, xf);
 	fval_set(x, xf + k);
-	tempfree(x);
+	tcell_put(x);
 	return z;
 }
 
@@ -535,7 +524,7 @@ f_assign(Node **a, int n)
 			fval_set(x, fval_get(y));
 		else
 			funnyvar(y, "read value of");
-		tempfree(y);
+		tcell_put(y);
 		return x;
 	}
 	xf = fval_get(x);
@@ -565,7 +554,7 @@ f_assign(Node **a, int n)
 		FATAL("illegal assignment operator %d", n);
 		break;
 	}
-	tempfree(y);
+	tcell_put(y);
 	fval_set(x, xf);
 	return x;
 }
@@ -581,7 +570,7 @@ f_pastat(Node **a, int n)
 	else {
 		x = execute(a[0]);
 		if (istrue(x)) {
-			tempfree(x);
+			tcell_put(x);
 			x = execute(a[1]);
 		}
 	}
@@ -596,10 +585,10 @@ f_condexpr(Node **a, int n)
 
 	x = execute(a[0]);
 	if (istrue(x)) {
-		tempfree(x);
+		tcell_put(x);
 		x = execute(a[1]);
 	} else {
-		tempfree(x);
+		tcell_put(x);
 		x = execute(a[2]);
 	}
 	return x;
@@ -613,10 +602,10 @@ f_if(Node **a, int n)
 
 	x = execute(a[0]);
 	if (istrue(x)) {
-		tempfree(x);
+		tcell_put(x);
 		x = execute(a[1]);
 	} else if (a[2] != 0) {
-		tempfree(x);
+		tcell_put(x);
 		x = execute(a[2]);
 	}
 	return x;
@@ -633,7 +622,7 @@ f_print(Node **a, int n)
 	for (x = a[0]; x != NULL; x = x->nnext) {
 		y = execute(x);
 		fputs(sval_get(y), fp);
-		tempfree(y);
+		tcell_put(y);
 		if (x->nnext == NULL)
 			fputs(ORS, fp);
 		else
