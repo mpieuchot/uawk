@@ -329,13 +329,3 @@ funnyvar(Cell *vp, const char *rw)
 	WARNING("funny variable %p: n=%s s=\"%s\" f=%g t=%o",
 		vp, vp->nval, vp->sval, vp->fval, vp->tval);
 }
-
-char *xstrdup(const char *s)
-{
-	char *p;
-
-	p = strdup(s);
-	if (p == NULL)
-		FATAL("%s: %s", __func__, strerror(errno));
-	return p;
-}
