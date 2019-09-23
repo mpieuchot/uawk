@@ -50,12 +50,10 @@ int	donefld;	/* 1 = implies rec broken into fields */
 int	donerec;	/* 1 = record is valid (no flds have changed) */
 
 int	lastfld	= 0;	/* last used field */
-int	argno	= 1;	/* current input argument number */
 
 static Cell dollar0 = { CFLD, NULL, "", 0.0, REC|STR|DONTFREE };
 static Cell dollar1 = { CFLD, NULL, "", 0.0, FLD|STR|DONTFREE };
 
-void		 initrecord_get(void);
 void		 field_alloc(int, int);
 void		 field_realloc(int n);
 int		 record_read(char **buf, int *bufsize, FILE *inf);
