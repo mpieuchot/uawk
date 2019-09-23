@@ -45,8 +45,6 @@ extern int	recsize;	/* size of current record, orig RECSIZE */
 #define	RS	"\n"		/* Input record separator */
 #define	ORS	"\n"		/* Output record separator */
 #define	OFS	" "		/* Output field separator */
-#define OFMT	"%.6g"		/* Output format for numbers */
-#define	CONVFMT "%.6g"		/* Conversion format when converting numbers */
 extern Awkfloat *NR;
 extern Awkfloat *FNR;
 extern Awkfloat *NF;
@@ -180,18 +178,14 @@ extern	Node	*linkum(Node *, Node *);
 extern	const char *tokname(int);
 extern	Cell	*(*proctab[])(Node **, int);
 
-/* tran.c */
-extern	void	syminit(void);
-extern	Array	*makesymtab(int);
-extern	void	freesymtab(Cell *);
-extern	Cell	*setsymtab(const char *, const char *, double, unsigned int, Array *);
-extern	Cell	*lookup(const char *, Array *);
-extern	double	setfval(Cell *, double);
+/* symtab.c */
+void		 symtab_init(void);
+Cell		*symtab_set(const char *, const char *, double, unsigned int, Array *);
+double		 fval_get(Cell *);
+double		 fval_set(Cell *, double);
+char		*sval_get(Cell *);
+char		*sval_set(Cell *, const char *);
 extern	void	funnyvar(Cell *, const char *);
-extern	char	*setsval(Cell *, const char *);
-extern	double	getfval(Cell *);
-extern	char	*getsval(Cell *);
-extern	char	*getpssval(Cell *);     /* for print */
 extern	char	*xstrdup(const char *);
 
 /* record.c */

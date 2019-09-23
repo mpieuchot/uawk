@@ -180,7 +180,7 @@ Cell *jump(Node **a, int n)	/* return */
 	case EXIT:
 		if (a[0] != NULL) {
 			y = execute(a[0]);
-			errorflag = (int) getfval(y);
+			errorflag = (int) fval_get(y);
 			tempfree(y);
 		}
 		longjmp(env, 1);
@@ -202,7 +202,7 @@ Cell *relop(Node **a, int n)	/* a[0 < a[1], etc. */
 		j = x->fval - y->fval;
 		i = j<0? -1: (j>0? 1: 0);
 	} else {
-		i = strcmp(getsval(x), getsval(y));
+		i = strcmp(sval_get(x), sval_get(y));
 	}
 	tempfree(x);
 	tempfree(y);
@@ -263,11 +263,11 @@ Cell *indirect(Node **a, int n)	/* $( a[0] ) */
 	char *s;
 
 	x = execute(a[0]);
-	val = getfval(x);	/* freebsd: defend against super large field numbers */
+	val = fval_get(x);	/* freebsd: defend against super large field numbers */
 	if ((Awkfloat)INT_MAX < val)
 		FATAL("trying to access out of range field %s", x->nval);
 	m = (int) val;
-	if (m == 0 && !is_number(s = getsval(x)))	/* suspicion! */
+	if (m == 0 && !is_number(s = sval_get(x)))	/* suspicion! */
 		FATAL("illegal field $(%s), name \"%s\"", s, x->nval);
 		/* BUG: can x->nval ever be null??? */
 	tempfree(x);
@@ -321,7 +321,7 @@ int format(char **pbuf, int *pbufsize, const char *s, Node *a)	/* printf-like co
 					FATAL("not enough args in printf(%s)", os);
 				x = execute(a);
 				a = a->nnext;
-				snprintf(t-1, fmt + fmtsz - (t-1), "%d", fmtwd=(int) getfval(x));
+				snprintf(t-1, fmt + fmtsz - (t-1), "%d", fmtwd=(int) fval_get(x));
 				if (fmtwd < 0)
 					fmtwd = -fmtwd;
 				adjbuf(&buf, &bufsize, fmtwd+1+p-buf, recsize, &p, "format");
@@ -370,7 +370,7 @@ int format(char **pbuf, int *pbufsize, const char *s, Node *a)	/* printf-like co
 		switch (flag) {
 		case '?':	/* unknown, so dump it too */
 			snprintf(p, buf + bufsize - p, "%s", fmt);
-			t = getsval(x);
+			t = sval_get(x);
 			n = strlen(t);
 			if (fmtwd > n)
 				n = fmtwd;
@@ -378,11 +378,11 @@ int format(char **pbuf, int *pbufsize, const char *s, Node *a)	/* printf-like co
 			p += strlen(p);
 			snprintf(p, buf + bufsize - p, "%s", t);
 			break;
-		case 'f':	snprintf(p, buf + bufsize - p, fmt, getfval(x)); break;
-		case 'd':	snprintf(p, buf + bufsize - p, fmt, (long) getfval(x)); break;
-		case 'u':	snprintf(p, buf + bufsize - p, fmt, (int) getfval(x)); break;
+		case 'f':	snprintf(p, buf + bufsize - p, fmt, fval_get(x)); break;
+		case 'd':	snprintf(p, buf + bufsize - p, fmt, (long) fval_get(x)); break;
+		case 'u':	snprintf(p, buf + bufsize - p, fmt, (int) fval_get(x)); break;
 		case 's':
-			t = getsval(x);
+			t = sval_get(x);
 			n = strlen(t);
 			if (fmtwd > n)
 				n = fmtwd;
@@ -392,14 +392,14 @@ int format(char **pbuf, int *pbufsize, const char *s, Node *a)	/* printf-like co
 			break;
 		case 'c':
 			if (isnum(x)) {
-				if ((int)getfval(x))
-					snprintf(p, buf + bufsize - p, fmt, (int) getfval(x));
+				if ((int)fval_get(x))
+					snprintf(p, buf + bufsize - p, fmt, (int) fval_get(x));
 				else {
 					*p++ = '\0'; /* explicit null byte */
 					*p = '\0';   /* next output will start here */
 				}
 			} else
-				snprintf(p, buf + bufsize - p, fmt, getsval(x)[0]);
+				snprintf(p, buf + bufsize - p, fmt, sval_get(x)[0]);
 			break;
 		default:
 			FATAL("can't happen: bad conversion %c in format()", flag);
@@ -430,7 +430,7 @@ Cell *awkprintf(Node **a, int n)		/* printf */
 		FATAL("out of memory in awkprintf");
 	y = a[0]->nnext;
 	x = execute(a[0]);
-	if ((len = format(&buf, &bufsz, getsval(x), y)) == -1)
+	if ((len = format(&buf, &bufsz, sval_get(x), y)) == -1)
 		FATAL("printf string %.30s... too long.  can't happen.", buf);
 	tempfree(x);
 	fwrite(buf, len, 1, fp);
@@ -447,11 +447,11 @@ Cell *arith(Node **a, int n)	/* a[0] + a[1], etc.  also -a[0] */
 	Cell *x, *y, *z;
 
 	x = execute(a[0]);
-	i = getfval(x);
+	i = fval_get(x);
 	tempfree(x);
 	if (n != UMINUS) {
 		y = execute(a[1]);
-		j = getfval(y);
+		j = fval_get(y);
 		tempfree(y);
 	}
 	z = gettemp();
@@ -482,7 +482,7 @@ Cell *arith(Node **a, int n)	/* a[0] + a[1], etc.  also -a[0] */
 	default:	/* can't happen */
 		FATAL("illegal arithmetic operator %d", n);
 	}
-	setfval(z, i);
+	fval_set(z, i);
 	return(z);
 }
 
@@ -493,15 +493,15 @@ Cell *incrdecr(Node **a, int n)		/* a[0]++, etc. */
 	Awkfloat xf;
 
 	x = execute(a[0]);
-	xf = getfval(x);
+	xf = fval_get(x);
 	k = (n == PREINCR || n == POSTINCR) ? 1 : -1;
 	if (n == PREINCR || n == PREDECR) {
-		setfval(x, xf + k);
+		fval_set(x, xf + k);
 		return(x);
 	}
 	z = gettemp();
-	setfval(z, xf);
-	setfval(x, xf + k);
+	fval_set(z, xf);
+	fval_set(x, xf + k);
 	tempfree(x);
 	return(z);
 }
@@ -518,21 +518,21 @@ Cell *assign(Node **a, int n)	/* a[0] = a[1], a[0] += a[1], etc. */
 		if (x == y && !(x->tval & (FLD|REC)))	/* self-assignment: */
 			;		/* leave alone unless it's a field */
 		else if ((y->tval & (STR|NUM)) == (STR|NUM)) {
-			setsval(x, getsval(y));
-			x->fval = getfval(y);
+			sval_set(x, sval_get(y));
+			x->fval = fval_get(y);
 			x->tval |= NUM;
 		}
 		else if (isstr(y))
-			setsval(x, getsval(y));
+			sval_set(x, sval_get(y));
 		else if (isnum(y))
-			setfval(x, getfval(y));
+			fval_set(x, fval_get(y));
 		else
 			funnyvar(y, "read value of");
 		tempfree(y);
 		return(x);
 	}
-	xf = getfval(x);
-	yf = getfval(y);
+	xf = fval_get(x);
+	yf = fval_get(y);
 	switch (n) {
 	case ADDEQ:
 		xf += yf;
@@ -559,7 +559,7 @@ Cell *assign(Node **a, int n)	/* a[0] = a[1], a[0] += a[1], etc. */
 		break;
 	}
 	tempfree(y);
-	setfval(x, xf);
+	fval_set(x, xf);
 	return(x);
 }
 
@@ -617,7 +617,7 @@ Cell *printstat(Node **a, int n)	/* print a[0] */
 
 	for (x = a[0]; x != NULL; x = x->nnext) {
 		y = execute(x);
-		fputs(getpssval(y), fp);
+		fputs(sval_get(y), fp);
 		tempfree(y);
 		if (x->nnext == NULL)
 			fputs(ORS, fp);

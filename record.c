@@ -102,7 +102,7 @@ int getrec(char **pbuf, int *pbufsize, int isrecord)	/* get next input record */
 	}
 	saveb0 = buf[0];
 	buf[0] = 0;
-	setfval(fnrloc, 0.0);
+	fval_set(fnrloc, 0.0);
 	c = readrec(&buf, &bufsize, infile);
 	if (c != 0 || buf[0] != '\0') {	/* normal record */
 		if (isrecord) {
@@ -115,8 +115,8 @@ int getrec(char **pbuf, int *pbufsize, int isrecord)	/* get next input record */
 				fldtab[0]->tval |= NUM;
 			}
 		}
-		setfval(nrloc, nrloc->fval+1);
-		setfval(fnrloc, fnrloc->fval+1);
+		fval_set(nrloc, nrloc->fval+1);
+		fval_set(fnrloc, fnrloc->fval+1);
 		*pbuf = buf;
 		*pbufsize = bufsize;
 		return 1;
@@ -181,7 +181,7 @@ void fldbld(void)	/* create fields from current record */
 	if (donefld)
 		return;
 	if (!isstr(fldtab[0]))
-		getsval(fldtab[0]);
+		sval_get(fldtab[0]);
 	r = fldtab[0]->sval;
 	n = strlen(r);
 	if (n > fieldssize) {
@@ -222,7 +222,7 @@ void fldbld(void)	/* create fields from current record */
 			p->tval |= NUM;
 		}
 	}
-	setfval(nfloc, (Awkfloat) lastfld);
+	fval_set(nfloc, (Awkfloat) lastfld);
 	if (dbg) {
 		for (j = 0; j <= lastfld; j++) {
 			p = fldtab[j];
@@ -251,7 +251,7 @@ void newfld(int n)	/* add field n after end of existing lastfld */
 		growfldtab(n);
 	cleanfld(lastfld+1, n);
 	lastfld = n;
-	setfval(nfloc, (Awkfloat) n);
+	fval_set(nfloc, (Awkfloat) n);
 }
 
 Cell *fieldadr(int n)	/* get nth field */
@@ -290,7 +290,7 @@ void recbld(void)	/* create $0 from $1..$NF if necessary */
 		return;
 	r = record;
 	for (i = 1; i <= *NF; i++) {
-		p = getsval(fldtab[i]);
+		p = sval_get(fldtab[i]);
 		if (!adjbuf(&record, &recsize, 1+strlen(p)+r-record, recsize, &r, "recbld 1"))
 			FATAL("created $0 `%.30s...' too long", record);
 		while ((*r = *p++) != 0)

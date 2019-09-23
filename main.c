@@ -103,9 +103,8 @@ int main(int argc, char *argv[])
 	signal(SIGFPE, fpecatch);
 
 	yyin = NULL;
-	symtab = makesymtab(NSYMTAB);
 	recinit(recsize);
-	syminit();
+	symtab_init();
 
 	compile_time = 1;
 	yyparse();

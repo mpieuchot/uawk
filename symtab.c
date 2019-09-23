@@ -30,44 +30,50 @@ THIS SOFTWARE.
 #include <math.h>
 #include "awk.h"
 
-#define	FULLTAB	2	/* rehash when table gets this x full */
-#define	GROWTAB 4	/* grow table by this factor */
+#define	FULLTAB	2		/* rehash when table gets this x full */
+#define	GROWTAB 4		/* grow table by this factor */
 
-Array	*symtab;	/* main symbol table */
+Array		*symtab;	/* main symbol table */
 
-Awkfloat *NF;		/* number of fields in current record */
-Awkfloat *NR;		/* number of current record */
-Awkfloat *FNR;		/* number of current record in current file */
+Awkfloat	*NF;		/* number of fields in current record */
+Awkfloat	*NR;		/* number of current record */
+Awkfloat	*FNR;		/* number of current record in current file */
 
-Cell	*nrloc;		/* NR */
-Cell	*nfloc;		/* NF */
-Cell	*fnrloc;	/* FNR */
-Cell	*symtabloc;	/* SYMTAB */
+Cell		*nrloc;		/* NR */
+Cell		*nfloc;		/* NF */
+Cell		*fnrloc;	/* FNR */
+Cell		*symtabloc;	/* SYMTAB */
 
-Cell	*nullloc;	/* a guaranteed empty cell */
-Cell	*literal0;
+Cell		*nullloc;	/* empty cell, used for if(x)... tests */
+Cell		*literal0;
 
 int		 hash(const char *, int);
+Cell		*lookup(const char *, Array *);
 void		 rehash(Array *);
+Array		*symtab_alloc(int);
+void		 symtab_free(Cell *);
 
-void syminit(void)	/* initialize symbol table with builtin vars */
+void
+symtab_init(void)
 {
-	literal0 = setsymtab("0", "0", 0.0, NUM|STR|CON|DONTFREE, symtab);
-	/* this is used for if(x)... tests: */
-	nullloc = setsymtab("$zero&null", "", 0.0, NUM|STR|CON|DONTFREE, symtab);
+	symtab = symtab_alloc(NSYMTAB);
+
+	literal0 = symtab_set("0", "0", 0.0, NUM|STR|CON|DONTFREE, symtab);
+	nullloc = symtab_set("$zero&null", "", 0.0, NUM|STR|CON|DONTFREE, symtab);
 	nullnode = celltonode(nullloc, CCON);
 
-	nfloc = setsymtab("NF", "", 0.0, NUM, symtab);
+	nfloc = symtab_set("NF", "", 0.0, NUM, symtab);
 	NF = &nfloc->fval;
-	nrloc = setsymtab("NR", "", 0.0, NUM, symtab);
+	nrloc = symtab_set("NR", "", 0.0, NUM, symtab);
 	NR = &nrloc->fval;
-	fnrloc = setsymtab("FNR", "", 0.0, NUM, symtab);
+	fnrloc = symtab_set("FNR", "", 0.0, NUM, symtab);
 	FNR = &fnrloc->fval;
-	symtabloc = setsymtab("SYMTAB", "", 0.0, ARR, symtab);
+	symtabloc = symtab_set("SYMTAB", "", 0.0, ARR, symtab);
 	symtabloc->sval = (char *) symtab;
 }
 
-Array *makesymtab(int n)	/* make a new symbol table */
+Array *
+symtab_alloc(int n)
 {
 	Array *ap;
 	Cell **tp;
@@ -75,14 +81,15 @@ Array *makesymtab(int n)	/* make a new symbol table */
 	ap = (Array *) malloc(sizeof(Array));
 	tp = (Cell **) calloc(n, sizeof(Cell *));
 	if (ap == NULL || tp == NULL)
-		FATAL("out of space in makesymtab");
+		FATAL("out of space in symtab_alloc");
 	ap->nelem = 0;
 	ap->size = n;
 	ap->tab = tp;
 	return(ap);
 }
 
-void freesymtab(Cell *ap)	/* free a symbol table */
+void
+symtab_free(Cell *ap)
 {
 	Cell *cp, *temp;
 	Array *tp;
@@ -110,13 +117,14 @@ void freesymtab(Cell *ap)	/* free a symbol table */
 	free(tp);
 }
 
-Cell *setsymtab(const char *n, const char *s, Awkfloat f, unsigned t, Array *tp)
+Cell *
+symtab_set(const char *n, const char *s, Awkfloat f, unsigned t, Array *tp)
 {
 	int h;
 	Cell *p;
 
 	if (n != NULL && (p = lookup(n, tp)) != NULL) {
-		   DPRINTF( ("setsymtab found %p: n=%s s=\"%s\" f=%g t=%o\n",
+		   DPRINTF( ("symtab_set found %p: n=%s s=\"%s\" f=%g t=%o\n",
 			(void*)p, NN(p->nval), NN(p->sval), p->fval, p->tval) );
 		return(p);
 	}
@@ -135,12 +143,16 @@ Cell *setsymtab(const char *n, const char *s, Awkfloat f, unsigned t, Array *tp)
 	h = hash(n, tp->size);
 	p->cnext = tp->tab[h];
 	tp->tab[h] = p;
-	   DPRINTF( ("setsymtab set %p: n=%s s=\"%s\" f=%g t=%o\n",
+	   DPRINTF( ("symtab_set set %p: n=%s s=\"%s\" f=%g t=%o\n",
 		(void*)p, p->nval, p->sval, p->fval, p->tval) );
 	return(p);
 }
 
-int hash(const char *s, int n)	/* form hash value for string s */
+/*
+ * form hash value for string s
+ */
+int
+hash(const char *s, int n)
 {
 	unsigned hashval;
 
@@ -149,7 +161,11 @@ int hash(const char *s, int n)	/* form hash value for string s */
 	return hashval % n;
 }
 
-void rehash(Array *tp)	/* rehash items in small table into big one */
+/*
+ * rehash items in small table into big one
+ */
+void
+rehash(Array *tp)
 {
 	int i, nh, nsz;
 	Cell *cp, *op, **np;
@@ -171,7 +187,11 @@ void rehash(Array *tp)	/* rehash items in small table into big one */
 	tp->size = nsz;
 }
 
-Cell *lookup(const char *s, Array *tp)	/* look for s in tp */
+/*
+ * look for s in tp
+ */
+Cell *
+lookup(const char *s, Array *tp)
 {
 	Cell *p;
 	int h;
@@ -183,7 +203,33 @@ Cell *lookup(const char *s, Array *tp)	/* look for s in tp */
 	return(NULL);			/* not found */
 }
 
-Awkfloat setfval(Cell *vp, Awkfloat f)	/* set float val of a Cell */
+/*
+ * get float val of a Cell
+ */
+Awkfloat
+fval_get(Cell *vp)
+{
+	if ((vp->tval & (NUM | STR)) == 0)
+		funnyvar(vp, "read value of");
+	if (isfld(vp) && donefld == 0)
+		fldbld();
+	else if (isrec(vp) && donerec == 0)
+		recbld();
+	if (!isnum(vp)) {	/* not a number */
+		vp->fval = atof(vp->sval);	/* best guess */
+		if (is_number(vp->sval) && !(vp->tval&CON))
+			vp->tval |= NUM;	/* make NUM only sparingly */
+	}
+	   DPRINTF( ("fval_get %p: %s = %g, t=%o\n",
+		(void*)vp, NN(vp->nval), vp->fval, vp->tval) );
+	return(vp->fval);
+}
+
+/*
+ * set float val of a Cell
+ */
+Awkfloat
+fval_set(Cell *vp, Awkfloat f)
 {
 	int fldno;
 
@@ -203,26 +249,52 @@ Awkfloat setfval(Cell *vp, Awkfloat f)	/* set float val of a Cell */
 		xfree(vp->sval); /* free any previous string */
 	vp->tval &= ~STR;	/* mark string invalid */
 	vp->tval |= NUM;	/* mark number ok */
-	   DPRINTF( ("setfval %p: %s = %g, t=%o\n", (void*)vp, NN(vp->nval), f, vp->tval) );
+	   DPRINTF( ("fval_set %p: %s = %g, t=%o\n", (void*)vp, NN(vp->nval), f, vp->tval) );
 	return vp->fval = f;
 }
 
-void funnyvar(Cell *vp, const char *rw)
+/*
+ * get string val of a Cell
+ */
+char *
+sval_get(Cell *vp)
 {
-	if (isarr(vp))
-		FATAL("can't %s %s; it's an array name.", rw, vp->nval);
-	if (vp->tval & FCN)
-		FATAL("can't %s %s; it's a function.", rw, vp->nval);
-	WARNING("funny variable %p: n=%s s=\"%s\" f=%g t=%o",
-		vp, vp->nval, vp->sval, vp->fval, vp->tval);
+	int n;
+	double dtemp;
+
+	if ((vp->tval & (NUM | STR)) == 0)
+		funnyvar(vp, "read value of");
+	if (isfld(vp) && donefld == 0)
+		fldbld();
+	else if (isrec(vp) && donerec == 0)
+		recbld();
+	if (isstr(vp) == 0) {
+		if (freeable(vp))
+			xfree(vp->sval);
+		if (modf(vp->fval, &dtemp) == 0)	/* it's integral */
+			n = asprintf(&vp->sval, "%.30g", vp->fval);
+		else
+			n = asprintf(&vp->sval, "%.6g", vp->fval);
+		if (n == -1)
+			FATAL("out of space in get_str_val");
+		vp->tval &= ~DONTFREE;
+		vp->tval |= STR;
+	}
+	   DPRINTF( ("sval_get %p: %s = \"%s (%p)\", t=%o\n",
+		(void*)vp, NN(vp->nval), vp->sval, vp->sval, vp->tval) );
+	return(vp->sval);
 }
 
-char *setsval(Cell *vp, const char *s)	/* set string val of a Cell */
+/*
+ * set string val of a Cell
+ */
+char *
+sval_set(Cell *vp, const char *s)
 {
 	char *t;
 	int fldno;
 
-	   DPRINTF( ("starting setsval %p: %s = \"%s\", t=%o, r,f=%d,%d\n", 
+	   DPRINTF( ("starting sval_set %p: %s = \"%s\", t=%o, r,f=%d,%d\n", 
 		(void*)vp, NN(vp->nval), s, vp->tval, donerec, donefld) );
 	if ((vp->tval & (NUM | STR)) == 0)
 		funnyvar(vp, "assign to");
@@ -242,67 +314,21 @@ char *setsval(Cell *vp, const char *s)	/* set string val of a Cell */
 	vp->tval &= ~NUM;
 	vp->tval |= STR;
 	vp->tval &= ~DONTFREE;
-	   DPRINTF( ("setsval %p: %s = \"%s (%p) \", t=%o r,f=%d,%d\n", 
+	   DPRINTF( ("sval_set %p: %s = \"%s (%p) \", t=%o r,f=%d,%d\n", 
 		(void*)vp, NN(vp->nval), t,t, vp->tval, donerec, donefld) );
 	return(vp->sval = t);
 }
 
-Awkfloat getfval(Cell *vp)	/* get float val of a Cell */
+void
+funnyvar(Cell *vp, const char *rw)
 {
-	if ((vp->tval & (NUM | STR)) == 0)
-		funnyvar(vp, "read value of");
-	if (isfld(vp) && donefld == 0)
-		fldbld();
-	else if (isrec(vp) && donerec == 0)
-		recbld();
-	if (!isnum(vp)) {	/* not a number */
-		vp->fval = atof(vp->sval);	/* best guess */
-		if (is_number(vp->sval) && !(vp->tval&CON))
-			vp->tval |= NUM;	/* make NUM only sparingly */
-	}
-	   DPRINTF( ("getfval %p: %s = %g, t=%o\n",
-		(void*)vp, NN(vp->nval), vp->fval, vp->tval) );
-	return(vp->fval);
+	if (isarr(vp))
+		FATAL("can't %s %s; it's an array name.", rw, vp->nval);
+	if (vp->tval & FCN)
+		FATAL("can't %s %s; it's a function.", rw, vp->nval);
+	WARNING("funny variable %p: n=%s s=\"%s\" f=%g t=%o",
+		vp, vp->nval, vp->sval, vp->fval, vp->tval);
 }
-
-static char *get_str_val(Cell *vp, char *fmt)        /* get string val of a Cell */
-{
-	int n;
-	double dtemp;
-
-	if ((vp->tval & (NUM | STR)) == 0)
-		funnyvar(vp, "read value of");
-	if (isfld(vp) && donefld == 0)
-		fldbld();
-	else if (isrec(vp) && donerec == 0)
-		recbld();
-	if (isstr(vp) == 0) {
-		if (freeable(vp))
-			xfree(vp->sval);
-		if (modf(vp->fval, &dtemp) == 0)	/* it's integral */
-			n = asprintf(&vp->sval, "%.30g", vp->fval);
-		else
-			n = asprintf(&vp->sval, fmt, vp->fval);
-		if (n == -1)
-			FATAL("out of space in get_str_val");
-		vp->tval &= ~DONTFREE;
-		vp->tval |= STR;
-	}
-	   DPRINTF( ("getsval %p: %s = \"%s (%p)\", t=%o\n",
-		(void*)vp, NN(vp->nval), vp->sval, vp->sval, vp->tval) );
-	return(vp->sval);
-}
-
-char *getsval(Cell *vp)       /* get string val of a Cell */
-{
-      return get_str_val(vp, CONVFMT);
-}
-
-char *getpssval(Cell *vp)     /* get string val of a Cell for print */
-{
-      return get_str_val(vp, OFMT);
-}
-
 
 char *xstrdup(const char *s)
 {
