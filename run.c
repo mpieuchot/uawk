@@ -623,9 +623,9 @@ f_print(Node **a, int n)
 		fputs(sval_get(y), fp);
 		tcell_put(y);
 		if (x->nnext == NULL)
-			fputs(ORS, fp);
+			fputs("\n", fp);
 		else
-			fputs(OFS, fp);
+			fputs(" ", fp);
 	}
 	if (ferror(fp))
 		FATAL("write error");

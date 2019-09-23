@@ -36,9 +36,6 @@ extern int	compile_time;	/* 1 if compiling, 0 if running */
 
 extern int	recsize;	/* size of current record, orig RECSIZE */
 
-#define	RS	"\n"		/* Input record separator */
-#define	ORS	"\n"		/* Output record separator */
-#define	OFS	" "		/* Output field separator */
 extern double *NR;
 extern double *NF;
 

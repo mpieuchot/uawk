@@ -122,32 +122,15 @@ record_get(void)
 int
 record_read(char **pbuf, int *pbufsize, FILE *inf)
 {
-	int sep, c;
+	int c, sep = '\n';
 	char *rr, *buf = *pbuf;
 	int bufsize = *pbufsize;
 
-	/*fflush(stdout); avoids some buffering problem but makes it 25% slower*/
-	if ((sep = *RS) == 0) {
-		sep = '\n';
-		while ((c=getc(inf)) == '\n' && c != EOF)	/* skip leading \n's */
-			;
-		if (c != EOF)
-			ungetc(c, inf);
-	}
-	for (rr = buf; ; ) {
-		for (; (c=getc(inf)) != sep && c != EOF; ) {
-			if (rr-buf+1 > bufsize)
-				if (!adjbuf(&buf, &bufsize, 1+rr-buf, recsize, &rr, "record_read 1"))
-					FATAL("input record `%.30s...' too long", buf);
-			*rr++ = c;
-		}
-		if (*RS == sep || c == EOF)
-			break;
-		if ((c = getc(inf)) == '\n' || c == EOF) /* 2 in a row */
-			break;
-		if (!adjbuf(&buf, &bufsize, 2+rr-buf, recsize, &rr, "record_read 2"))
-			FATAL("input record `%.30s...' too long", buf);
-		*rr++ = '\n';
+	rr = buf;
+	while ((c=getc(inf)) != sep && c != EOF) {
+		if (rr-buf+1 > bufsize)
+			if (!adjbuf(&buf, &bufsize, 1+rr-buf, recsize, &rr, "record_read 1"))
+				FATAL("input record `%.30s...' too long", buf);
 		*rr++ = c;
 	}
 	if (!adjbuf(&buf, &bufsize, 1+rr-buf, recsize, &rr, "record_read 3"))
@@ -330,9 +313,9 @@ record_parse(void)
 		while ((*r = *p++) != 0)
 			r++;
 		if (i < *NF) {
-			if (!adjbuf(&record, &recsize, 2+strlen(OFS)+r-record, recsize, &r, "record_parse 2"))
+			if (!adjbuf(&record, &recsize, 2+strlen(" ")+r-record, recsize, &r, "record_parse 2"))
 				FATAL("created $0 `%.30s...' too long", record);
-			for (p = OFS; (*r = *p++) != 0; )
+			for (p = " "; (*r = *p++) != 0; )
 				r++;
 		}
 	}
