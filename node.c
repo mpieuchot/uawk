@@ -116,7 +116,8 @@ nodeinit(int a, Node *x)
 	x->proc = xproc;
 }
 
-Node *nodealloc(int n)
+Node *
+nodealloc(int n)
 {
 	Node *x;
 
@@ -126,13 +127,15 @@ Node *nodealloc(int n)
 	return(x);
 }
 
-Node *exptostat(Node *a)
+Node *
+exp2stat(Node *a)
 {
 	a->ntype = NSTAT;
 	return(a);
 }
 
-Node *node1(int a, Node *b)
+Node *
+node1(int a, Node *b)
 {
 	Node *x;
 
@@ -142,7 +145,8 @@ Node *node1(int a, Node *b)
 	return(x);
 }
 
-Node *node2(int a, Node *b, Node *c)
+Node *
+node2(int a, Node *b, Node *c)
 {
 	Node *x;
 
@@ -153,7 +157,8 @@ Node *node2(int a, Node *b, Node *c)
 	return(x);
 }
 
-Node *node3(int a, Node *b, Node *c, Node *d)
+Node *
+node3(int a, Node *b, Node *c, Node *d)
 {
 	Node *x;
 
@@ -165,7 +170,8 @@ Node *node3(int a, Node *b, Node *c, Node *d)
 	return(x);
 }
 
-Node *node4(int a, Node *b, Node *c, Node *d, Node *e)
+Node *
+node4(int a, Node *b, Node *c, Node *d, Node *e)
 {
 	Node *x;
 
@@ -178,7 +184,8 @@ Node *node4(int a, Node *b, Node *c, Node *d, Node *e)
 	return(x);
 }
 
-Node *stat1(int a, Node *b)
+Node *
+stat1(int a, Node *b)
 {
 	Node *x;
 
@@ -187,7 +194,8 @@ Node *stat1(int a, Node *b)
 	return(x);
 }
 
-Node *stat2(int a, Node *b, Node *c)
+Node *
+stat2(int a, Node *b, Node *c)
 {
 	Node *x;
 
@@ -196,7 +204,8 @@ Node *stat2(int a, Node *b, Node *c)
 	return(x);
 }
 
-Node *stat3(int a, Node *b, Node *c, Node *d)
+Node *
+stat3(int a, Node *b, Node *c, Node *d)
 {
 	Node *x;
 
@@ -205,7 +214,8 @@ Node *stat3(int a, Node *b, Node *c, Node *d)
 	return(x);
 }
 
-Node *op1(int a, Node *b)
+Node *
+op1(int a, Node *b)
 {
 	Node *x;
 
@@ -214,7 +224,8 @@ Node *op1(int a, Node *b)
 	return(x);
 }
 
-Node *op2(int a, Node *b, Node *c)
+Node *
+op2(int a, Node *b, Node *c)
 {
 	Node *x;
 
@@ -223,7 +234,8 @@ Node *op2(int a, Node *b, Node *c)
 	return(x);
 }
 
-Node *op3(int a, Node *b, Node *c, Node *d)
+Node *
+op3(int a, Node *b, Node *c, Node *d)
 {
 	Node *x;
 
@@ -232,7 +244,8 @@ Node *op3(int a, Node *b, Node *c, Node *d)
 	return(x);
 }
 
-Node *celltonode(Cell *a, int b)
+Node *
+cell2node(Cell *a, int b)
 {
 	Node *x;
 
@@ -243,13 +256,18 @@ Node *celltonode(Cell *a, int b)
 	return(x);
 }
 
-Node *rectonode(void)	/* make $0 into a Node */
+/*
+ * make $0 into a Node
+ */
+Node *
+record2node(void)
 {
 	extern Cell *literal0;
-	return op1(INDIRECT, celltonode(literal0, CUNK));
+	return op1(INDIRECT, cell2node(literal0, CUNK));
 }
 
-Node *linkum(Node *a, Node *b)
+Node *
+node_link(Node *a, Node *b)
 {
 	Node *c;
 

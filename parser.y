@@ -124,18 +124,18 @@ pa_pat:
 	;
 
 pa_stat:
-	  pa_pat			{ $$ = stat2(PASTAT, $1, stat2(PRINT, rectonode(), NULL)); }
+	  pa_pat			{ $$ = stat2(PASTAT, $1, stat2(PRINT, record2node(), NULL)); }
 	| pa_pat lbrace stmtlist '}'	{ $$ = stat2(PASTAT, $1, $3); }
 	| lbrace stmtlist '}'		{ $$ = stat2(PASTAT, NULL, $2); }
 	| XBEGIN lbrace stmtlist '}'
-		{ beginloc = linkum(beginloc, $3); $$ = 0; }
+		{ beginloc = node_link(beginloc, $3); $$ = 0; }
 	| XEND lbrace stmtlist '}'
-		{ endloc = linkum(endloc, $3); $$ = 0; }
+		{ endloc = node_link(endloc, $3); $$ = 0; }
 	;
 
 pa_stats:
 	  pa_stat
-	| pa_stats opt_pst pa_stat	{ $$ = linkum($1, $3); }
+	| pa_stats opt_pst pa_stat	{ $$ = node_link($1, $3); }
 	;
 
 pattern:
@@ -152,8 +152,8 @@ pattern:
 	;
 
 plist:
-	  pattern ',' pattern		{ $$ = linkum($1, $3); }
-	| plist ',' pattern		{ $$ = linkum($1, $3); }
+	  pattern ',' pattern		{ $$ = node_link($1, $3); }
+	| plist ',' pattern		{ $$ = node_link($1, $3); }
 	;
 
 print:
@@ -175,7 +175,7 @@ rparen:
 simple_stmt:
 	| print '(' pattern ')'		{ $$ = stat1($1, $3); }
 	| print '(' plist ')'		{ $$ = stat1($1, $3); }
-	| pattern			{ $$ = exptostat($1); }
+	| pattern			{ $$ = exp2stat($1); }
 	| error				{ yyclearin; }
 	;
 
@@ -196,7 +196,7 @@ stmt:
 
 stmtlist:
 	  stmt
-	| stmtlist stmt		{ $$ = linkum($1, $2); }
+	| stmtlist stmt		{ $$ = node_link($1, $2); }
 	;
 
 term:
@@ -213,14 +213,14 @@ term:
 	| var DECR			{ $$ = op1(POSTDECR, $1); }
 	| var INCR			{ $$ = op1(POSTINCR, $1); }
 	| '(' pattern ')'		{ $$ = $2; }
-	| NUMBER			{ $$ = celltonode($1, CCON); }
-	| STRING	 		{ $$ = celltonode($1, CCON); }
+	| NUMBER			{ $$ = cell2node($1, CCON); }
+	| STRING	 		{ $$ = cell2node($1, CCON); }
 	| var
 	;
 
 var:
-	  VAR				{ $$ = celltonode($1, CVAR); }
-	| IVAR				{ $$ = op1(INDIRECT, celltonode($1, CVAR)); }
+	  VAR				{ $$ = cell2node($1, CVAR); }
+	| IVAR				{ $$ = op1(INDIRECT, cell2node($1, CVAR)); }
 	| INDIRECT term	 		{ $$ = op1(INDIRECT, $2); }
 	;
 

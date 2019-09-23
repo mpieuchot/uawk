@@ -60,7 +60,7 @@ symtab_init(void)
 
 	literal0 = symtab_set("0", "0", 0.0, NUM|STR|CON|DONTFREE, symtab);
 	nullloc = symtab_set("$zero&null", "", 0.0, NUM|STR|CON|DONTFREE, symtab);
-	nullnode = celltonode(nullloc, CCON);
+	nullnode = cell2node(nullloc, CCON);
 
 	nfloc = symtab_set("NF", "", 0.0, NUM, symtab);
 	NF = &nfloc->fval;

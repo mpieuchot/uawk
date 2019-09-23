@@ -166,18 +166,17 @@ extern	int	pgetc(void);
 extern	char	*cursource(void);
 
 /* node.c */
-extern	Node	*exptostat(Node *);
-extern	Node	*stat3(int, Node *, Node *, Node *);
-extern	Node	*op2(int, Node *, Node *);
-extern	Node	*op1(int, Node *);
-extern	Node	*stat1(int, Node *);
-extern	Node	*op3(int, Node *, Node *, Node *);
-extern	Node	*stat2(int, Node *, Node *);
-extern	Node	*celltonode(Cell *, int);
-extern	Node	*rectonode(void);
-extern	Node	*linkum(Node *, Node *);
-extern	const char *tokname(int);
-extern	Cell	*(*proctab[])(Node **, int);
+Node		*op1(int, Node *);
+Node		*op2(int, Node *, Node *);
+Node		*op3(int, Node *, Node *, Node *);
+Node		*stat1(int, Node *);
+Node		*stat2(int, Node *, Node *);
+Node		*stat3(int, Node *, Node *, Node *);
+Node		*exp2stat(Node *);
+Node		*cell2node(Cell *, int);
+Node		*record2node(void);
+Node		*node_link(Node *, Node *);
+const char	 *tokname(int);
 
 /* symtab.c */
 void		 symtab_init(void);
