@@ -251,7 +251,7 @@ Keyword keywords[] ={	/* keep sorted: binary searched */
 #define	RET(x)	{ if(debug)printf("lex %s\n", tokname((x))); return (x); }
 
 int		 peek(void);
-int		 gettok(char **, int *);
+int		 gettok(char *, size_t);
 int		 binsearch(char *, Keyword *, int);
 int		 word(char *);
 int		 string(void);
@@ -268,12 +268,11 @@ peek(void)
 	return c;
 }
 
+/* get next input token */
 int
-gettok(char **pbuf, int *psz)	/* get next input token */
+gettok(char *buf, size_t sz)
 {
 	int c, retc;
-	char *buf = *pbuf;
-	int sz = *psz;
 	char *bp = buf;
 
 	c = input();
@@ -288,8 +287,7 @@ gettok(char **pbuf, int *psz)	/* get next input token */
 	if (isalpha(c) || c == '_') {	/* it's a varname */
 		for ( ; (c = input()) != 0; ) {
 			if (bp-buf >= sz)
-				xadjbuf(&buf, &sz, bp-buf+2, 100, &bp,
-				    "gettok");
+				yyerror("token too long");
 			if (isalnum(c) || c == '_')
 				*bp++ = c;
 			else {
@@ -305,8 +303,7 @@ gettok(char **pbuf, int *psz)	/* get next input token */
 		/* read input until can't be a number */
 		for ( ; (c = input()) != 0; ) {
 			if (bp-buf >= sz)
-				xadjbuf(&buf, &sz, bp-buf+2, 100, &bp,
-				    "gettok");
+				yyerror("token too long");
 			if (isdigit(c) || c == 'e' || c == 'E' 
 			  || c == '.' || c == '+' || c == '-')
 				*bp++ = c;
@@ -327,8 +324,6 @@ gettok(char **pbuf, int *psz)	/* get next input token */
 			retc = '0';	/* type is number */
 		}
 	}
-	*pbuf = buf;
-	*psz = sz;
 	return retc;
 }
 
@@ -337,18 +332,15 @@ int	sc = 0;		/* 1 => return a } right now */
 int
 yylex(void)
 {
+	static char buf[1024];
 	int c;
-	static char *buf = NULL;
-	static int bufsize = 5; /* BUG: setting this small causes core dump! */
 
-	if (buf == NULL)
-		buf = xmalloc(bufsize);
 	if (sc) {
 		sc = 0;
 		RET('}');
 	}
 	for (;;) {
-		c = gettok(&buf, &bufsize);
+		c = gettok(buf, sizeof(buf));
 		if (c == 0)
 			return 0;
 		if (isalpha(c) || c == '_')
@@ -441,7 +433,7 @@ yylex(void)
 				RET('%');
 		case '$':
 			/* BUG: awkward, if not wrong */
-			c = gettok(&buf, &bufsize);
+			c = gettok(buf, sizeof(buf));
 			if (isalpha(c)) {
 				c = peek();
 				if (c == '(' || c == '[' ) {
@@ -491,15 +483,13 @@ yylex(void)
 int
 string(void)
 {
+	static char buf[1024];
 	int c, n;
 	char *s, *bp;
-	static char *buf = NULL;
-	static int bufsz = 500;
-
-	if (buf == NULL)
-		buf = xmalloc(bufsz);
 	for (bp = buf; (c = input()) != '"'; ) {
-		xadjbuf(&buf, &bufsz, bp-buf+2, 500, &bp, "string");
+		if (bp-buf >= sizeof(buf))
+			yyerror("string too long");
+
 		switch (c) {
 		case '\n':
 		case '\r':
