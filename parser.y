@@ -260,14 +260,16 @@ void		 bclass(int);
 void		 bcheck2(int, int, int);
 void		 error(void);
 
-int peek(void)
+int
+peek(void)
 {
 	int c = input();
 	unput(c);
 	return c;
 }
 
-int gettok(char **pbuf, int *psz)	/* get next input token */
+int
+gettok(char **pbuf, int *psz)	/* get next input token */
 {
 	int c, retc;
 	char *buf = *pbuf;
@@ -330,9 +332,10 @@ int gettok(char **pbuf, int *psz)	/* get next input token */
 	return retc;
 }
 
-int	sc	= 0;	/* 1 => return a } right now */
+int	sc = 0;		/* 1 => return a } right now */
 
-int yylex(void)
+int
+yylex(void)
 {
 	int c;
 	static char *buf = NULL;
@@ -485,7 +488,8 @@ int yylex(void)
 	}
 }
 
-int string(void)
+int
+string(void)
 {
 	int c, n;
 	char *s, *bp;
@@ -564,12 +568,14 @@ int string(void)
 	RET(STRING);
 }
 
-int kcmp(const void *w, const void *kp)
+int
+kcmp(const void *w, const void *kp)
 {
 	return strcmp(w, ((const Keyword *)kp)->word);
 }
 
-int word(char *w) 
+int
+word(char *w) 
 {
 	Keyword *kp;
 
@@ -591,7 +597,9 @@ char	yysbuf[100];	/* pushback buffer */
 char	*yysptr = yysbuf;
 FILE	*yyin = 0;
 
-int input(void)	/* get next lexical input character */
+/* get next lexical input character */
+int
+input(void)
 {
 	int c;
 	extern char *lexprog;
@@ -612,7 +620,9 @@ int input(void)	/* get next lexical input character */
 	return *ep++ = c;
 }
 
-void unput(int c)	/* put lexical character back on input */
+/* put lexical character back on input */
+void
+unput(int c)
 {
 	if (c == '\n')
 		lineno--;
@@ -623,7 +633,9 @@ void unput(int c)	/* put lexical character back on input */
 		ep = ebuf + sizeof(ebuf) - 1;
 }
 
-void unputstr(const char *s)	/* put a string back on input */
+/* put a string back on input */
+void
+unputstr(const char *s)
 {
 	int i;
 
@@ -631,7 +643,8 @@ void unputstr(const char *s)	/* put a string back on input */
 		unput(s[i]);
 }
 
-void yyerror(const char *fmt, ...)
+void
+yyerror(const char *fmt, ...)
 {
 	static int been_here = 0;
 	va_list varg;
@@ -650,7 +663,8 @@ void yyerror(const char *fmt, ...)
 
 
 /* try to print context around error */
-void eprint(void)
+void
+eprint(void)
 {
 	static int been_here = 0;
 	char *p, *recstart, *tokstart, *tokend;
@@ -723,7 +737,8 @@ __dead void FATAL(const char *fmt, ...)
 	exit(2);
 }
 
-void WARNING(const char *fmt, ...)
+void
+WARNING(const char *fmt, ...)
 {
 	va_list varg;
 
@@ -735,7 +750,8 @@ void WARNING(const char *fmt, ...)
 	error();
 }
 
-void error()
+void
+error(void)
 {
 	extern Node *curnode;
 
@@ -753,7 +769,8 @@ void error()
 	eprint();
 }
 
-void bracecheck(void)
+void
+bracecheck(void)
 {
 	int c;
 	static int beenhere = 0;
@@ -767,7 +784,8 @@ void bracecheck(void)
 	bcheck2(parencnt, '(', ')');
 }
 
-void bcheck2(int n, int c1, int c2)
+void
+bcheck2(int n, int c1, int c2)
 {
 	if (n == 1)
 		fprintf(stderr, "\tmissing %c\n", c2);
@@ -779,7 +797,8 @@ void bcheck2(int n, int c1, int c2)
 		fprintf(stderr, "\t%d extra %c's\n", -n, c2);
 }
 
-void bclass(int c)
+void
+bclass(int c)
 {
 	switch (c) {
 	case '{': bracecnt++; break;
@@ -791,7 +810,8 @@ void bclass(int c)
 	}
 }
 
-Node *notnull(Node *n)
+Node *
+notnull(Node *n)
 {
 	switch (n->nobj) {
 	case LE: case LT: case EQ: case NE: case GT: case GE:
