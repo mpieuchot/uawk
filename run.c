@@ -78,8 +78,6 @@ int adjbuf(char **pbuf, int *psiz, int minlen, int quantum, char **pbptr,
  * quantum: buffer size quantum
  * pbptr:   address of movable pointer into buffer, or 0 if none
  * whatrtn: name of the calling routine if failure should cause fatal error
- *
- * return   0 for realloc failure, !=0 for success
  */
 {
 	if (minlen > *psiz) {
@@ -89,13 +87,8 @@ int adjbuf(char **pbuf, int *psiz, int minlen, int quantum, char **pbptr,
 		/* round up to next multiple of quantum */
 		if (rminlen)
 			minlen += quantum - rminlen;
-		tbuf = (char *) realloc(*pbuf, minlen);
+		tbuf = xrealloc(*pbuf, minlen);
 		DPRINTF( ("adjbuf %s: %d %d (pbuf=%p, tbuf=%p)\n", whatrtn, *psiz, minlen, *pbuf, tbuf) );
-		if (tbuf == NULL) {
-			if (whatrtn)
-				FATAL("out of memory in %s", whatrtn);
-			return 0;
-		}
 		*pbuf = tbuf;
 		*psiz = minlen;
 		if (pbptr)
@@ -242,9 +235,7 @@ Cell *gettemp(void)	/* get a tempcell */
 	Cell *x;
 
 	if (!tmps) {
-		tmps = (Cell *) calloc(100, sizeof(Cell));
-		if (!tmps)
-			FATAL("out of space for temporaries");
+		tmps = xcalloc(100, sizeof(Cell));
 		for(i = 1; i < 100; i++)
 			tmps[i-1].cnext = &tmps[i];
 		tmps[i-1].cnext = 0;
@@ -293,8 +284,7 @@ int format(char **pbuf, int *pbufsize, const char *s, Node *a)	/* printf-like co
 
 	os = s;
 	p = buf;
-	if ((fmt = (char *) malloc(fmtsz)) == NULL)
-		FATAL("out of memory in format()");
+	fmt = xmalloc(fmtsz);
 	while (*s) {
 		adjbuf(&buf, &bufsize, MAXNUMSIZE+1+p-buf, recsize, &p, "format1");
 		if (*s != '%') {
@@ -426,8 +416,7 @@ Cell *awkprintf(Node **a, int n)		/* printf */
 	int len;
 	int bufsz=3*recsize;
 
-	if ((buf = (char *) malloc(bufsz)) == NULL)
-		FATAL("out of memory in awkprintf");
+	buf = xmalloc(bufsz);
 	y = a[0]->nnext;
 	x = execute(a[0]);
 	if ((len = format(&buf, &bufsz, sval_get(x), y)) == -1)

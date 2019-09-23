@@ -78,10 +78,8 @@ symtab_alloc(int n)
 	Array *ap;
 	Cell **tp;
 
-	ap = (Array *) malloc(sizeof(Array));
-	tp = (Cell **) calloc(n, sizeof(Cell *));
-	if (ap == NULL || tp == NULL)
-		FATAL("out of space in symtab_alloc");
+	ap = xmalloc(sizeof(Array));
+	tp = xcalloc(n, sizeof(Cell *));
 	ap->nelem = 0;
 	ap->size = n;
 	ap->tab = tp;
@@ -128,9 +126,7 @@ symtab_set(const char *n, const char *s, Awkfloat f, unsigned t, Array *tp)
 			(void*)p, NN(p->nval), NN(p->sval), p->fval, p->tval) );
 		return(p);
 	}
-	p = (Cell *) malloc(sizeof(Cell));
-	if (p == NULL)
-		FATAL("out of space for symbol table at %s", n);
+	p = xmalloc(sizeof(Cell));
 	p->nval = xstrdup(n);
 	p->sval = s ? xstrdup(s) : xstrdup("");
 	p->fval = f;
@@ -171,9 +167,7 @@ rehash(Array *tp)
 	Cell *cp, *op, **np;
 
 	nsz = GROWTAB * tp->size;
-	np = (Cell **) calloc(nsz, sizeof(Cell *));
-	if (np == NULL)		/* can't do it, but can keep running. */
-		return;		/* someone else will run out later. */
+	np = xcalloc(nsz, sizeof(Cell *));
 	for (i = 0; i < tp->size; i++) {
 		for (cp = tp->tab[i]; cp; cp = op) {
 			op = cp->cnext;
@@ -272,11 +266,9 @@ sval_get(Cell *vp)
 		if (freeable(vp))
 			xfree(vp->sval);
 		if (modf(vp->fval, &dtemp) == 0)	/* it's integral */
-			n = asprintf(&vp->sval, "%.30g", vp->fval);
+			n = xasprintf(&vp->sval, "%.30g", vp->fval);
 		else
-			n = asprintf(&vp->sval, "%.6g", vp->fval);
-		if (n == -1)
-			FATAL("out of space in get_str_val");
+			n = xasprintf(&vp->sval, "%.6g", vp->fval);
 		vp->tval &= ~DONTFREE;
 		vp->tval |= STR;
 	}

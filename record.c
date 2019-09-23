@@ -61,11 +61,10 @@ void		 cleanfld(int, int);
 
 void recinit(unsigned int n)
 {
-	if ( (record = (char *) malloc(n)) == NULL
-	  || (fields = (char *) malloc(n+1)) == NULL
-	  || (fldtab = (Cell **) calloc(nfields+1, sizeof(Cell *))) == NULL
-	  || (fldtab[0] = (Cell *) malloc(sizeof(Cell))) == NULL )
-		FATAL("out of space for $0 and fields");
+	record = xmalloc(n);
+	fields = xmalloc(n+1);
+	fldtab = xcalloc(nfields+1, sizeof(Cell *));
+	fldtab[0] = xmalloc(sizeof(Cell));
 	*record = '\0';
 	*fldtab[0] = dollar0;
 	fldtab[0]->sval = record;
@@ -79,9 +78,7 @@ void makefields(int n1, int n2)		/* create $n1..$n2 inclusive */
 	int i;
 
 	for (i = n1; i <= n2; i++) {
-		fldtab[i] = (Cell *) malloc(sizeof (struct Cell));
-		if (fldtab[i] == NULL)
-			FATAL("out of space in makefields %d", i);
+		fldtab[i] = xmalloc(sizeof (struct Cell));
 		*fldtab[i] = dollar1;
 		snprintf(temp, sizeof temp, "%d", i);
 		fldtab[i]->nval = xstrdup(temp);
@@ -186,8 +183,7 @@ void fldbld(void)	/* create fields from current record */
 	n = strlen(r);
 	if (n > fieldssize) {
 		xfree(fields);
-		if ((fields = (char *) malloc(n+2)) == NULL) /* possibly 2 final \0s */
-			FATAL("out of space for fields in fldbld %d", n);
+		fields = xmalloc(n+2); /* possibly 2 final \0s */
 		fieldssize = n;
 	}
 	fr = fields;
@@ -272,11 +268,9 @@ void growfldtab(int n)	/* make new fields up to at least $n */
 		nf = n;
 	s = (nf+1) * (sizeof (struct Cell *));  /* freebsd: how much do we need? */
 	if (s / sizeof(struct Cell *) - 1 == nf) /* didn't overflow */
-		fldtab = (Cell **) realloc(fldtab, s);
+		fldtab = xrealloc(fldtab, s);
 	else					/* overflow sizeof int */
 		xfree(fldtab);	/* make it null */
-	if (fldtab == NULL)
-		FATAL("out of space creating %d fields", nf);
 	makefields(nfields+1, nf);
 	nfields = nf;
 }

@@ -335,11 +335,11 @@ int	sc	= 0;	/* 1 => return a } right now */
 int yylex(void)
 {
 	int c;
-	static char *buf = 0;
+	static char *buf = NULL;
 	static int bufsize = 5; /* BUG: setting this small causes core dump! */
 
-	if (buf == 0 && (buf = (char *) malloc(bufsize)) == NULL)
-		FATAL( "out of space in yylex" );
+	if (buf == NULL)
+		buf = xmalloc(bufsize);
 	if (sc) {
 		sc = 0;
 		RET('}');
@@ -489,11 +489,11 @@ int string(void)
 {
 	int c, n;
 	char *s, *bp;
-	static char *buf = 0;
+	static char *buf = NULL;
 	static int bufsz = 500;
 
-	if (buf == 0 && (buf = (char *) malloc(bufsz)) == NULL)
-		FATAL("out of space for strings");
+	if (buf == NULL)
+		buf = xmalloc(bufsz);
 	for (bp = buf; (c = input()) != '"'; ) {
 		if (!adjbuf(&buf, &bufsz, bp-buf+2, 500, &bp, "string"))
 			FATAL("out of space for string %.10s...", buf);

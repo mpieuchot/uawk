@@ -120,9 +120,7 @@ Node *nodealloc(int n)
 {
 	Node *x;
 
-	x = (Node *) malloc(sizeof(Node) + (n-1)*sizeof(Node *));
-	if (x == NULL)
-		FATAL("out of space in nodealloc");
+	x = xmalloc(sizeof(Node) + (n-1)*sizeof(Node *));
 	x->nnext = NULL;
 	x->lineno = lineno;
 	return(x);
