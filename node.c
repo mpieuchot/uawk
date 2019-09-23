@@ -124,14 +124,14 @@ nodealloc(int n)
 	x = xmalloc(sizeof(Node) + (n-1)*sizeof(Node *));
 	x->nnext = NULL;
 	x->lineno = lineno;
-	return(x);
+	return x;
 }
 
 Node *
 exp2stat(Node *a)
 {
 	a->ntype = NSTAT;
-	return(a);
+	return a;
 }
 
 Node *
@@ -142,7 +142,7 @@ node1(int a, Node *b)
 	x = nodealloc(1);
 	nodeinit(a, x);
 	x->narg[0]=b;
-	return(x);
+	return x;
 }
 
 Node *
@@ -154,7 +154,7 @@ node2(int a, Node *b, Node *c)
 	nodeinit(a, x);
 	x->narg[0] = b;
 	x->narg[1] = c;
-	return(x);
+	return x;
 }
 
 Node *
@@ -167,7 +167,7 @@ node3(int a, Node *b, Node *c, Node *d)
 	x->narg[0] = b;
 	x->narg[1] = c;
 	x->narg[2] = d;
-	return(x);
+	return x;
 }
 
 Node *
@@ -181,7 +181,7 @@ node4(int a, Node *b, Node *c, Node *d, Node *e)
 	x->narg[1] = c;
 	x->narg[2] = d;
 	x->narg[3] = e;
-	return(x);
+	return x;
 }
 
 Node *
@@ -191,7 +191,7 @@ stat1(int a, Node *b)
 
 	x = node1(a,b);
 	x->ntype = NSTAT;
-	return(x);
+	return x;
 }
 
 Node *
@@ -201,7 +201,7 @@ stat2(int a, Node *b, Node *c)
 
 	x = node2(a,b,c);
 	x->ntype = NSTAT;
-	return(x);
+	return x;
 }
 
 Node *
@@ -211,7 +211,7 @@ stat3(int a, Node *b, Node *c, Node *d)
 
 	x = node3(a,b,c,d);
 	x->ntype = NSTAT;
-	return(x);
+	return x;
 }
 
 Node *
@@ -221,7 +221,7 @@ op1(int a, Node *b)
 
 	x = node1(a,b);
 	x->ntype = NEXPR;
-	return(x);
+	return x;
 }
 
 Node *
@@ -231,7 +231,7 @@ op2(int a, Node *b, Node *c)
 
 	x = node2(a,b,c);
 	x->ntype = NEXPR;
-	return(x);
+	return x;
 }
 
 Node *
@@ -241,7 +241,7 @@ op3(int a, Node *b, Node *c, Node *d)
 
 	x = node3(a,b,c,d);
 	x->ntype = NEXPR;
-	return(x);
+	return x;
 }
 
 Node *
@@ -253,7 +253,7 @@ cell2node(Cell *a, int b)
 	a->csub = b;
 	x = node1(0, (Node *) a);
 	x->ntype = NVALUE;
-	return(x);
+	return x;
 }
 
 /*
@@ -274,11 +274,11 @@ node_link(Node *a, Node *b)
 	if (errorflag)	/* don't link things that are wrong */
 		return a;
 	if (a == NULL)
-		return(b);
+		return b;
 	else if (b == NULL)
-		return(a);
+		return a;
 	for (c = a; c->nnext != NULL; c = c->nnext)
 		;
 	c->nnext = b;
-	return(a);
+	return a;
 }

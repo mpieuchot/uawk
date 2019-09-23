@@ -248,7 +248,7 @@ Keyword keywords[] ={	/* keep sorted: binary searched */
 	{ "printf",	PRINTF,		PRINTF },
 };
 
-#define	RET(x)	{ if(dbg)printf("lex %s\n", tokname(x)); return(x); }
+#define	RET(x)	{ if(dbg)printf("lex %s\n", tokname((x))); return (x); }
 
 int		 peek(void);
 int		 gettok(char **, int *);

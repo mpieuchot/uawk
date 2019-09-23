@@ -83,7 +83,7 @@ symtab_alloc(int n)
 	ap->nelem = 0;
 	ap->size = n;
 	ap->tab = tp;
-	return(ap);
+	return ap;
 }
 
 void
@@ -124,7 +124,7 @@ symtab_set(const char *n, const char *s, double f, unsigned t, Array *tp)
 	if (n != NULL && (p = lookup(n, tp)) != NULL) {
 		   DPRINTF( ("symtab_set found %p: n=%s s=\"%s\" f=%g t=%o\n",
 			(void*)p, NN(p->nval), NN(p->sval), p->fval, p->tval) );
-		return(p);
+		return p;
 	}
 	p = xmalloc(sizeof(Cell));
 	p->nval = xstrdup(n);
@@ -141,7 +141,7 @@ symtab_set(const char *n, const char *s, double f, unsigned t, Array *tp)
 	tp->tab[h] = p;
 	   DPRINTF( ("symtab_set set %p: n=%s s=\"%s\" f=%g t=%o\n",
 		(void*)p, p->nval, p->sval, p->fval, p->tval) );
-	return(p);
+	return p;
 }
 
 /*
@@ -193,8 +193,8 @@ lookup(const char *s, Array *tp)
 	h = hash(s, tp->size);
 	for (p = tp->tab[h]; p != NULL; p = p->cnext)
 		if (strcmp(s, p->nval) == 0)
-			return(p);	/* found it */
-	return(NULL);			/* not found */
+			return p;	/* found it */
+	return NULL;			/* not found */
 }
 
 /*

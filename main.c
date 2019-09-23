@@ -123,7 +123,7 @@ int main(int argc, char *argv[])
 		execute(rootnode);
 	} else
 		bracecheck();
-	return(errorflag);
+	return errorflag;
 }
 
 int pgetc(void)		/* get 1 character from awk program */

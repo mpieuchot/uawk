@@ -107,7 +107,7 @@ execute(Node *u)
 	Node *a;
 
 	if (u == NULL)
-		return(True);
+		return True;
 	for (a = u; ; a = a->nnext) {
 		curnode = a;
 		if (isvalue(a)) {
@@ -116,7 +116,7 @@ execute(Node *u)
 				field_from_record();
 			else if (isrec(x) && !donerec)
 				record_parse();
-			return(x);
+			return x;
 		}
 		/* probably a Cell* but too risky to print */
 		if (notlegal(a))
@@ -127,11 +127,11 @@ execute(Node *u)
 		else if (isrec(x) && !donerec)
 			record_parse();
 		if (isexpr(a))
-			return(x);
+			return x;
 		if (isexit(x))
-			return(x);
+			return x;
 		if (a->nnext == NULL)
-			return(x);
+			return x;
 		tempfree(x);
 	}
 }
@@ -149,7 +149,7 @@ f_program(Node **a, int n)
 	if (a[0]) {		/* BEGIN */
 		x = execute(a[0]);
 		if (isexit(x))
-			return(True);
+			return True;
 		tempfree(x);
 	}
 	if (a[1] || a[2])
@@ -167,7 +167,7 @@ f_program(Node **a, int n)
 		tempfree(x);
 	}
   ex1:
-	return(True);
+	return True;
 }
 
 /* return */
@@ -209,18 +209,18 @@ f_relop(Node **a, int n)
 	tempfree(x);
 	tempfree(y);
 	switch (n) {
-	case LT:	if (i<0) return(True);
-			else return(False);
-	case LE:	if (i<=0) return(True);
-			else return(False);
-	case NE:	if (i!=0) return(True);
-			else return(False);
-	case EQ:	if (i == 0) return(True);
-			else return(False);
-	case GE:	if (i>=0) return(True);
-			else return(False);
-	case GT:	if (i>0) return(True);
-			else return(False);
+	case LT:	if (i<0) return True;
+			else return False;
+	case LE:	if (i<=0) return True;
+			else return False;
+	case NE:	if (i!=0) return True;
+			else return False;
+	case EQ:	if (i == 0) return True;
+			else return False;
+	case GE:	if (i>=0) return True;
+			else return False;
+	case GT:	if (i>0) return True;
+			else return False;
 	default:	/* can't happen */
 		FATAL("unknown relational operator %d", n);
 	}
@@ -256,7 +256,7 @@ gettemp(void)
 	x = tmps;
 	tmps = x->cnext;
 	*x = tempcell;
-	return(x);
+	return x;
 }
 
 /* $( a[0] ) */
@@ -280,7 +280,7 @@ f_indirect(Node **a, int n)
 	x = field_get(m);
 	x->ctype = OCELL;	/* BUG?  why are these needed? */
 	x->csub = CFLD;
-	return(x);
+	return x;
 }
 
 
@@ -446,7 +446,7 @@ f_printf(Node **a, int n)
 	if (ferror(fp))
 		FATAL("write error");
 	free(buf);
-	return(True);
+	return True;
 }
 
 /* a[0] + a[1], etc.  also -a[0] */
@@ -494,7 +494,7 @@ f_arith(Node **a, int n)
 		FATAL("illegal arithmetic operator %d", n);
 	}
 	fval_set(z, i);
-	return(z);
+	return z;
 }
 
 /* a[0]++, etc. */
@@ -510,13 +510,13 @@ f_incrdecr(Node **a, int n)
 	k = (n == PREINCR || n == POSTINCR) ? 1 : -1;
 	if (n == PREINCR || n == PREDECR) {
 		fval_set(x, xf + k);
-		return(x);
+		return x;
 	}
 	z = gettemp();
 	fval_set(z, xf);
 	fval_set(x, xf + k);
 	tempfree(x);
-	return(z);
+	return z;
 }
 
 /* a[0] = a[1], a[0] += a[1], etc. */
@@ -544,7 +544,7 @@ f_assign(Node **a, int n)
 		else
 			funnyvar(y, "read value of");
 		tempfree(y);
-		return(x);
+		return x;
 	}
 	xf = fval_get(x);
 	yf = fval_get(y);
@@ -575,7 +575,7 @@ f_assign(Node **a, int n)
 	}
 	tempfree(y);
 	fval_set(x, xf);
-	return(x);
+	return x;
 }
 
 /* a[0] { a[1] } */
@@ -610,7 +610,7 @@ f_condexpr(Node **a, int n)
 		tempfree(x);
 		x = execute(a[2]);
 	}
-	return(x);
+	return x;
 }
 
 /* if (a[0]) a[1]; else a[2] */
@@ -627,7 +627,7 @@ f_if(Node **a, int n)
 		tempfree(x);
 		x = execute(a[2]);
 	}
-	return(x);
+	return x;
 }
 
 /* print a[0] */
@@ -649,7 +649,7 @@ f_print(Node **a, int n)
 	}
 	if (ferror(fp))
 		FATAL("write error");
-	return(True);
+	return True;
 }
 
 Cell *
