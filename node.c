@@ -44,14 +44,14 @@ struct
 	Cell *(*func)(Node **, int);
 	const char *name;
 } tokens[] = {
-	{ XBEGIN, f_null, "XBEGIN" },
-	{ XEND, f_null, "XEND" },
-	{ NL, f_null, "NL" },
-	{ ASGNOP, f_null, "ASGNOP" },
-	{ VAR, f_null, "VAR" },
-	{ IVAR, f_null, "IVAR" },
-	{ NUMBER, f_null, "NUMBER" },
-	{ STRING, f_null, "STRING" },
+	{ XBEGIN, NULL, "XBEGIN" },
+	{ XEND, NULL, "XEND" },
+	{ NL, NULL, "NL" },
+	{ ASGNOP, NULL, "ASGNOP" },
+	{ VAR, NULL, "VAR" },
+	{ IVAR, NULL, "IVAR" },
+	{ NUMBER, NULL, "NUMBER" },
+	{ STRING, NULL, "STRING" },
 	{ PROGRAM, f_program,  "PROGRAM" },
 	{ NE, f_relop,  "NE" },
 	{ EQ, f_relop,  "EQ" },
