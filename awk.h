@@ -199,19 +199,19 @@ int		 is_number(const char *);
 /* run.c */
 extern	int	adjbuf(char **, int *, int, int, char **, const char *);
 extern	Cell	*execute(Node *);
-extern	Cell	*program(Node **, int);
-extern	Cell	*jump(Node **, int);
-extern	Cell	*relop(Node **, int);
-extern	Cell	*indirect(Node **, int);
-extern	Cell	*awkprintf(Node **, int);
-extern	Cell	*arith(Node **, int);
-extern	Cell	*incrdecr(Node **, int);
-extern	Cell	*assign(Node **, int);
-extern	Cell	*pastat(Node **, int);
-extern	Cell	*condexpr(Node **, int);
-extern	Cell	*ifstat(Node **, int);
-extern	Cell	*printstat(Node **, int);
-extern	Cell	*nullproc(Node **, int);
+extern	Cell	*f_program(Node **, int);
+extern	Cell	*f_jump(Node **, int);
+extern	Cell	*f_relop(Node **, int);
+extern	Cell	*f_indirect(Node **, int);
+extern	Cell	*f_printf(Node **, int);
+extern	Cell	*f_arith(Node **, int);
+extern	Cell	*f_incrdecr(Node **, int);
+extern	Cell	*f_assign(Node **, int);
+extern	Cell	*f_pastat(Node **, int);
+extern	Cell	*f_condexpr(Node **, int);
+extern	Cell	*f_if(Node **, int);
+extern	Cell	*f_print(Node **, int);
+extern	Cell	*f_null(Node **, int);
 
 /* xmalloc.c */
 void	*xmalloc(size_t);

@@ -97,9 +97,11 @@ int adjbuf(char **pbuf, int *psiz, int minlen, int quantum, char **pbptr,
 	return 1;
 }
 
-#define notlegal(a)	(a->proc == nullproc)
+#define notlegal(a)	(a->proc == f_null)
 
-Cell *execute(Node *u)	/* execute a node of the parse tree */
+/* execute a node of the parse tree */
+Cell *
+execute(Node *u)
 {
 	Cell *x;
 	Node *a;
@@ -135,8 +137,11 @@ Cell *execute(Node *u)	/* execute a node of the parse tree */
 }
 
 
-Cell *program(Node **a, int n)	/* execute an awk program */
-{				/* a[0] = BEGIN, a[1] = body, a[2] = END */
+/* execute an awk program */
+/* a[0] = BEGIN, a[1] = body, a[2] = END */
+Cell *
+f_program(Node **a, int n)
+{
 	Cell *x;
 
 	if (setjmp(env) != 0)
@@ -165,7 +170,9 @@ Cell *program(Node **a, int n)	/* execute an awk program */
 	return(True);
 }
 
-Cell *jump(Node **a, int n)	/* return */
+/* return */
+Cell *
+f_jump(Node **a, int n)
 {
 	Cell *y;
 
@@ -183,7 +190,9 @@ Cell *jump(Node **a, int n)	/* return */
 	return 0;	/* not reached */
 }
 
-Cell *relop(Node **a, int n)	/* a[0 < a[1], etc. */
+/* a[0 < a[1], etc. */
+Cell *
+f_relop(Node **a, int n)
 {
 	int i;
 	Cell *x, *y;
@@ -218,7 +227,9 @@ Cell *relop(Node **a, int n)	/* a[0 < a[1], etc. */
 	return 0;	/*NOTREACHED*/
 }
 
-void tfree(Cell *a)	/* free a tempcell */
+/* free a tempcell */
+void
+tfree(Cell *a)
 {
 	if (freeable(a)) {
 		   DPRINTF( ("freeing %s %s %o\n", NN(a->nval), NN(a->sval), a->tval) );
@@ -230,7 +241,9 @@ void tfree(Cell *a)	/* free a tempcell */
 	tmps = a;
 }
 
-Cell *gettemp(void)	/* get a tempcell */
+/* get a tempcell */
+Cell *
+gettemp(void)
 {	int i;
 	Cell *x;
 
@@ -246,7 +259,9 @@ Cell *gettemp(void)	/* get a tempcell */
 	return(x);
 }
 
-Cell *indirect(Node **a, int n)	/* $( a[0] ) */
+/* $( a[0] ) */
+Cell *
+f_indirect(Node **a, int n)
 {
 	double val;
 	Cell *x;
@@ -268,10 +283,12 @@ Cell *indirect(Node **a, int n)	/* $( a[0] ) */
 	return(x);
 }
 
-#define	MAXNUMSIZE	50
 
-int format(char **pbuf, int *pbufsize, const char *s, Node *a)	/* printf-like conversions */
+	/* printf-like conversions */
+int
+format(char **pbuf, int *pbufsize, const char *s, Node *a)
 {
+#define	MAXNUMSIZE	50
 	char *fmt;
 	char *p, *t;
 	const char *os;
@@ -405,9 +422,12 @@ int format(char **pbuf, int *pbufsize, const char *s, Node *a)	/* printf-like co
 	*pbuf = buf;
 	*pbufsize = bufsize;
 	return p - buf;
+#undef MAXNUMSIZE
 }
 
-Cell *awkprintf(Node **a, int n)		/* printf */
+/* printf */
+Cell *
+f_printf(Node **a, int n)
 {	/* a[0] is list of args, starting with format string */
 	FILE *fp = stdout;
 	Cell *x;
@@ -429,7 +449,9 @@ Cell *awkprintf(Node **a, int n)		/* printf */
 	return(True);
 }
 
-Cell *arith(Node **a, int n)	/* a[0] + a[1], etc.  also -a[0] */
+/* a[0] + a[1], etc.  also -a[0] */
+Cell *
+f_arith(Node **a, int n)
 {
 	double i, j = 0;
 	double v;
@@ -475,7 +497,9 @@ Cell *arith(Node **a, int n)	/* a[0] + a[1], etc.  also -a[0] */
 	return(z);
 }
 
-Cell *incrdecr(Node **a, int n)		/* a[0]++, etc. */
+/* a[0]++, etc. */
+Cell *
+f_incrdecr(Node **a, int n)
 {
 	Cell *x, *z;
 	int k;
@@ -495,7 +519,9 @@ Cell *incrdecr(Node **a, int n)		/* a[0]++, etc. */
 	return(z);
 }
 
-Cell *assign(Node **a, int n)	/* a[0] = a[1], a[0] += a[1], etc. */
+/* a[0] = a[1], a[0] += a[1], etc. */
+Cell *
+f_assign(Node **a, int n)
 {		/* this is subtle; don't muck with it. */
 	Cell *x, *y;
 	double xf, yf;
@@ -552,7 +578,9 @@ Cell *assign(Node **a, int n)	/* a[0] = a[1], a[0] += a[1], etc. */
 	return(x);
 }
 
-Cell *pastat(Node **a, int n)	/* a[0] { a[1] } */
+/* a[0] { a[1] } */
+Cell *
+f_pastat(Node **a, int n)
 {
 	Cell *x;
 
@@ -568,7 +596,9 @@ Cell *pastat(Node **a, int n)	/* a[0] { a[1] } */
 	return x;
 }
 
-Cell *condexpr(Node **a, int n)	/* a[0] ? a[1] : a[2] */
+/* a[0] ? a[1] : a[2] */
+Cell *
+f_condexpr(Node **a, int n)
 {
 	Cell *x;
 
@@ -583,7 +613,9 @@ Cell *condexpr(Node **a, int n)	/* a[0] ? a[1] : a[2] */
 	return(x);
 }
 
-Cell *ifstat(Node **a, int n)	/* if (a[0]) a[1]; else a[2] */
+/* if (a[0]) a[1]; else a[2] */
+Cell *
+f_if(Node **a, int n)
 {
 	Cell *x;
 
@@ -598,7 +630,9 @@ Cell *ifstat(Node **a, int n)	/* if (a[0]) a[1]; else a[2] */
 	return(x);
 }
 
-Cell *printstat(Node **a, int n)	/* print a[0] */
+/* print a[0] */
+Cell *
+f_print(Node **a, int n)
 {
 	FILE *fp = stdout;
 	Node *x;
@@ -618,7 +652,8 @@ Cell *printstat(Node **a, int n)	/* print a[0] */
 	return(True);
 }
 
-Cell *nullproc(Node **a, int n)
+Cell *
+f_null(Node **a, int n)
 {
 	n = n;
 	a = a;
