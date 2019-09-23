@@ -220,7 +220,7 @@ field_from_record(void)
 			p->tval |= NUM;
 		}
 	}
-	fval_set(nfloc, (Awkfloat) lastfld);
+	fval_set(nfloc, (double) lastfld);
 	if (dbg) {
 		for (j = 0; j <= lastfld; j++) {
 			p = fldtab[j];
@@ -259,7 +259,7 @@ field_add(int n)
 		field_realloc(n);
 	field_purge(lastfld+1, n);
 	lastfld = n;
-	fval_set(nfloc, (Awkfloat) n);
+	fval_set(nfloc, (double) n);
 }
 
 /*

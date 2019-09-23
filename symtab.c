@@ -35,9 +35,9 @@ THIS SOFTWARE.
 
 Array		*symtab;	/* main symbol table */
 
-Awkfloat	*NF;		/* number of fields in current record */
-Awkfloat	*NR;		/* number of current record */
-Awkfloat	*FNR;		/* number of current record in current file */
+double	*NF;		/* number of fields in current record */
+double	*NR;		/* number of current record */
+double	*FNR;		/* number of current record in current file */
 
 Cell		*nrloc;		/* NR */
 Cell		*nfloc;		/* NF */
@@ -116,7 +116,7 @@ symtab_free(Cell *ap)
 }
 
 Cell *
-symtab_set(const char *n, const char *s, Awkfloat f, unsigned t, Array *tp)
+symtab_set(const char *n, const char *s, double f, unsigned t, Array *tp)
 {
 	int h;
 	Cell *p;
@@ -200,7 +200,7 @@ lookup(const char *s, Array *tp)
 /*
  * get float val of a Cell
  */
-Awkfloat
+double
 fval_get(Cell *vp)
 {
 	if ((vp->tval & (NUM | STR)) == 0)
@@ -222,8 +222,8 @@ fval_get(Cell *vp)
 /*
  * set float val of a Cell
  */
-Awkfloat
-fval_set(Cell *vp, Awkfloat f)
+double
+fval_set(Cell *vp, double f)
 {
 	int fldno;
 

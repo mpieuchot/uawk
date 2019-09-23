@@ -187,7 +187,7 @@ Cell *relop(Node **a, int n)	/* a[0 < a[1], etc. */
 {
 	int i;
 	Cell *x, *y;
-	Awkfloat j;
+	double j;
 
 	x = execute(a[0]);
 	y = execute(a[1]);
@@ -248,14 +248,14 @@ Cell *gettemp(void)	/* get a tempcell */
 
 Cell *indirect(Node **a, int n)	/* $( a[0] ) */
 {
-	Awkfloat val;
+	double val;
 	Cell *x;
 	int m;
 	char *s;
 
 	x = execute(a[0]);
 	val = fval_get(x);	/* freebsd: defend against super large field numbers */
-	if ((Awkfloat)INT_MAX < val)
+	if ((double)INT_MAX < val)
 		FATAL("trying to access out of range field %s", x->nval);
 	m = (int) val;
 	if (m == 0 && !is_number(s = sval_get(x)))	/* suspicion! */
@@ -431,7 +431,7 @@ Cell *awkprintf(Node **a, int n)		/* printf */
 
 Cell *arith(Node **a, int n)	/* a[0] + a[1], etc.  also -a[0] */
 {
-	Awkfloat i, j = 0;
+	double i, j = 0;
 	double v;
 	Cell *x, *y, *z;
 
@@ -479,7 +479,7 @@ Cell *incrdecr(Node **a, int n)		/* a[0]++, etc. */
 {
 	Cell *x, *z;
 	int k;
-	Awkfloat xf;
+	double xf;
 
 	x = execute(a[0]);
 	xf = fval_get(x);
@@ -498,7 +498,7 @@ Cell *incrdecr(Node **a, int n)		/* a[0]++, etc. */
 Cell *assign(Node **a, int n)	/* a[0] = a[1], a[0] += a[1], etc. */
 {		/* this is subtle; don't muck with it. */
 	Cell *x, *y;
-	Awkfloat xf, yf;
+	double xf, yf;
 	double v;
 
 	y = execute(a[1]);

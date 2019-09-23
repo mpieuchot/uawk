@@ -23,8 +23,6 @@ ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF
 THIS SOFTWARE.
 ****************************************************************/
 
-typedef double	Awkfloat;
-
 /* unsigned char is more trouble than it's worth */
 
 typedef	unsigned char uschar;
@@ -45,9 +43,9 @@ extern int	recsize;	/* size of current record, orig RECSIZE */
 #define	RS	"\n"		/* Input record separator */
 #define	ORS	"\n"		/* Output record separator */
 #define	OFS	" "		/* Output field separator */
-extern Awkfloat *NR;
-extern Awkfloat *FNR;
-extern Awkfloat *NF;
+extern double *NR;
+extern double *FNR;
+extern double *NF;
 
 extern char	*record;	/* points to $0 */
 extern int	lineno;		/* line number in awk program */
@@ -67,7 +65,7 @@ typedef struct Cell {
 	uschar	csub;		/* CCON, CTEMP, CFLD, etc. */
 	char	*nval;		/* name, for variables only */
 	char	*sval;		/* string value */
-	Awkfloat fval;		/* value as number */
+	double	 fval;		/* value as number */
 	int	 tval;		/* type info: STR|NUM|ARR|FCN|FLD|CON|DONTFREE */
 	struct Cell *cnext;	/* ptr to next if chained */
 } Cell;
