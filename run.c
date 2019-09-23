@@ -55,8 +55,6 @@ static Cell	tempcell	={ CTEMP, 0, "", 0.0, NUM|STR|DONTFREE };
 Node	*curnode = NULL;	/* the node being executed, for debugging */
 
 /* buffer memory management */
-int adjbuf(char **pbuf, int *psiz, int minlen, int quantum, char **pbptr,
-	const char *whatrtn)
 /* pbuf:    address of pointer to buffer being managed
  * psiz:    address of buffer size variable
  * minlen:  minimum length of buffer needed
@@ -64,6 +62,9 @@ int adjbuf(char **pbuf, int *psiz, int minlen, int quantum, char **pbptr,
  * pbptr:   address of movable pointer into buffer, or 0 if none
  * whatrtn: name of the calling routine if failure should cause fatal error
  */
+void
+xadjbuf(char **pbuf, int *psiz, int minlen, int quantum, char **pbptr,
+	const char *whatrtn)
 {
 	if (minlen > *psiz) {
 		char *tbuf;
@@ -79,7 +80,6 @@ int adjbuf(char **pbuf, int *psiz, int minlen, int quantum, char **pbptr,
 		if (pbptr)
 			*pbptr = tbuf + boff;
 	}
-	return 1;
 }
 
 #define notlegal(a)	(a->proc == f_null)
@@ -283,7 +283,7 @@ format(char **pbuf, int *pbufsize, const char *s, Node *a)
 	p = buf;
 	fmt = xmalloc(fmtsz);
 	while (*s) {
-		adjbuf(&buf, &bufsize, MAXNUMSIZE+1+p-buf, recsize, &p, "format1");
+		xadjbuf(&buf, &bufsize, MAXNUMSIZE+1+p-buf, recsize, &p, "format1");
 		if (*s != '%') {
 			*p++ = *s++;
 			continue;
@@ -297,10 +297,10 @@ format(char **pbuf, int *pbufsize, const char *s, Node *a)
 		fmtwd = atoi(s+1);
 		if (fmtwd < 0)
 			fmtwd = -fmtwd;
-		adjbuf(&buf, &bufsize, fmtwd+1+p-buf, recsize, &p, "format2");
+		xadjbuf(&buf, &bufsize, fmtwd+1+p-buf, recsize, &p, "format2");
 		for (t = fmt; (*t++ = *s) != '\0'; s++) {
-			if (!adjbuf(&fmt, &fmtsz, MAXNUMSIZE+1+t-fmt, recsize, &t, "format3"))
-				FATAL("format item %.30s... ran format() out of memory", os);
+			xadjbuf(&fmt, &fmtsz, MAXNUMSIZE+1+t-fmt, recsize, &t,
+			    "format3");
 			if (isalpha((unsigned char)*s) && *s != 'l' && *s != 'h' && *s != 'L')
 				break;	/* the ansi panoply */
 			if (*s == '*') {
@@ -311,7 +311,8 @@ format(char **pbuf, int *pbufsize, const char *s, Node *a)
 				snprintf(t-1, fmt + fmtsz - (t-1), "%d", fmtwd=(int) fval_get(x));
 				if (fmtwd < 0)
 					fmtwd = -fmtwd;
-				adjbuf(&buf, &bufsize, fmtwd+1+p-buf, recsize, &p, "format");
+				xadjbuf(&buf, &bufsize, fmtwd+1+p-buf, recsize,
+				    &p, "format");
 				t = fmt + strlen(fmt);
 				tcell_put(x);
 			}
@@ -319,7 +320,7 @@ format(char **pbuf, int *pbufsize, const char *s, Node *a)
 		*t = '\0';
 		if (fmtwd < 0)
 			fmtwd = -fmtwd;
-		adjbuf(&buf, &bufsize, fmtwd+1+p-buf, recsize, &p, "format4");
+		xadjbuf(&buf, &bufsize, fmtwd+1+p-buf, recsize, &p, "format4");
 
 		switch (*s) {
 		case 'f': case 'e': case 'g': case 'E': case 'G':
@@ -353,7 +354,7 @@ format(char **pbuf, int *pbufsize, const char *s, Node *a)
 		n = MAXNUMSIZE;
 		if (fmtwd > n)
 			n = fmtwd;
-		adjbuf(&buf, &bufsize, 1+n+p-buf, recsize, &p, "format5");
+		xadjbuf(&buf, &bufsize, 1+n+p-buf, recsize, &p, "format5");
 		switch (flag) {
 		case '?':	/* unknown, so dump it too */
 			snprintf(p, buf + bufsize - p, "%s", fmt);
@@ -361,7 +362,8 @@ format(char **pbuf, int *pbufsize, const char *s, Node *a)
 			n = strlen(t);
 			if (fmtwd > n)
 				n = fmtwd;
-			adjbuf(&buf, &bufsize, 1+strlen(p)+n+p-buf, recsize, &p, "format6");
+			xadjbuf(&buf, &bufsize, 1+strlen(p)+n+p-buf, recsize,
+			    &p, "format6");
 			p += strlen(p);
 			snprintf(p, buf + bufsize - p, "%s", t);
 			break;
@@ -373,8 +375,8 @@ format(char **pbuf, int *pbufsize, const char *s, Node *a)
 			n = strlen(t);
 			if (fmtwd > n)
 				n = fmtwd;
-			if (!adjbuf(&buf, &bufsize, 1+n+p-buf, recsize, &p, "format7"))
-				FATAL("huge string/format (%d chars) in printf %.30s... ran format() out of memory", n, t);
+			xadjbuf(&buf, &bufsize, 1+n+p-buf, recsize, &p,
+			    "format7");
 			snprintf(p, buf + bufsize - p, fmt, t);
 			break;
 		case 'c':

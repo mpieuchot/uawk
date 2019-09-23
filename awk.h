@@ -176,7 +176,7 @@ Cell		*field_get(int);
 int		 is_number(const char *);
 
 /* run.c */
-extern	int	adjbuf(char **, int *, int, int, char **, const char *);
+void		 xadjbuf(char **, int *, int, int, char **, const char *);
 extern	Cell	*execute(Node *);
 extern	Cell	*f_program(Node **, int);
 extern	Cell	*f_jump(Node **, int);

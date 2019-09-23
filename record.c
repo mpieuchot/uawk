@@ -128,13 +128,13 @@ record_read(char **pbuf, int *pbufsize, FILE *inf)
 
 	rr = buf;
 	while ((c=getc(inf)) != sep && c != EOF) {
-		if (rr-buf+1 > bufsize)
-			if (!adjbuf(&buf, &bufsize, 1+rr-buf, recsize, &rr, "record_read 1"))
-				FATAL("input record `%.30s...' too long", buf);
+		if (rr-buf+1 > bufsize) {
+			xadjbuf(&buf, &bufsize, 1+rr-buf, recsize, &rr,
+			    "record_read 1");
+		}
 		*rr++ = c;
 	}
-	if (!adjbuf(&buf, &bufsize, 1+rr-buf, recsize, &rr, "record_read 3"))
-		FATAL("input record `%.30s...' too long", buf);
+	xadjbuf(&buf, &bufsize, 1+rr-buf, recsize, &rr, "record_read 3");
 	*rr = 0;
 	   DPRINTF( ("record_read saw <%s>, returns %d\n", buf, c == EOF && rr == buf ? 0 : 1) );
 	*pbuf = buf;
@@ -308,18 +308,18 @@ record_parse(void)
 	r = record;
 	for (i = 1; i <= *NF; i++) {
 		p = sval_get(fldtab[i]);
-		if (!adjbuf(&record, &recsize, 1+strlen(p)+r-record, recsize, &r, "record_parse 1"))
-			FATAL("created $0 `%.30s...' too long", record);
+		xadjbuf(&record, &recsize, 1+strlen(p)+r-record, recsize, &r,
+		    "record_parse 1");
 		while ((*r = *p++) != 0)
 			r++;
 		if (i < *NF) {
-			if (!adjbuf(&record, &recsize, 2+strlen(" ")+r-record, recsize, &r, "record_parse 2"))
-				FATAL("created $0 `%.30s...' too long", record);
+			xadjbuf(&record, &recsize, 2+strlen(" ")+r-record,
+			    recsize, &r, "record_parse 2");
 			for (p = " "; (*r = *p++) != 0; )
 				r++;
 		}
 	}
-	if (!adjbuf(&record, &recsize, 2+r-record, recsize, &r, "record_parse 3"))
+	xadjbuf(&record, &recsize, 2+r-record, recsize, &r, "record_parse 3");
 		FATAL("built giant record `%.30s...'", record);
 	*r = '\0';
 	   DPRINTF( ("in record_parse fldtab[0]=%p\n", (void*)fldtab[0]) );

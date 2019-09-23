@@ -288,8 +288,8 @@ gettok(char **pbuf, int *psz)	/* get next input token */
 	if (isalpha(c) || c == '_') {	/* it's a varname */
 		for ( ; (c = input()) != 0; ) {
 			if (bp-buf >= sz)
-				if (!adjbuf(&buf, &sz, bp-buf+2, 100, &bp, "gettok"))
-					FATAL( "out of space for name %.10s...", buf );
+				xadjbuf(&buf, &sz, bp-buf+2, 100, &bp,
+				    "gettok");
 			if (isalnum(c) || c == '_')
 				*bp++ = c;
 			else {
@@ -305,8 +305,8 @@ gettok(char **pbuf, int *psz)	/* get next input token */
 		/* read input until can't be a number */
 		for ( ; (c = input()) != 0; ) {
 			if (bp-buf >= sz)
-				if (!adjbuf(&buf, &sz, bp-buf+2, 100, &bp, "gettok"))
-					FATAL( "out of space for number %.10s...", buf );
+				xadjbuf(&buf, &sz, bp-buf+2, 100, &bp,
+				    "gettok");
 			if (isdigit(c) || c == 'e' || c == 'E' 
 			  || c == '.' || c == '+' || c == '-')
 				*bp++ = c;
@@ -499,8 +499,7 @@ string(void)
 	if (buf == NULL)
 		buf = xmalloc(bufsz);
 	for (bp = buf; (c = input()) != '"'; ) {
-		if (!adjbuf(&buf, &bufsz, bp-buf+2, 500, &bp, "string"))
-			FATAL("out of space for string %.10s...", buf);
+		xadjbuf(&buf, &bufsz, bp-buf+2, 500, &bp, "string");
 		switch (c) {
 		case '\n':
 		case '\r':
