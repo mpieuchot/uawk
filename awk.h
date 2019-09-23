@@ -159,6 +159,9 @@ extern	int	yylex(void);
 extern	int	input(void);
 extern	void	unput(int);
 extern	void	unputstr(const char *);
+extern	void	bracecheck(void);
+extern	__dead void	FATAL(const char *, ...);
+extern	void	WARNING(const char *, ...);
 
 /* main.c */
 extern	int	pgetc(void);
@@ -185,22 +188,16 @@ double		 fval_get(Cell *);
 double		 fval_set(Cell *, double);
 char		*sval_get(Cell *);
 char		*sval_set(Cell *, const char *);
-extern	void	funnyvar(Cell *, const char *);
-extern	char	*xstrdup(const char *);
+void		 funnyvar(Cell *, const char *);
 
 /* record.c */
-extern	void	recinit(unsigned int);
-extern	void	makefields(int, int);
-extern	int	getrec(char **, int *, int);
-extern	void	fldbld(void);
-extern	void	newfld(int);
-extern	void	recbld(void);
-extern	Cell	*fieldadr(int);
-extern	void	fpecatch(int);
-extern	void	bracecheck(void);
-extern	__dead void	FATAL(const char *, ...);
-extern	void	WARNING(const char *, ...);
-extern	int	is_number(const char *);
+void		 record_init(void);
+int		 record_get(void);
+void		 record_parse(void);
+void		 field_from_record(void);
+void		 field_add(int);
+Cell		*field_get(int);
+int		 is_number(const char *);
 
 /* run.c */
 extern	int	adjbuf(char **, int *, int, int, char **, const char *);

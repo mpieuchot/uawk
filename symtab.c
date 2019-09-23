@@ -206,9 +206,9 @@ fval_get(Cell *vp)
 	if ((vp->tval & (NUM | STR)) == 0)
 		funnyvar(vp, "read value of");
 	if (isfld(vp) && donefld == 0)
-		fldbld();
+		field_from_record();
 	else if (isrec(vp) && donerec == 0)
-		recbld();
+		record_parse();
 	if (!isnum(vp)) {	/* not a number */
 		vp->fval = atof(vp->sval);	/* best guess */
 		if (is_number(vp->sval) && !(vp->tval&CON))
@@ -233,7 +233,7 @@ fval_set(Cell *vp, Awkfloat f)
 		donerec = 0;	/* mark $0 invalid */
 		fldno = atoi(vp->nval);
 		if (fldno > *NF)
-			newfld(fldno);
+			field_add(fldno);
 		   DPRINTF( ("setting field %d to %g\n", fldno, f) );
 	} else if (isrec(vp)) {
 		donefld = 0;	/* mark $1... invalid */
@@ -259,9 +259,9 @@ sval_get(Cell *vp)
 	if ((vp->tval & (NUM | STR)) == 0)
 		funnyvar(vp, "read value of");
 	if (isfld(vp) && donefld == 0)
-		fldbld();
+		field_from_record();
 	else if (isrec(vp) && donerec == 0)
-		recbld();
+		record_parse();
 	if (isstr(vp) == 0) {
 		if (freeable(vp))
 			xfree(vp->sval);
@@ -294,7 +294,7 @@ sval_set(Cell *vp, const char *s)
 		donerec = 0;	/* mark $0 invalid */
 		fldno = atoi(vp->nval);
 		if (fldno > *NF)
-			newfld(fldno);
+			field_add(fldno);
 		   DPRINTF( ("setting field %d to %s (%p)\n", fldno, s, s) );
 	} else if (isrec(vp)) {
 		donefld = 0;	/* mark $1... invalid */

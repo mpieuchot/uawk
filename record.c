@@ -23,11 +23,12 @@ ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF
 THIS SOFTWARE.
 ****************************************************************/
 
-#include <stdio.h>
-#include <string.h>
 #include <ctype.h>
 #include <errno.h>
+#include <math.h>
 #include <stdlib.h>
+#include <stdio.h>
+#include <string.h>
 #include <unistd.h>
 #include "awk.h"
 #include "ytab.h"
@@ -54,80 +55,76 @@ int	argno	= 1;	/* current input argument number */
 static Cell dollar0 = { OCELL, CFLD, NULL, "", 0.0, REC|STR|DONTFREE };
 static Cell dollar1 = { OCELL, CFLD, NULL, "", 0.0, FLD|STR|DONTFREE };
 
-void		 initgetrec(void);
-void		 growfldtab(int n);
-int		 readrec(char **buf, int *bufsize, FILE *inf);
-void		 cleanfld(int, int);
+void		 initrecord_get(void);
+void		 field_alloc(int, int);
+void		 field_realloc(int n);
+int		 record_read(char **buf, int *bufsize, FILE *inf);
+void		 field_purge(int, int);
 
-void recinit(unsigned int n)
+void
+record_init(void)
 {
-	record = xmalloc(n);
-	fields = xmalloc(n+1);
+	recsize = RECSIZE;
+	record = xmalloc(recsize);
+	*record = '\0';
+
+	fieldssize = RECSIZE;
+	fields = xmalloc(fieldssize+1);
+
 	fldtab = xcalloc(nfields+1, sizeof(Cell *));
 	fldtab[0] = xmalloc(sizeof(Cell));
-	*record = '\0';
 	*fldtab[0] = dollar0;
 	fldtab[0]->sval = record;
 	fldtab[0]->nval = xstrdup("0");
-	makefields(1, nfields);
+	field_alloc(1, nfields);
 }
 
-void makefields(int n1, int n2)		/* create $n1..$n2 inclusive */
-{
-	char temp[50];
-	int i;
-
-	for (i = n1; i <= n2; i++) {
-		fldtab[i] = xmalloc(sizeof (struct Cell));
-		*fldtab[i] = dollar1;
-		snprintf(temp, sizeof temp, "%d", i);
-		fldtab[i]->nval = xstrdup(temp);
-	}
-}
-
-int getrec(char **pbuf, int *pbufsize, int isrecord)	/* get next input record */
+/*
+ * get next input record
+ */
+int
+record_get(void)
 {			/* note: cares whether buf == record */
-	int c;
-	char *buf = *pbuf;
+	char *buf = record;
+	int c, bufsize = recsize, savebufsize = recsize;
 	uschar saveb0;
-	int bufsize = *pbufsize, savebufsize = bufsize;
 	extern FILE *infile;
 
-	if (isrecord) {
-		donefld = 0;
-		donerec = 1;
-	}
+	donefld = 0;
+	donerec = 1;
 	saveb0 = buf[0];
 	buf[0] = 0;
 	fval_set(fnrloc, 0.0);
-	c = readrec(&buf, &bufsize, infile);
+	c = record_read(&buf, &bufsize, infile);
 	if (c != 0 || buf[0] != '\0') {	/* normal record */
-		if (isrecord) {
-			if (freeable(fldtab[0]))
-				xfree(fldtab[0]->sval);
-			fldtab[0]->sval = buf;	/* buf == record */
-			fldtab[0]->tval = REC | STR | DONTFREE;
-			if (is_number(fldtab[0]->sval)) {
-				fldtab[0]->fval = atof(fldtab[0]->sval);
-				fldtab[0]->tval |= NUM;
-			}
+		if (freeable(fldtab[0]))
+			xfree(fldtab[0]->sval);
+		fldtab[0]->sval = buf;	/* buf == record */
+		fldtab[0]->tval = REC | STR | DONTFREE;
+		if (is_number(fldtab[0]->sval)) {
+			fldtab[0]->fval = atof(fldtab[0]->sval);
+			fldtab[0]->tval |= NUM;
 		}
 		fval_set(nrloc, nrloc->fval+1);
 		fval_set(fnrloc, fnrloc->fval+1);
-		*pbuf = buf;
-		*pbufsize = bufsize;
+		record = buf;
+		recsize = bufsize;
 		return 1;
 	}
 	/* EOF arrived on this file; set up next */
 	if (infile != stdin)
 		fclose(infile);
 	buf[0] = saveb0;
-	*pbuf = buf;
-	*pbufsize = savebufsize;
+	record = buf;
+	recsize = savebufsize;
 	return 0;	/* true end of file */
 }
 
-int readrec(char **pbuf, int *pbufsize, FILE *inf)	/* read one record into buf */
+/*
+ * read one record into buf
+ */
+int
+record_read(char **pbuf, int *pbufsize, FILE *inf)
 {
 	int sep, c;
 	char *rr, *buf = *pbuf;
@@ -144,7 +141,7 @@ int readrec(char **pbuf, int *pbufsize, FILE *inf)	/* read one record into buf *
 	for (rr = buf; ; ) {
 		for (; (c=getc(inf)) != sep && c != EOF; ) {
 			if (rr-buf+1 > bufsize)
-				if (!adjbuf(&buf, &bufsize, 1+rr-buf, recsize, &rr, "readrec 1"))
+				if (!adjbuf(&buf, &bufsize, 1+rr-buf, recsize, &rr, "record_read 1"))
 					FATAL("input record `%.30s...' too long", buf);
 			*rr++ = c;
 		}
@@ -152,25 +149,30 @@ int readrec(char **pbuf, int *pbufsize, FILE *inf)	/* read one record into buf *
 			break;
 		if ((c = getc(inf)) == '\n' || c == EOF) /* 2 in a row */
 			break;
-		if (!adjbuf(&buf, &bufsize, 2+rr-buf, recsize, &rr, "readrec 2"))
+		if (!adjbuf(&buf, &bufsize, 2+rr-buf, recsize, &rr, "record_read 2"))
 			FATAL("input record `%.30s...' too long", buf);
 		*rr++ = '\n';
 		*rr++ = c;
 	}
-	if (!adjbuf(&buf, &bufsize, 1+rr-buf, recsize, &rr, "readrec 3"))
+	if (!adjbuf(&buf, &bufsize, 1+rr-buf, recsize, &rr, "record_read 3"))
 		FATAL("input record `%.30s...' too long", buf);
 	*rr = 0;
-	   DPRINTF( ("readrec saw <%s>, returns %d\n", buf, c == EOF && rr == buf ? 0 : 1) );
+	   DPRINTF( ("record_read saw <%s>, returns %d\n", buf, c == EOF && rr == buf ? 0 : 1) );
 	*pbuf = buf;
 	*pbufsize = bufsize;
 	return c == EOF && rr == buf ? 0 : 1;
 }
 
-void fldbld(void)	/* create fields from current record */
+/*
+ * create fields from current record
+ *
+ * this relies on having fields[] the same length as $0
+ * the fields are all stored in this one array with \0's
+ * possibly with a final trailing \0 not associated with any field
+ */
+void
+field_from_record(void)
 {
-	/* this relies on having fields[] the same length as $0 */
-	/* the fields are all stored in this one array with \0's */
-	/* possibly with a final trailing \0 not associated with any field */
 	char *r, *fr, sep;
 	Cell *p;
 	int i, j, n;
@@ -195,7 +197,7 @@ void fldbld(void)	/* create fields from current record */
 			break;
 		i++;
 		if (i > nfields)
-			growfldtab(i);
+			field_realloc(i);
 		if (freeable(fldtab[i]))
 			xfree(fldtab[i]->sval);
 		fldtab[i]->sval = fr;
@@ -208,7 +210,7 @@ void fldbld(void)	/* create fields from current record */
 	*fr = 0;
 	if (i > nfields)
 		FATAL("record `%.30s...' has too many fields; can't happen", r);
-	cleanfld(i+1, lastfld);	/* clean out junk from previous record */
+	field_purge(i+1, lastfld);	/* clean out junk from previous record */
 	lastfld = i;
 	donefld = 1;
 	for (j = 1; j <= lastfld; j++) {
@@ -227,8 +229,14 @@ void fldbld(void)	/* create fields from current record */
 	}
 }
 
-void cleanfld(int n1, int n2)	/* clean out fields n1 .. n2 inclusive */
-{				/* nvals remain intact */
+/*
+ * clean out fields n1 .. n2 inclusive
+ *
+ * nvals remain intact
+ */
+void
+field_purge(int n1, int n2)
+{
 	Cell *p;
 	int i;
 
@@ -241,25 +249,57 @@ void cleanfld(int n1, int n2)	/* clean out fields n1 .. n2 inclusive */
 	}
 }
 
-void newfld(int n)	/* add field n after end of existing lastfld */
+/*
+ * add field n after end of existing lastfld
+ */
+void
+field_add(int n)
 {
 	if (n > nfields)
-		growfldtab(n);
-	cleanfld(lastfld+1, n);
+		field_realloc(n);
+	field_purge(lastfld+1, n);
 	lastfld = n;
 	fval_set(nfloc, (Awkfloat) n);
 }
 
-Cell *fieldadr(int n)	/* get nth field */
+/*
+ * get nth field
+ */
+Cell *
+field_get(int n)
 {
 	if (n < 0)
 		FATAL("trying to access out of range field %d", n);
-	if (n > nfields)	/* fields after NF are empty */
-		growfldtab(n);	/* but does not increase NF */
+	/* fields after NF are empty */
+	if (n > nfields) {
+		/* but does not increase NF */
+		field_realloc(n);
+	}
 	return(fldtab[n]);
 }
 
-void growfldtab(int n)	/* make new fields up to at least $n */
+/*
+ * create $n1..$n2 inclusive
+ */
+void
+field_alloc(int n1, int n2)
+{
+	char temp[50];
+	int i;
+
+	for (i = n1; i <= n2; i++) {
+		fldtab[i] = xmalloc(sizeof (struct Cell));
+		*fldtab[i] = dollar1;
+		snprintf(temp, sizeof temp, "%d", i);
+		fldtab[i]->nval = xstrdup(temp);
+	}
+}
+
+/*
+ * make new fields up to at least $n
+ */
+void
+field_realloc(int n)
 {
 	int nf = 2 * nfields;
 	size_t s;
@@ -271,11 +311,15 @@ void growfldtab(int n)	/* make new fields up to at least $n */
 		fldtab = xrealloc(fldtab, s);
 	else					/* overflow sizeof int */
 		xfree(fldtab);	/* make it null */
-	makefields(nfields+1, nf);
+	field_alloc(nfields+1, nf);
 	nfields = nf;
 }
 
-void recbld(void)	/* create $0 from $1..$NF if necessary */
+/*
+ * create $0 from $1..$NF if necessary
+ */
+void
+record_parse(void)
 {
 	int i;
 	char *r, *p;
@@ -285,62 +329,37 @@ void recbld(void)	/* create $0 from $1..$NF if necessary */
 	r = record;
 	for (i = 1; i <= *NF; i++) {
 		p = sval_get(fldtab[i]);
-		if (!adjbuf(&record, &recsize, 1+strlen(p)+r-record, recsize, &r, "recbld 1"))
+		if (!adjbuf(&record, &recsize, 1+strlen(p)+r-record, recsize, &r, "record_parse 1"))
 			FATAL("created $0 `%.30s...' too long", record);
 		while ((*r = *p++) != 0)
 			r++;
 		if (i < *NF) {
-			if (!adjbuf(&record, &recsize, 2+strlen(OFS)+r-record, recsize, &r, "recbld 2"))
+			if (!adjbuf(&record, &recsize, 2+strlen(OFS)+r-record, recsize, &r, "record_parse 2"))
 				FATAL("created $0 `%.30s...' too long", record);
 			for (p = OFS; (*r = *p++) != 0; )
 				r++;
 		}
 	}
-	if (!adjbuf(&record, &recsize, 2+r-record, recsize, &r, "recbld 3"))
+	if (!adjbuf(&record, &recsize, 2+r-record, recsize, &r, "record_parse 3"))
 		FATAL("built giant record `%.30s...'", record);
 	*r = '\0';
-	   DPRINTF( ("in recbld fldtab[0]=%p\n", (void*)fldtab[0]) );
+	   DPRINTF( ("in record_parse fldtab[0]=%p\n", (void*)fldtab[0]) );
 
 	if (freeable(fldtab[0]))
 		xfree(fldtab[0]->sval);
 	fldtab[0]->tval = REC | STR | DONTFREE;
 	fldtab[0]->sval = record;
 
-	   DPRINTF( ("in recbld fldtab[0]=%p\n", (void*)fldtab[0]) );
-	   DPRINTF( ("recbld = |%s|\n", record) );
+	   DPRINTF( ("in record_parse fldtab[0]=%p\n", (void*)fldtab[0]) );
+	   DPRINTF( ("record_parse = |%s|\n", record) );
 	donerec = 1;
-}
-
-void fpecatch(int sig)
-{
-	extern Node *curnode;
-
-	dprintf(STDERR_FILENO, "floating point exception\n");
-
-	if (compile_time != 2 && NR && *NR > 0) {
-		dprintf(STDERR_FILENO, " input record number %d", (int) (*FNR));
-		dprintf(STDERR_FILENO, "\n");
-	}
-	if (compile_time != 2 && curnode) {
-		dprintf(STDERR_FILENO, " source line number %d", curnode->lineno);
-	} else if (compile_time != 2 && lineno) {
-		dprintf(STDERR_FILENO, " source line number %d", lineno);
-	}
-	if (compile_time == 1 && cursource() != NULL) {
-		dprintf(STDERR_FILENO, " source file %s", cursource());
-	}
-	dprintf(STDERR_FILENO, "\n");
-	if (dbg > 1)		/* core dump if serious debugging on */
-		abort();
-	_exit(1);
 }
 
 /* strtod is supposed to be a proper test of what's a valid number */
 /* appears to be broken in gcc on linux: thinks 0x123 is a valid FP number */
 /* wrong: violates 4.10.1.4 of ansi C standard */
-
-#include <math.h>
-int is_number(const char *s)
+int
+is_number(const char *s)
 {
 	double r;
 	char *ep;

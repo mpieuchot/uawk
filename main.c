@@ -46,6 +46,8 @@ char	*pfile[MAX_PFILE];	/* program filenames */
 int	npfile = 0;		/* number of filenames */
 int	curpfile = 0;		/* current filename */
 
+void		 fpecatch(int);
+
 __dead void usage(void)
 {
 	fprintf(stderr, "usage: %s [-d] [prog | -f progfile]\tfile ...\n",
@@ -103,7 +105,7 @@ int main(int argc, char *argv[])
 	signal(SIGFPE, fpecatch);
 
 	yyin = NULL;
-	recinit(recsize);
+	record_init();
 	symtab_init();
 
 	compile_time = 1;
@@ -153,4 +155,29 @@ char *cursource(void)	/* current source file name */
 		return pfile[curpfile];
 	else
 		return NULL;
+}
+
+void
+fpecatch(int sig)
+{
+	extern Node *curnode;
+
+	dprintf(STDERR_FILENO, "floating point exception\n");
+
+	if (compile_time != 2 && NR && *NR > 0) {
+		dprintf(STDERR_FILENO, " input record number %d", (int) (*FNR));
+		dprintf(STDERR_FILENO, "\n");
+	}
+	if (compile_time != 2 && curnode) {
+		dprintf(STDERR_FILENO, " source line number %d", curnode->lineno);
+	} else if (compile_time != 2 && lineno) {
+		dprintf(STDERR_FILENO, " source line number %d", lineno);
+	}
+	if (compile_time == 1 && cursource() != NULL) {
+		dprintf(STDERR_FILENO, " source file %s", cursource());
+	}
+	dprintf(STDERR_FILENO, "\n");
+	if (dbg > 1)		/* core dump if serious debugging on */
+		abort();
+	_exit(1);
 }

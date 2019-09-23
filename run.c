@@ -111,9 +111,9 @@ Cell *execute(Node *u)	/* execute a node of the parse tree */
 		if (isvalue(a)) {
 			x = (Cell *) (a->narg[0]);
 			if (isfld(x) && !donefld)
-				fldbld();
+				field_from_record();
 			else if (isrec(x) && !donerec)
-				recbld();
+				record_parse();
 			return(x);
 		}
 		/* probably a Cell* but too risky to print */
@@ -121,9 +121,9 @@ Cell *execute(Node *u)	/* execute a node of the parse tree */
 			FATAL("illegal statement");
 		x = (*a->proc)(a->narg, a->nobj);
 		if (isfld(x) && !donefld)
-			fldbld();
+			field_from_record();
 		else if (isrec(x) && !donerec)
-			recbld();
+			record_parse();
 		if (isexpr(a))
 			return(x);
 		if (isexit(x))
@@ -148,7 +148,7 @@ Cell *program(Node **a, int n)	/* execute an awk program */
 		tempfree(x);
 	}
 	if (a[1] || a[2])
-		while (getrec(&record, &recsize, 1) > 0) {
+		while (record_get() > 0) {
 			x = execute(a[1]);
 			if (isexit(x))
 				break;
@@ -262,7 +262,7 @@ Cell *indirect(Node **a, int n)	/* $( a[0] ) */
 		FATAL("illegal field $(%s), name \"%s\"", s, x->nval);
 		/* BUG: can x->nval ever be null??? */
 	tempfree(x);
-	x = fieldadr(m);
+	x = field_get(m);
 	x->ctype = OCELL;	/* BUG?  why are these needed? */
 	x->csub = CFLD;
 	return(x);
