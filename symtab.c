@@ -106,7 +106,7 @@ symtab_free(Cell *ap)
 		tp->tab[i] = 0;
 	}
 	if (tp->nelem != 0)
-		WARNING("can't happen: inconsistent element count freeing %s", ap->nval);
+		FATAL("can't happen: inconsistent element count freeing %s", ap->nval);
 	free(tp->tab);
 	free(tp);
 }
@@ -313,6 +313,6 @@ funnyvar(Cell *vp, const char *rw)
 		FATAL("can't %s %s; it's an array name.", rw, vp->nval);
 	if (vp->tval & FCN)
 		FATAL("can't %s %s; it's a function.", rw, vp->nval);
-	WARNING("funny variable %p: n=%s s=\"%s\" f=%g t=%o",
+	FATAL("funny variable %p: n=%s s=\"%s\" f=%g t=%o",
 		vp, vp->nval, vp->sval, vp->fval, vp->tval);
 }

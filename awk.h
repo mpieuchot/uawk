@@ -138,7 +138,6 @@ extern	void	unput(int);
 extern	void	unputstr(const char *);
 extern	void	bracecheck(void);
 extern	__dead void	FATAL(const char *, ...);
-extern	void	WARNING(const char *, ...);
 
 /* main.c */
 extern	int	pgetc(void);

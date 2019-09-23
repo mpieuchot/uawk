@@ -343,8 +343,7 @@ format(char **pbuf, int *pbufsize, const char *s, Node *a)
 			flag = 'c';
 			break;
 		default:
-			WARNING("weird printf conversion %s", fmt);
-			flag = '?';
+			FATAL("unknown printf conversion %s", fmt);
 			break;
 		}
 		if (a == NULL)
