@@ -33,7 +33,7 @@ THIS SOFTWARE.
 
 extern	char	*__progname;
 
-int	dbg	= 0;
+int	debug	= 0;
 FILE	*infile	= NULL;
 extern	FILE	*yyin;	/* lex input file */
 char	*lexprog;	/* points to program argument if it exists */
@@ -77,7 +77,7 @@ int main(int argc, char *argv[])
 			pfile[npfile++] = optarg;
 			break;
 		case 'd':
-			dbg++;
+			debug++;
 			break;
 		default:
 			usage();
@@ -177,7 +177,7 @@ fpecatch(int sig)
 		dprintf(STDERR_FILENO, " source file %s", cursource());
 	}
 	dprintf(STDERR_FILENO, "\n");
-	if (dbg > 1)		/* core dump if serious debugging on */
+	if (debug > 1)		/* core dump if serious debugging on */
 		abort();
 	_exit(1);
 }

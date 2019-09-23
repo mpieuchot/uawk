@@ -248,7 +248,7 @@ Keyword keywords[] ={	/* keep sorted: binary searched */
 	{ "printf",	PRINTF,		PRINTF },
 };
 
-#define	RET(x)	{ if(dbg)printf("lex %s\n", tokname((x))); return (x); }
+#define	RET(x)	{ if(debug)printf("lex %s\n", tokname((x))); return (x); }
 
 int		 peek(void);
 int		 gettok(char **, int *);
@@ -718,7 +718,7 @@ __dead void FATAL(const char *fmt, ...)
 	vfprintf(stderr, fmt, varg);
 	va_end(varg);
 	error();
-	if (dbg > 1)		/* core dump if serious debugging on */
+	if (debug > 1)		/* core dump if serious debugging on */
 		abort();
 	exit(2);
 }

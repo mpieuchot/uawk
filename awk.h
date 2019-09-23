@@ -31,7 +31,7 @@ typedef	unsigned char uschar;
 
 #define	NN(p)	((p) ? (p) : "(null)")	/* guaranteed non-null for DPRINTF */
 #ifdef	DEBUG
-#	define	DPRINTF(x)	if (dbg) printf x
+#	define	DPRINTF(x)	if (debug) printf x
 #else
 #	define	DPRINTF(x)
 #endif
@@ -53,7 +53,7 @@ extern int	errorflag;	/* 1 if error has occurred */
 extern int	donefld;	/* 1 if record broken into fields */
 extern int	donerec;	/* 1 if record is valid (no fld has changed */
 
-extern int	dbg;
+extern int	debug;
 
 extern	char	*patbeg;	/* beginning of pattern matched */
 extern	int	patlen;		/* length of pattern matched.  set in b.c */
