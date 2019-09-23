@@ -165,7 +165,7 @@ fpecatch(int sig)
 	dprintf(STDERR_FILENO, "floating point exception\n");
 
 	if (compile_time != 2 && NR && *NR > 0) {
-		dprintf(STDERR_FILENO, " input record number %d", (int) (*FNR));
+		dprintf(STDERR_FILENO, " input record number %d", (int) (*NR));
 		dprintf(STDERR_FILENO, "\n");
 	}
 	if (compile_time != 2 && curnode) {

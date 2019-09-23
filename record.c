@@ -92,7 +92,6 @@ record_get(void)
 	donerec = 1;
 	saveb0 = buf[0];
 	buf[0] = 0;
-	fval_set(fnrloc, 0.0);
 	c = record_read(&buf, &bufsize, infile);
 	if (c != 0 || buf[0] != '\0') {	/* normal record */
 		if (freeable(fldtab[0]))
@@ -104,7 +103,6 @@ record_get(void)
 			fldtab[0]->tval |= NUM;
 		}
 		fval_set(nrloc, nrloc->fval+1);
-		fval_set(fnrloc, fnrloc->fval+1);
 		record = buf;
 		recsize = bufsize;
 		return 1;

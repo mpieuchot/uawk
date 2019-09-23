@@ -37,11 +37,9 @@ Array		*symtab;	/* main symbol table */
 
 double	*NF;		/* number of fields in current record */
 double	*NR;		/* number of current record */
-double	*FNR;		/* number of current record in current file */
 
 Cell		*nrloc;		/* NR */
 Cell		*nfloc;		/* NF */
-Cell		*fnrloc;	/* FNR */
 Cell		*symtabloc;	/* SYMTAB */
 
 Cell		*nullloc;	/* empty cell, used for if(x)... tests */
@@ -66,8 +64,6 @@ symtab_init(void)
 	NF = &nfloc->fval;
 	nrloc = symtab_set("NR", "", 0.0, NUM, symtab);
 	NR = &nrloc->fval;
-	fnrloc = symtab_set("FNR", "", 0.0, NUM, symtab);
-	FNR = &fnrloc->fval;
 	symtabloc = symtab_set("SYMTAB", "", 0.0, ARR, symtab);
 	symtabloc->sval = (char *) symtab;
 }

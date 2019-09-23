@@ -40,7 +40,6 @@ extern int	recsize;	/* size of current record, orig RECSIZE */
 #define	ORS	"\n"		/* Output record separator */
 #define	OFS	" "		/* Output field separator */
 extern double *NR;
-extern double *FNR;
 extern double *NF;
 
 extern char	*record;	/* points to $0 */
@@ -97,7 +96,6 @@ typedef struct Array {		/* symbol table array */
 extern Array	*symtab;
 
 extern Cell	*nrloc;		/* NR */
-extern Cell	*fnrloc;	/* FNR */
 extern Cell	*nfloc;		/* NF */
 
 

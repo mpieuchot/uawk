@@ -757,7 +757,7 @@ error(void)
 
 	fprintf(stderr, "\n");
 	if (compile_time != 2 && NR && *NR > 0) {
-		fprintf(stderr, " input record number %d\n", (int) (*FNR));
+		fprintf(stderr, " input record number %d\n", (int) (*NR));
 	}
 	if (compile_time != 2 && curnode)
 		fprintf(stderr, " source line number %d", curnode->lineno);
