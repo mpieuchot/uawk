@@ -55,12 +55,6 @@ extern	char	*patbeg;	/* beginning of pattern matched */
 extern	int	patlen;		/* length of pattern matched.  set in b.c */
 
 enum ctype {
-	OCELL =	1,
-	OBOOL,
-	OJUMP,
-};
-
-enum csubtype {
 	CUNK = 0,
 	CFLD,
 	CVAR,
@@ -68,6 +62,8 @@ enum csubtype {
 	CCON,
 	CFREE,
 	CCOPY,
+	CTRUE,
+	CFALSE,
 };
 
 
@@ -75,8 +71,7 @@ enum csubtype {
  * Cell:  all information about a variable or constant
  */
 typedef struct Cell {
-	enum ctype	 ctype;
-	enum csubtype	 csub;	/* Cell subtypes: csub */
+	enum ctype	 ctype;	/* Cell type */
 	char		*nval;	/* name, for variables only */
 	char		*sval;	/* string value */
 	double	 	 fval;	/* value as number */
@@ -126,10 +121,6 @@ extern Node	*nullnode;
 #define NSTAT	2
 #define NEXPR	3
 
-/* bool subtypes */
-#define BTRUE	11
-#define BFALSE	12
-
 #define isvalue(n)	((n)->ntype == NVALUE)
 #define isexpr(n)	((n)->ntype == NEXPR)
 #define isrec(n)	((n)->tval & REC)
@@ -138,7 +129,7 @@ extern Node	*nullnode;
 #define isnum(n)	((n)->tval & NUM)
 #define isarr(n)	((n)->tval & ARR)
 #define isfcn(n)	((n)->tval & FCN)
-#define istrue(n)	((n)->csub == BTRUE)
+#define istrue(n)	((n)->ctype == CTRUE)
 #define	isargument(n)	((n)->nobj == ARG)
 /* #define freeable(p)	(!((p)->tval & DONTFREE)) */
 #define freeable(p)	( ((p)->tval & (STR|DONTFREE)) == STR )

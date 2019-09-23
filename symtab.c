@@ -131,8 +131,7 @@ symtab_set(const char *n, const char *s, double f, unsigned t, Array *tp)
 	p->sval = s ? xstrdup(s) : xstrdup("");
 	p->fval = f;
 	p->tval = t;
-	p->csub = CUNK;
-	p->ctype = OCELL;
+	p->ctype = CUNK;
 	tp->nelem++;
 	if (tp->nelem > FULLTAB * tp->size)
 		rehash(tp);

@@ -34,7 +34,7 @@ THIS SOFTWARE.
 #include "awk.h"
 #include "ytab.h"
 
-#define istemp(n)	((n)->csub == CTEMP)
+#define istemp(n)	((n)->ctype == CTEMP)
 
 Cell		*tcell_get(void);
 void		 tcell_put(Cell *);
@@ -46,11 +46,11 @@ jmp_buf env;
 
 Cell	*tmps;		/* free temporary cells for execution */
 
-static Cell	truecell	={ OBOOL, BTRUE, 0, 0, 1.0, NUM };
+static Cell	truecell	={ CTRUE, 0, 0, 1.0, NUM };
 Cell	*True	= &truecell;
-static Cell	falsecell	={ OBOOL, BFALSE, 0, 0, 0.0, NUM };
+static Cell	falsecell	={ CFALSE, 0, 0, 0.0, NUM };
 Cell	*False	= &falsecell;
-static Cell	tempcell	={ OCELL, CTEMP, 0, "", 0.0, NUM|STR|DONTFREE };
+static Cell	tempcell	={ CTEMP, 0, "", 0.0, NUM|STR|DONTFREE };
 
 Node	*curnode = NULL;	/* the node being executed, for debugging */
 
@@ -259,8 +259,7 @@ f_indirect(Node **a, int n)
 		/* BUG: can x->nval ever be null??? */
 	tcell_put(x);
 	x = field_get(m);
-	x->ctype = OCELL;	/* BUG?  why are these needed? */
-	x->csub = CFLD;
+	x->ctype = CFLD;
 	return x;
 }
 

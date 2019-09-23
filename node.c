@@ -249,8 +249,7 @@ cell2node(Cell *a, int b)
 {
 	Node *x;
 
-	a->ctype = OCELL;
-	a->csub = b;
+	a->ctype = b;
 	x = node1(0, (Node *) a);
 	x->ntype = NVALUE;
 	return x;
