@@ -511,7 +511,7 @@ f_assign(Node **a, int n)
 	y = execute(a[1]);
 	x = execute(a[0]);
 	if (n == ASSIGN) {	/* ordinary assignment */
-		if (x == y && !(x->tval & (FLD|REC)))	/* self-assignment: */
+		if (x == y && !(isfld(x) || isrec(x))) /* self-assignment: */
 			;		/* leave alone unless it's a field */
 		else if ((y->tval & (STR|NUM)) == (STR|NUM)) {
 			sval_set(x, sval_get(y));
