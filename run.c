@@ -63,8 +63,6 @@ static Cell	truecell	={ OBOOL, BTRUE, 0, 0, 1.0, NUM };
 Cell	*True	= &truecell;
 static Cell	falsecell	={ OBOOL, BFALSE, 0, 0, 0.0, NUM };
 Cell	*False	= &falsecell;
-static Cell	exitcell	={ OJUMP, JEXIT, 0, 0, 0.0, NUM };
-Cell	*jexit	= &exitcell;
 static Cell	tempcell	={ OCELL, CTEMP, 0, "", 0.0, NUM|STR|DONTFREE };
 
 Node	*curnode = NULL;	/* the node being executed, for debugging */
@@ -128,8 +126,6 @@ execute(Node *u)
 			record_parse();
 		if (isexpr(a))
 			return x;
-		if (isexit(x))
-			return x;
 		if (a->nnext == NULL)
 			return x;
 		tempfree(x);
@@ -148,15 +144,11 @@ f_program(Node **a, int n)
 		goto ex;
 	if (a[0]) {		/* BEGIN */
 		x = execute(a[0]);
-		if (isexit(x))
-			return True;
 		tempfree(x);
 	}
 	if (a[1] || a[2])
 		while (record_get() > 0) {
 			x = execute(a[1]);
-			if (isexit(x))
-				break;
 			tempfree(x);
 		}
   ex:
@@ -321,7 +313,7 @@ format(char **pbuf, int *pbufsize, const char *s, Node *a)
 		for (t = fmt; (*t++ = *s) != '\0'; s++) {
 			if (!adjbuf(&fmt, &fmtsz, MAXNUMSIZE+1+t-fmt, recsize, &t, "format3"))
 				FATAL("format item %.30s... ran format() out of memory", os);
-			if (isalpha((uschar)*s) && *s != 'l' && *s != 'h' && *s != 'L')
+			if (isalpha((unsigned char)*s) && *s != 'l' && *s != 'h' && *s != 'L')
 				break;	/* the ansi panoply */
 			if (*s == '*') {
 				if (a == NULL)

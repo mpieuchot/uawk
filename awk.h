@@ -23,10 +23,6 @@ ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF
 THIS SOFTWARE.
 ****************************************************************/
 
-/* unsigned char is more trouble than it's worth */
-
-typedef	unsigned char uschar;
-
 #define	xfree(a)	{ if ((a) != NULL) { free((void *) (a)); (a) = NULL; } }
 
 #define	NN(p)	((p) ? (p) : "(null)")	/* guaranteed non-null for DPRINTF */
@@ -58,16 +54,42 @@ extern int	debug;
 extern	char	*patbeg;	/* beginning of pattern matched */
 extern	int	patlen;		/* length of pattern matched.  set in b.c */
 
-/* Cell:  all information about a variable or constant */
+enum ctype {
+	OCELL =	1,
+	OBOOL,
+	OJUMP,
+};
 
+enum csubtype {
+	CUNK = 0,
+	CFLD,
+	CVAR,
+	CTEMP,
+	CCON,
+	CFREE,
+	CCOPY,
+};
+
+
+/*
+ * Cell:  all information about a variable or constant
+ */
 typedef struct Cell {
-	uschar	ctype;		/* OCELL, OBOOL, OJUMP, etc. */
-	uschar	csub;		/* CCON, CTEMP, CFLD, etc. */
-	char	*nval;		/* name, for variables only */
-	char	*sval;		/* string value */
-	double	 fval;		/* value as number */
-	int	 tval;		/* type info: STR|NUM|ARR|FCN|FLD|CON|DONTFREE */
-	struct Cell *cnext;	/* ptr to next if chained */
+	enum ctype	 ctype;
+	enum csubtype	 csub;	/* Cell subtypes: csub */
+	char		*nval;	/* name, for variables only */
+	char		*sval;	/* string value */
+	double	 	 fval;	/* value as number */
+	unsigned int 	 tval;	/* type info */
+#define	NUM		0001	/* number value is valid */
+#define	STR		0002	/* string value is valid */
+#define DONTFREE	0004	/* string space is not freeable */
+#define	CON		0010	/* this is a constant */
+#define	ARR		0020	/* this is an array */
+#define	FCN		0040	/* this is a function name */
+#define FLD		0100	/* this is a field $1, $2, ... */
+#define	REC		0200	/* this is $0 */
+	struct Cell	*cnext;	/* ptr to next if chained */
 } Cell;
 
 typedef struct Array {		/* symbol table array */
@@ -83,15 +105,6 @@ extern Cell	*nrloc;		/* NR */
 extern Cell	*fnrloc;	/* FNR */
 extern Cell	*nfloc;		/* NF */
 
-/* Cell.tval values: */
-#define	NUM	01	/* number value is valid */
-#define	STR	02	/* string value is valid */
-#define DONTFREE 04	/* string space is not freeable */
-#define	CON	010	/* this is a constant */
-#define	ARR	020	/* this is an array */
-#define	FCN	040	/* this is a function name */
-#define FLD	0100	/* this is a field $1, $2, ... */
-#define	REC	0200	/* this is $0 */
 
 
 /* Node:  parse tree is made of nodes, with Cell's at bottom */
@@ -108,36 +121,17 @@ typedef struct Node {
 extern Node	*rootnode;
 extern Node	*nullnode;
 
-/* ctypes */
-#define OCELL	1
-#define OBOOL	2
-#define OJUMP	3
-
-/* Cell subtypes: csub */
-#define	CFREE	7
-#define CCOPY	6
-#define CCON	5
-#define CTEMP	4
-#define CNAME	3 
-#define CVAR	2
-#define CFLD	1
-#define	CUNK	0
-
-/* bool subtypes */
-#define BTRUE	11
-#define BFALSE	12
-
-/* jump subtypes */
-#define JEXIT	21
-
 /* node types */
 #define NVALUE	1
 #define NSTAT	2
 #define NEXPR	3
 
+/* bool subtypes */
+#define BTRUE	11
+#define BFALSE	12
+
 #define isvalue(n)	((n)->ntype == NVALUE)
 #define isexpr(n)	((n)->ntype == NEXPR)
-#define isexit(n)	((n)->csub == JEXIT)
 #define isrec(n)	((n)->tval & REC)
 #define isfld(n)	((n)->tval & FLD)
 #define isstr(n)	((n)->tval & STR)

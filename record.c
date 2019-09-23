@@ -87,7 +87,7 @@ record_get(void)
 {			/* note: cares whether buf == record */
 	char *buf = record;
 	int c, bufsize = recsize, savebufsize = recsize;
-	uschar saveb0;
+	unsigned char saveb0;
 	extern FILE *infile;
 
 	donefld = 0;
