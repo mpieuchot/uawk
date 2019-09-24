@@ -95,17 +95,11 @@ execute(Node *u)
 		curnode = a;
 		if (isvalue(a)) {
 			x = (Cell *) (a->narg[0]);
-			if (isfld(x) && !donefld)
-				field_from_record();
-			else if (isrec(x) && !donerec)
-				record_parse();
+			record_validate(x);
 			return x;
 		}
 		x = (*a->proc)(a->narg, a->nobj);
-		if (isfld(x) && !donefld)
-			field_from_record();
-		else if (isrec(x) && !donerec)
-			record_parse();
+		record_validate(x);
 		if (isexpr(a))
 			return x;
 		if (a->nnext == NULL)

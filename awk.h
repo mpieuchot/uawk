@@ -150,6 +150,7 @@ void		 funnyvar(Cell *, const char *);
 /* record.c */
 void		 record_init(void);
 int		 record_get(FILE *);
+void		 record_validate(Cell *);
 void		 record_parse(void);
 void		 field_from_record(void);
 void		 field_add(int);

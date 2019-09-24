@@ -208,10 +208,7 @@ fval_get(Cell *vp)
 {
 	if ((vp->tval & (NUM | STR)) == 0)
 		funnyvar(vp, "read value of");
-	if (isfld(vp) && donefld == 0)
-		field_from_record();
-	else if (isrec(vp) && donerec == 0)
-		record_parse();
+	record_validate(vp);
 	if (!isnum(vp)) {	/* not a number */
 		vp->fval = atof(vp->sval);	/* best guess */
 		if (is_number(vp->sval) && !(vp->tval&CON))

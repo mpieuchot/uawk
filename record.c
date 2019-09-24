@@ -204,6 +204,15 @@ field_from_record(void)
 	}
 }
 
+void
+record_validate(Cell *x)
+{
+	if (isfld(x) && !donefld)
+		field_from_record();
+	if (isrec(x) && !donerec)
+		record_parse();
+}
+
 /*
  * clean out fields n1 .. n2 inclusive
  *
