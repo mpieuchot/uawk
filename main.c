@@ -101,25 +101,25 @@ int main(int argc, char *argv[])
 		usage();
 
 	file = argv[0];
-
-	signal(SIGFPE, fpecatch);
-
 	yyin = NULL;
 	record_init();
 	symtab_init();
+
+	signal(SIGFPE, fpecatch);
 
 	compile_time = 1;
 	yyparse();
 	   DPRINTF( ("errorflag=%d\n", errorflag) );
 
-	if (*file == '-' && *(file+1) == '\0')
-		infile = stdin;
-	else if ((infile = fopen(file, "r")) == NULL)
-		FATAL("can't open file %s", file);
-
 	setlocale(LC_NUMERIC, ""); /* back to whatever it is locally */
 	if (errorflag == 0) {
 		compile_time = 0;
+
+		if (*file == '-' && *(file+1) == '\0')
+			infile = stdin;
+		else if ((infile = fopen(file, "r")) == NULL)
+			FATAL("can't open file %s", file);
+
 		execute(rootnode);
 	} else
 		bracecheck();
