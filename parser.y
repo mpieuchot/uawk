@@ -346,7 +346,8 @@ yylex(void)
 		if (isalpha(c) || c == '_')
 			return word(buf);
 		if (isdigit(c)) {
-			yylval.cp = symtab_set(buf, xstrdup(buf), atof(buf), CON|NUM, symtab);
+			yylval.cp = symtab_set(buf, xstrdup(buf), atof(buf),
+			    CON|NUM);
 			/* should this also have STR set? */
 			RET(NUMBER);
 		}
@@ -440,7 +441,7 @@ yylex(void)
 					unputstr(buf);
 					RET(INDIRECT);
 				}
-				yylval.cp = symtab_set(buf, "", 0.0, STR|NUM, symtab);
+				yylval.cp = symtab_set(buf, "", 0.0, STR|NUM);
 				RET(IVAR);
 			} else if (c == 0) {	/*  */
 				yyerror( "unexpected end of input after $" );
@@ -553,7 +554,7 @@ string(void)
 	*bp = 0; 
 	s = xstrdup(buf);
 	*bp++ = ' '; *bp++ = 0;
-	yylval.cp = symtab_set(buf, s, 0.0, CON|STR|DONTFREE, symtab);
+	yylval.cp = symtab_set(buf, s, 0.0, CON|STR|DONTFREE);
 	RET(STRING);
 }
 
@@ -574,7 +575,7 @@ word(char *w)
 		yylval.i = kp->sub;
 		RET(kp->type);
 	}
-	yylval.cp = symtab_set(w, "", 0.0, STR|NUM|DONTFREE, symtab);
+	yylval.cp = symtab_set(w, "", 0.0, STR|NUM|DONTFREE);
 	RET(VAR);
 }
 

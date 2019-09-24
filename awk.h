@@ -83,15 +83,6 @@ typedef struct Cell {
 	struct Cell	*cnext;	/* ptr to next if chained */
 } Cell;
 
-typedef struct Array {		/* symbol table array */
-	int	nelem;		/* elements in table right now */
-	int	size;		/* size of tab */
-	Cell	**tab;		/* hash table pointers */
-} Array;
-
-#define	NSYMTAB	50	/* initial size of a symbol table */
-extern Array	*symtab;
-
 extern Cell	*nrloc;		/* NR */
 extern Cell	*nfloc;		/* NF */
 
@@ -158,7 +149,7 @@ const char	 *tokname(int);
 
 /* symtab.c */
 void		 symtab_init(void);
-Cell		*symtab_set(const char *, const char *, double, unsigned int, Array *);
+Cell		*symtab_set(const char *, const char *, double, unsigned int);
 double		 fval_get(Cell *);
 double		 fval_set(Cell *, double);
 char		*sval_get(Cell *);

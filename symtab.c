@@ -33,7 +33,14 @@ THIS SOFTWARE.
 #define	FULLTAB	2		/* rehash when table gets this x full */
 #define	GROWTAB 4		/* grow table by this factor */
 
-Array		*symtab;	/* main symbol table */
+struct array {			/* symbol table array */
+	int	nelem;		/* elements in table right now */
+	int	size;		/* size of tab */
+	Cell	**tab;		/* hash table pointers */
+};
+
+#define	NSYMTAB	50		/* initial size of a symbol table */
+struct array	*symtab;	/* main symbol table */
 
 double	*NF;		/* number of fields in current record */
 double	*NR;		/* number of current record */
@@ -46,9 +53,9 @@ Cell		*nullloc;	/* empty cell, used for if(x)... tests */
 Cell		*literal0;
 
 int		 hash(const char *, int);
-Cell		*lookup(const char *, Array *);
-void		 rehash(Array *);
-Array		*symtab_alloc(int);
+Cell		*lookup(const char *, struct array *);
+void		 rehash(struct array *);
+struct array	*symtab_alloc(int);
 void		 symtab_free(Cell *);
 
 void
@@ -56,25 +63,25 @@ symtab_init(void)
 {
 	symtab = symtab_alloc(NSYMTAB);
 
-	literal0 = symtab_set("0", "0", 0.0, NUM|STR|CON|DONTFREE, symtab);
-	nullloc = symtab_set("$zero&null", "", 0.0, NUM|STR|CON|DONTFREE, symtab);
+	literal0 = symtab_set("0", "0", 0.0, NUM|STR|CON|DONTFREE);
+	nullloc = symtab_set("$zero&null", "", 0.0, NUM|STR|CON|DONTFREE);
 	nullnode = cell2node(nullloc, CCON);
 
-	nfloc = symtab_set("NF", "", 0.0, NUM, symtab);
+	nfloc = symtab_set("NF", "", 0.0, NUM);
 	NF = &nfloc->fval;
-	nrloc = symtab_set("NR", "", 0.0, NUM, symtab);
+	nrloc = symtab_set("NR", "", 0.0, NUM);
 	NR = &nrloc->fval;
-	symtabloc = symtab_set("SYMTAB", "", 0.0, ARR, symtab);
+	symtabloc = symtab_set("SYMTAB", "", 0.0, ARR);
 	symtabloc->sval = (char *) symtab;
 }
 
-Array *
+struct array *
 symtab_alloc(int n)
 {
-	Array *ap;
+	struct array *ap;
 	Cell **tp;
 
-	ap = xmalloc(sizeof(Array));
+	ap = xmalloc(sizeof(*ap));
 	tp = xcalloc(n, sizeof(Cell *));
 	ap->nelem = 0;
 	ap->size = n;
@@ -86,12 +93,12 @@ void
 symtab_free(Cell *ap)
 {
 	Cell *cp, *temp;
-	Array *tp;
+	struct array *tp;
 	int i;
 
 	if (!isarr(ap))
 		return;
-	tp = (Array *) ap->sval;
+	tp = (struct array *) ap->sval;
 	if (tp == NULL)
 		return;
 	for (i = 0; i < tp->size; i++) {
@@ -112,8 +119,9 @@ symtab_free(Cell *ap)
 }
 
 Cell *
-symtab_set(const char *n, const char *s, double f, unsigned t, Array *tp)
+symtab_set(const char *n, const char *s, double f, unsigned t)
 {
+	struct array *tp = symtab;
 	int h;
 	Cell *p;
 
@@ -156,7 +164,7 @@ hash(const char *s, int n)
  * rehash items in small table into big one
  */
 void
-rehash(Array *tp)
+rehash(struct array *tp)
 {
 	int i, nh, nsz;
 	Cell *cp, *op, **np;
@@ -180,7 +188,7 @@ rehash(Array *tp)
  * look for s in tp
  */
 Cell *
-lookup(const char *s, Array *tp)
+lookup(const char *s, struct array *tp)
 {
 	Cell *p;
 	int h;
