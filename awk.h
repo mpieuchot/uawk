@@ -37,8 +37,6 @@ extern double *NF;
 
 extern int	lineno;		/* line number in awk program */
 extern int	errorflag;	/* 1 if error has occurred */
-extern int	donefld;	/* 1 if record broken into fields */
-extern int	donerec;	/* 1 if record is valid (no fld has changed */
 
 extern int	debug;
 
@@ -151,6 +149,7 @@ void		 funnyvar(Cell *, const char *);
 void		 record_init(void);
 int		 record_get(FILE *);
 void		 record_validate(Cell *);
+void		 record_invalidate(Cell *);
 void		 record_parse(void);
 void		 field_from_record(void);
 void		 field_add(int);

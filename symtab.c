@@ -230,15 +230,12 @@ fval_set(Cell *vp, double f)
 	if ((vp->tval & (NUM | STR)) == 0) 
 		funnyvar(vp, "assign to");
 	if (isfld(vp)) {
-		donerec = 0;	/* mark $0 invalid */
 		fldno = atoi(vp->nval);
 		if (fldno > *NF)
 			field_add(fldno);
 		   DPRINTF( ("setting field %d to %g\n", fldno, f) );
-	} else if (isrec(vp)) {
-		donefld = 0;	/* mark $1... invalid */
-		donerec = 1;
 	}
+	record_invalidate(vp);
 	if (freeable(vp))
 		xfree(vp->sval); /* free any previous string */
 	vp->tval &= ~STR;	/* mark string invalid */
@@ -258,10 +255,7 @@ sval_get(Cell *vp)
 
 	if ((vp->tval & (NUM | STR)) == 0)
 		funnyvar(vp, "read value of");
-	if (isfld(vp) && donefld == 0)
-		field_from_record();
-	else if (isrec(vp) && donerec == 0)
-		record_parse();
+	record_validate(vp);
 	if (isstr(vp) == 0) {
 		if (freeable(vp))
 			xfree(vp->sval);
@@ -286,28 +280,25 @@ sval_set(Cell *vp, const char *s)
 	char *t;
 	int fldno;
 
-	   DPRINTF( ("starting sval_set %p: %s = \"%s\", t=%o, r,f=%d,%d\n", 
-		(void*)vp, NN(vp->nval), s, vp->tval, donerec, donefld) );
+	   DPRINTF( ("starting sval_set %p: %s = \"%s\", t=%o\n",
+		(void*)vp, NN(vp->nval), s, vp->tval) );
 	if ((vp->tval & (NUM | STR)) == 0)
 		funnyvar(vp, "assign to");
 	if (isfld(vp)) {
-		donerec = 0;	/* mark $0 invalid */
 		fldno = atoi(vp->nval);
 		if (fldno > *NF)
 			field_add(fldno);
 		   DPRINTF( ("setting field %d to %s (%p)\n", fldno, s, s) );
-	} else if (isrec(vp)) {
-		donefld = 0;	/* mark $1... invalid */
-		donerec = 1;
 	}
+	record_invalidate(vp);
 	t = xstrdup(s);	/* in case it's self-assign */
 	if (freeable(vp))
 		xfree(vp->sval);
 	vp->tval &= ~NUM;
 	vp->tval |= STR;
 	vp->tval &= ~DONTFREE;
-	   DPRINTF( ("sval_set %p: %s = \"%s (%p) \", t=%o r,f=%d,%d\n", 
-		(void*)vp, NN(vp->nval), t,t, vp->tval, donerec, donefld) );
+	   DPRINTF( ("sval_set %p: %s = \"%s (%p) \", t=%o\n",
+		(void*)vp, NN(vp->nval), t,t, vp->tval) );
 	return(vp->sval = t);
 }
 

@@ -46,8 +46,8 @@ Cell	**fldtab;	/* pointers to Cells */
 #define	MAXFLD	2
 int	nfields	= MAXFLD;	/* last allocated slot for $i */
 
-int	donefld;	/* 1 = implies rec broken into fields */
-int	donerec;	/* 1 = record is valid (no flds have changed) */
+int	donefld;	/* 1 if `record' broken into fields */
+int	donerec;	/* 1 if `record' is valid (no flds have changed) */
 
 int	lastfld	= 0;	/* last used field */
 
@@ -211,6 +211,17 @@ record_validate(Cell *x)
 		field_from_record();
 	if (isrec(x) && !donerec)
 		record_parse();
+}
+
+void
+record_invalidate(Cell *x)
+{
+	if (isfld(x))
+		donerec = 0;	/* mark $0 invalid */
+	if (isrec(x)) {
+		donefld = 0;	/* mark $1... invalid */
+		donerec = 1;
+	}
 }
 
 /*
