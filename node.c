@@ -102,7 +102,7 @@ tokname(int a)
 void
 nodeinit(int a, Node *x)
 {
-	Cell *(*xproc)(Node **, int) = f_null;
+	Cell *(*xproc)(Node **, int) = NULL;
 	int i;
 
 	for (i = 0; i < (sizeof(tokens) / sizeof(tokens[0])); i++) {

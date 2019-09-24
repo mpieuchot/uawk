@@ -82,8 +82,6 @@ xadjbuf(char **pbuf, int *psiz, int minlen, int quantum, char **pbptr,
 	}
 }
 
-#define notlegal(a)	(a->proc == f_null)
-
 /* execute a node of the parse tree */
 Cell *
 execute(Node *u)
@@ -103,9 +101,6 @@ execute(Node *u)
 				record_parse();
 			return x;
 		}
-		/* probably a Cell* but too risky to print */
-		if (notlegal(a))
-			FATAL("illegal statement");
 		x = (*a->proc)(a->narg, a->nobj);
 		if (isfld(x) && !donefld)
 			field_from_record();
