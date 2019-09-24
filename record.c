@@ -81,12 +81,11 @@ record_init(void)
  * get next input record
  */
 int
-record_get(void)
+record_get(FILE *infile)
 {			/* note: cares whether buf == record */
 	char *buf = record;
 	int c, bufsize = recsize, savebufsize = recsize;
 	unsigned char saveb0;
-	extern FILE *infile;
 
 	donefld = 0;
 	donerec = 1;
@@ -107,9 +106,6 @@ record_get(void)
 		recsize = bufsize;
 		return 1;
 	}
-	/* EOF arrived on this file; set up next */
-	if (infile != stdin)
-		fclose(infile);
 	buf[0] = saveb0;
 	record = buf;
 	recsize = savebufsize;

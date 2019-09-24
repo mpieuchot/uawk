@@ -123,6 +123,10 @@ int main(int argc, char *argv[])
 		execute(rootnode);
 	} else
 		bracecheck();
+
+	if (infile != stdin)
+		fclose(infile);
+
 	return errorflag;
 }
 

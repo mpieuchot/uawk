@@ -125,6 +125,7 @@ execute(Node *u)
 Cell *
 f_program(Node **a, int n)
 {
+	extern FILE *infile;
 	Cell *x;
 
 	if (setjmp(env) != 0)
@@ -133,11 +134,12 @@ f_program(Node **a, int n)
 		x = execute(a[0]);
 		tcell_put(x);
 	}
-	if (a[1] || a[2])
-		while (record_get() > 0) {
+	if (a[1] || a[2]) {
+		while (record_get(infile) > 0) {
 			x = execute(a[1]);
 			tcell_put(x);
 		}
+	}
   ex:
 	if (setjmp(env) != 0)	/* handles exit within END */
 		goto ex1;
