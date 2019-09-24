@@ -26,11 +26,7 @@ THIS SOFTWARE.
 #define	xfree(a)	{ if ((a) != NULL) { free((void *) (a)); (a) = NULL; } }
 
 #define	NN(p)	((p) ? (p) : "(null)")	/* guaranteed non-null for DPRINTF */
-#ifdef	DEBUG
-#	define	DPRINTF(x)	if (debug) printf x
-#else
-#	define	DPRINTF(x)
-#endif
+#define	DPRINTF(x)	if (debug) printf x
 
 extern int	compile_time;	/* 1 if compiling, 0 if running */
 
@@ -39,16 +35,12 @@ extern int	recsize;	/* size of current record, orig RECSIZE */
 extern double *NR;
 extern double *NF;
 
-extern char	*record;	/* points to $0 */
 extern int	lineno;		/* line number in awk program */
 extern int	errorflag;	/* 1 if error has occurred */
 extern int	donefld;	/* 1 if record broken into fields */
 extern int	donerec;	/* 1 if record is valid (no fld has changed */
 
 extern int	debug;
-
-extern	char	*patbeg;	/* beginning of pattern matched */
-extern	int	patlen;		/* length of pattern matched.  set in b.c */
 
 enum ctype {
 	CUNK = 0,
@@ -117,7 +109,6 @@ extern Node	*nullnode;
 #define isfcn(n)	((n)->tval & FCN)
 #define istrue(n)	((n)->ctype == CTRUE)
 #define	isargument(n)	((n)->nobj == ARG)
-/* #define freeable(p)	(!((p)->tval & DONTFREE)) */
 #define freeable(p)	( ((p)->tval & (STR|DONTFREE)) == STR )
 
 /* parser.y */

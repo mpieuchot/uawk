@@ -36,7 +36,7 @@ THIS SOFTWARE.
 #define	RECSIZE	(8 * 1024)	/* sets limit on records, fields, etc., etc. */
 
 char	*file	= "";
-char	*record;
+char	*record;		/* points to $0 */
 int	recsize	= RECSIZE;
 char	*fields;
 int	fieldssize = RECSIZE;
