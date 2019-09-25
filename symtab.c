@@ -55,7 +55,6 @@ int		 hash(const char *, int);
 Cell		*lookup(const char *, struct array *);
 void		 rehash(struct array *);
 struct array	*symtab_alloc(int);
-void		 symtab_free(Cell *);
 
 void
 symtab_init(void)
@@ -84,35 +83,6 @@ symtab_alloc(int n)
 	ap->size = n;
 	ap->tab = tp;
 	return ap;
-}
-
-void
-symtab_free(Cell *ap)
-{
-	Cell *cp, *temp;
-	struct array *tp;
-	int i;
-
-	if (!isarr(ap))
-		return;
-	tp = (struct array *) ap->sval;
-	if (tp == NULL)
-		return;
-	for (i = 0; i < tp->size; i++) {
-		for (cp = tp->tab[i]; cp != NULL; cp = temp) {
-			xfree(cp->nval);
-			if (freeable(cp))
-				xfree(cp->sval);
-			temp = cp->cnext;	/* avoids freeing then using */
-			free(cp); 
-			tp->nelem--;
-		}
-		tp->tab[i] = 0;
-	}
-	if (tp->nelem != 0)
-		FATAL("can't happen: inconsistent element count freeing %s", ap->nval);
-	free(tp->tab);
-	free(tp);
 }
 
 Cell *
@@ -302,8 +272,6 @@ sval_set(Cell *vp, const char *s)
 void
 funnyvar(Cell *vp, const char *rw)
 {
-	if (isarr(vp))
-		FATAL("can't %s %s; it's an array name.", rw, vp->nval);
 	if (vp->tval & FCN)
 		FATAL("can't %s %s; it's a function.", rw, vp->nval);
 	FATAL("funny variable %p: n=%s s=\"%s\" f=%g t=%o",
