@@ -105,7 +105,6 @@ extern Node	*nullnode;
 #define isstr(n)	((n)->tval & STR)
 #define isnum(n)	((n)->tval & NUM)
 #define istrue(n)	((n)->ctype == CTRUE)
-#define	isargument(n)	((n)->nobj == ARG)
 #define freeable(p)	( ((p)->tval & (STR|DONTFREE)) == STR )
 
 /* parser.y */
