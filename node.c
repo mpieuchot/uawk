@@ -42,7 +42,7 @@ Node		*node4(int, Node *, Node *, Node *, Node *);
 struct
 {	int value;
 	Cell *(*func)(Node **, int);
-} tokens[] = {
+} functions[] = {
 	{ PROGRAM,	f_program },
 	{ NE,		f_relop },
 	{ EQ,		f_relop },
@@ -78,18 +78,19 @@ struct
 void
 nodeinit(int a, Node *x)
 {
-	Cell *(*xproc)(Node **, int) = NULL;
 	int i;
 
-	for (i = 0; i < (sizeof(tokens) / sizeof(tokens[0])); i++) {
-		if (a == tokens[i].value) {
-			xproc = tokens[i].func;
+	/* NVALUE */
+	if (a == 0)
+		return;
+
+	for (i = 0; i < nitems(functions); i++) {
+		if (a == functions[i].value)
 			break;
-		}
 	}
 
-	x->nobj = a;
-	x->proc = xproc;
+	x->nobj = functions[i].value;
+	x->proc = functions[i].func;
 }
 
 Node *
