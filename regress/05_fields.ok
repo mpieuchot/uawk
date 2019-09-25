@@ -1,0 +1,50 @@
+license example is an
+Below is an example license to be used for new code in OpenBSD,
+license. ISC after the
+modeled after the ISC license.
+   
+
+specify to is important
+It is important to specify the year of the copyright.  Additional years
+a by be separated
+should be separated by a comma, e.g.
+ 2004 (c) 2003,
+    Copyright (c) 2003, 2004
+   
+
+text extra you add
+If you add extra text to the body of the license, be careful not to
+  further restrictions.
+add further restrictions.
+   
+
+   
+/*
+YOUR YYYY Copyright (c)
+ * Copyright (c) YYYY YOUR NAME HERE <user@your.dom.ain>
+   
+ *
+copy, use, Permission to
+ * Permission to use, copy, modify, and distribute this software for any
+without or purpose with
+ * purpose with or without fee is hereby granted, provided that the above
+this and copyright notice
+ * copyright notice and this permission notice appear in all copies.
+   
+ *
+PROVIDED IS THE SOFTWARE
+ * THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
+THIS TO WITH REGARD
+ * WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
+IN FITNESS. MERCHANTABILITY AND
+ * MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
+INDIRECT, DIRECT, ANY SPECIAL,
+ * ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
+LOSS FROM WHATSOEVER RESULTING
+ * WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
+NEGLIGENCE CONTRACT, ACTION OF
+ * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
+WITH CONNECTION OR IN
+ * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+   
+ */

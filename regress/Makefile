@@ -4,7 +4,7 @@ FILE=	/usr/share/misc/license.template
 
 .MAIN: all
 
-FILE_TARGETS=	00_head10 01_sum 02_begin 03_div_by_0 04_modulo
+FILE_TARGETS=	00_head10 01_sum 02_begin 03_div_by_0 04_modulo 05_fields
 PIPE_TARGETS=	40_line
 
 
