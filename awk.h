@@ -75,6 +75,12 @@ typedef struct Cell {
 	struct Cell	*cnext;	/* ptr to next if chained */
 } Cell;
 
+#define isstr(n)	((n)->tval & STR)
+#define isrec(n)	((n)->tval & REC)
+#define isfld(n)	((n)->tval & FLD)
+#define freeable(p)	( ((p)->tval & (STR|DONTFREE)) == STR )
+
+
 extern Cell	*nrloc;		/* NR */
 extern Cell	*nfloc;		/* NF */
 
@@ -97,15 +103,6 @@ typedef struct Node {
 
 extern Node	*rootnode;
 extern Node	*nullnode;
-
-#define isvalue(n)	((n)->ntype == NVALUE)
-#define isexpr(n)	((n)->ntype == NEXPR)
-#define isrec(n)	((n)->tval & REC)
-#define isfld(n)	((n)->tval & FLD)
-#define isstr(n)	((n)->tval & STR)
-#define isnum(n)	((n)->tval & NUM)
-#define istrue(n)	((n)->ctype == CTRUE)
-#define freeable(p)	( ((p)->tval & (STR|DONTFREE)) == STR )
 
 /* parser.y */
 extern	Node	*notnull(Node *);

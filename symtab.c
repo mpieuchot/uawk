@@ -23,7 +23,6 @@ ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF
 THIS SOFTWARE.
 ****************************************************************/
 
-#include <assert.h>
 #include <errno.h>
 #include <string.h>
 #include <stdlib.h>
@@ -166,106 +165,4 @@ lookup(const char *s, struct array *tp)
 		if (strcmp(s, p->nval) == 0)
 			return p;	/* found it */
 	return NULL;			/* not found */
-}
-
-/*
- * get float val of a Cell
- */
-double
-fval_get(Cell *vp)
-{
-	assert(vp->tval & (NUM | STR));
-
-	record_validate(vp);
-	if (!isnum(vp)) {	/* not a number */
-		vp->fval = atof(vp->sval);	/* best guess */
-		if (is_number(vp->sval) && !(vp->tval&CON))
-			vp->tval |= NUM;	/* make NUM only sparingly */
-	}
-	   DPRINTF( ("fval_get %p: %s = %g, t=%o\n",
-		(void*)vp, NN(vp->nval), vp->fval, vp->tval) );
-	return(vp->fval);
-}
-
-/*
- * set float val of a Cell
- */
-double
-fval_set(Cell *vp, double f)
-{
-	int fldno;
-
-	assert(vp->tval & (NUM | STR));
-
-	if (isfld(vp)) {
-		fldno = atoi(vp->nval);
-		if (fldno > *NF)
-			field_add(fldno);
-		   DPRINTF( ("setting field %d to %g\n", fldno, f) );
-	}
-	record_invalidate(vp);
-	if (freeable(vp))
-		xfree(vp->sval); /* free any previous string */
-	vp->tval &= ~STR;	/* mark string invalid */
-	vp->tval |= NUM;	/* mark number ok */
-	   DPRINTF( ("fval_set %p: %s = %g, t=%o\n", (void*)vp, NN(vp->nval), f, vp->tval) );
-	return vp->fval = f;
-}
-
-/*
- * get string val of a Cell
- */
-char *
-sval_get(Cell *vp)
-{
-	int n;
-	double dtemp;
-
-	assert(vp->tval & (NUM | STR));
-
-	record_validate(vp);
-	if (isstr(vp) == 0) {
-		if (freeable(vp))
-			xfree(vp->sval);
-		if (modf(vp->fval, &dtemp) == 0)	/* it's integral */
-			n = xasprintf(&vp->sval, "%.30g", vp->fval);
-		else
-			n = xasprintf(&vp->sval, "%.6g", vp->fval);
-		vp->tval &= ~DONTFREE;
-		vp->tval |= STR;
-	}
-	   DPRINTF( ("sval_get %p: %s = \"%s (%p)\", t=%o\n",
-		(void*)vp, NN(vp->nval), vp->sval, vp->sval, vp->tval) );
-	return(vp->sval);
-}
-
-/*
- * set string val of a Cell
- */
-char *
-sval_set(Cell *vp, const char *s)
-{
-	char *t;
-	int fldno;
-
-	   DPRINTF( ("starting sval_set %p: %s = \"%s\", t=%o\n",
-		(void*)vp, NN(vp->nval), s, vp->tval) );
-	assert(vp->tval & (NUM | STR));
-
-	if (isfld(vp)) {
-		fldno = atoi(vp->nval);
-		if (fldno > *NF)
-			field_add(fldno);
-		   DPRINTF( ("setting field %d to %s (%p)\n", fldno, s, s) );
-	}
-	record_invalidate(vp);
-	t = xstrdup(s);	/* in case it's self-assign */
-	if (freeable(vp))
-		xfree(vp->sval);
-	vp->tval &= ~NUM;
-	vp->tval |= STR;
-	vp->tval &= ~DONTFREE;
-	   DPRINTF( ("sval_set %p: %s = \"%s (%p) \", t=%o\n",
-		(void*)vp, NN(vp->nval), t,t, vp->tval) );
-	return(vp->sval = t);
 }
