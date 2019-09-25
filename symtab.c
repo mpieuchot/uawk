@@ -272,8 +272,6 @@ sval_set(Cell *vp, const char *s)
 void
 funnyvar(Cell *vp, const char *rw)
 {
-	if (vp->tval & FCN)
-		FATAL("can't %s %s; it's a function.", rw, vp->nval);
 	FATAL("funny variable %p: n=%s s=\"%s\" f=%g t=%o",
 		vp, vp->nval, vp->sval, vp->fval, vp->tval);
 }

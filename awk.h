@@ -70,7 +70,6 @@ typedef struct Cell {
 #define	STR		0002	/* string value is valid */
 #define DONTFREE	0004	/* string space is not freeable */
 #define	CON		0010	/* this is a constant */
-#define	FCN		0040	/* this is a function name */
 #define FLD		0100	/* this is a field $1, $2, ... */
 #define	REC		0200	/* this is $0 */
 	struct Cell	*cnext;	/* ptr to next if chained */
@@ -105,7 +104,6 @@ extern Node	*nullnode;
 #define isfld(n)	((n)->tval & FLD)
 #define isstr(n)	((n)->tval & STR)
 #define isnum(n)	((n)->tval & NUM)
-#define isfcn(n)	((n)->tval & FCN)
 #define istrue(n)	((n)->ctype == CTRUE)
 #define	isargument(n)	((n)->nobj == ARG)
 #define freeable(p)	( ((p)->tval & (STR|DONTFREE)) == STR )
