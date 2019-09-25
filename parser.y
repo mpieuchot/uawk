@@ -234,18 +234,17 @@ int	parencnt = 0;
 
 typedef struct Keyword {
 	const char *word;
-	int	sub;
 	int	type;
 } Keyword;
 
 Keyword keywords[] ={	/* keep sorted: binary searched */
-	{ "BEGIN",	XBEGIN,		XBEGIN },
-	{ "END",	XEND,		XEND },
-	{ "else",	ELSE,		ELSE },
-	{ "exit",	EXIT,		EXIT },
-	{ "if",		IF,		IF },
-	{ "print",	PRINT,		PRINT },
-	{ "printf",	PRINTF,		PRINTF },
+	{ "BEGIN",	XBEGIN },
+	{ "END",	XEND },
+	{ "else",	ELSE },
+	{ "exit",	EXIT },
+	{ "if",		IF },
+	{ "print",	PRINT },
+	{ "printf",	PRINTF },
 };
 
 #define	RET(x)	{ if(debug)printf("lex %s\n", tokname((x))); return (x); }
@@ -572,7 +571,7 @@ word(char *w)
 	kp = bsearch(w, keywords, sizeof(keywords)/sizeof(keywords[0]),
 	    sizeof(keywords[0]), kcmp);
 	if (kp != NULL) {
-		yylval.i = kp->sub;
+		yylval.i = kp->type;
 		RET(kp->type);
 	}
 	yylval.cp = symtab_set(w, "", 0.0, STR|NUM|DONTFREE);
