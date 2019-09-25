@@ -513,8 +513,10 @@ f_assign(Node **a, int n)
 			sval_set(x, sval_get(y));
 		else if (isnum(y))
 			fval_set(x, fval_get(y));
-		else
-			funnyvar(y, "read value of");
+		else {
+			FATAL("incorrect assign %p: n=%s s=\"%s\" f=%g t=%o",
+			    y, y->nval, y->sval, y->fval, y->tval);
+		}
 		tcell_put(y);
 		return x;
 	}

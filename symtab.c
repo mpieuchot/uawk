@@ -23,6 +23,7 @@ ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF
 THIS SOFTWARE.
 ****************************************************************/
 
+#include <assert.h>
 #include <errno.h>
 #include <string.h>
 #include <stdlib.h>
@@ -173,8 +174,8 @@ lookup(const char *s, struct array *tp)
 double
 fval_get(Cell *vp)
 {
-	if ((vp->tval & (NUM | STR)) == 0)
-		funnyvar(vp, "read value of");
+	assert(vp->tval & (NUM | STR));
+
 	record_validate(vp);
 	if (!isnum(vp)) {	/* not a number */
 		vp->fval = atof(vp->sval);	/* best guess */
@@ -194,8 +195,8 @@ fval_set(Cell *vp, double f)
 {
 	int fldno;
 
-	if ((vp->tval & (NUM | STR)) == 0) 
-		funnyvar(vp, "assign to");
+	assert(vp->tval & (NUM | STR));
+
 	if (isfld(vp)) {
 		fldno = atoi(vp->nval);
 		if (fldno > *NF)
@@ -220,8 +221,8 @@ sval_get(Cell *vp)
 	int n;
 	double dtemp;
 
-	if ((vp->tval & (NUM | STR)) == 0)
-		funnyvar(vp, "read value of");
+	assert(vp->tval & (NUM | STR));
+
 	record_validate(vp);
 	if (isstr(vp) == 0) {
 		if (freeable(vp))
@@ -249,8 +250,8 @@ sval_set(Cell *vp, const char *s)
 
 	   DPRINTF( ("starting sval_set %p: %s = \"%s\", t=%o\n",
 		(void*)vp, NN(vp->nval), s, vp->tval) );
-	if ((vp->tval & (NUM | STR)) == 0)
-		funnyvar(vp, "assign to");
+	assert(vp->tval & (NUM | STR));
+
 	if (isfld(vp)) {
 		fldno = atoi(vp->nval);
 		if (fldno > *NF)
@@ -267,11 +268,4 @@ sval_set(Cell *vp, const char *s)
 	   DPRINTF( ("sval_set %p: %s = \"%s (%p) \", t=%o\n",
 		(void*)vp, NN(vp->nval), t,t, vp->tval) );
 	return(vp->sval = t);
-}
-
-void
-funnyvar(Cell *vp, const char *rw)
-{
-	FATAL("funny variable %p: n=%s s=\"%s\" f=%g t=%o",
-		vp, vp->nval, vp->sval, vp->fval, vp->tval);
 }

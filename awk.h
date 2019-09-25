@@ -141,7 +141,6 @@ double		 fval_get(Cell *);
 double		 fval_set(Cell *, double);
 char		*sval_get(Cell *);
 char		*sval_set(Cell *, const char *);
-void		 funnyvar(Cell *, const char *);
 
 /* record.c */
 void		 record_init(void);
