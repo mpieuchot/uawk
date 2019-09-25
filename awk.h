@@ -85,7 +85,11 @@ extern Cell	*nfloc;		/* NF */
 /* Node:  parse tree is made of nodes, with Cell's at bottom */
 
 typedef struct Node {
-	int	ntype;
+	enum {
+		NVALUE = 1,
+		NSTAT,
+		NEXPR,
+	} ntype;
 	struct	Node *nnext;
 	int	lineno;
 	int	nobj;
@@ -95,11 +99,6 @@ typedef struct Node {
 
 extern Node	*rootnode;
 extern Node	*nullnode;
-
-/* node types */
-#define NVALUE	1
-#define NSTAT	2
-#define NEXPR	3
 
 #define isvalue(n)	((n)->ntype == NVALUE)
 #define isexpr(n)	((n)->ntype == NEXPR)
