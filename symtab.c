@@ -47,7 +47,6 @@ double	*NR;		/* number of current record */
 
 Cell		*nrloc;		/* NR */
 Cell		*nfloc;		/* NF */
-Cell		*symtabloc;	/* SYMTAB */
 
 Cell		*nullloc;	/* empty cell, used for if(x)... tests */
 Cell		*literal0;
@@ -71,8 +70,6 @@ symtab_init(void)
 	NF = &nfloc->fval;
 	nrloc = symtab_set("NR", "", 0.0, NUM);
 	NR = &nrloc->fval;
-	symtabloc = symtab_set("SYMTAB", "", 0.0, ARR);
-	symtabloc->sval = (char *) symtab;
 }
 
 struct array *
