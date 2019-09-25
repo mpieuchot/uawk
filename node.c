@@ -42,62 +42,38 @@ Node		*node4(int, Node *, Node *, Node *, Node *);
 struct
 {	int value;
 	Cell *(*func)(Node **, int);
-	const char *name;
 } tokens[] = {
-	{ XBEGIN, NULL, "XBEGIN" },
-	{ XEND, NULL, "XEND" },
-	{ NL, NULL, "NL" },
-	{ ASGNOP, NULL, "ASGNOP" },
-	{ VAR, NULL, "VAR" },
-	{ IVAR, NULL, "IVAR" },
-	{ NUMBER, NULL, "NUMBER" },
-	{ STRING, NULL, "STRING" },
-	{ PROGRAM, f_program,  "PROGRAM" },
-	{ NE, f_relop,  "NE" },
-	{ EQ, f_relop,  "EQ" },
-	{ LE, f_relop,  "LE" },
-	{ LT, f_relop,  "LT" },
-	{ GE, f_relop,  "GE" },
-	{ GT, f_relop,  "GT" },
-	{ INDIRECT, f_indirect,  "INDIRECT" },
-	{ ADD, f_arith,  "ADD" },
-	{ MINUS, f_arith,  "MINUS" },
-	{ MULT, f_arith,  "MULT" },
-	{ DIVIDE, f_arith,  "DIVIDE" },
-	{ MOD, f_arith,  "MOD" },
-	{ UMINUS, f_arith,  "UMINUS" },
-	{ PREINCR, f_incrdecr,  "PREINCR" },
-	{ POSTINCR, f_incrdecr,  "POSTINCR" },
-	{ PREDECR, f_incrdecr,  "PREDECR" },
-	{ POSTDECR, f_incrdecr,  "POSTDECR" },
-	{ PASTAT, f_pastat,  "PASTAT" },
-	{ PRINTF, f_printf,  "PRINTF" },
-	{ PRINT, f_print,  "PRINT" },
-	{ ASSIGN, f_assign,  "ASSIGN" },
-	{ ADDEQ, f_assign,  "ADDEQ" },
-	{ SUBEQ, f_assign,  "SUBEQ" },
-	{ MULTEQ, f_assign,  "MULTEQ" },
-	{ DIVEQ, f_assign,  "DIVEQ" },
-	{ MODEQ, f_assign,  "MODEQ" },
-	{ CONDEXPR, f_condexpr,  "CONDEXPR" },
-	{ IF, f_if,  "IFSTAT" },
-	{ EXIT, f_jump,  "exit" },
+	{ PROGRAM,	f_program },
+	{ NE,		f_relop },
+	{ EQ,		f_relop },
+	{ LE,		f_relop },
+	{ LT,		f_relop },
+	{ GE,		f_relop },
+	{ GT,		f_relop },
+	{ INDIRECT,	f_indirect },
+	{ ADD,		f_arith },
+	{ MINUS,	f_arith },
+	{ MULT,		f_arith },
+	{ DIVIDE,	f_arith },
+	{ MOD,		f_arith },
+	{ UMINUS,	f_arith },
+	{ PREINCR,	f_incrdecr },
+	{ POSTINCR,	f_incrdecr },
+	{ PREDECR,	f_incrdecr },
+	{ POSTDECR,	f_incrdecr },
+	{ PASTAT,	f_pastat },
+	{ PRINTF,	f_printf },
+	{ PRINT,	f_print },
+	{ ASSIGN,	f_assign },
+	{ ADDEQ,	f_assign },
+	{ SUBEQ,	f_assign },
+	{ MULTEQ,	f_assign },
+	{ DIVEQ,	f_assign },
+	{ MODEQ,	f_assign },
+	{ CONDEXPR,	f_condexpr },
+	{ IF,		f_if },
+	{ EXIT,		f_jump },
 };
-
-const char *
-tokname(int a)
-{
-	static char buf[100];
-	int i;
-
-	for (i = 0; i < (sizeof(tokens) / sizeof(tokens[0])); i++) {
-		if (a == tokens[i].value)
-			return tokens[i].name;
-	}
-
-	snprintf(buf, sizeof(buf), "token %d", a);
-	return buf;
-}
 
 void
 nodeinit(int a, Node *x)

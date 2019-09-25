@@ -134,7 +134,6 @@ Node		*exp2stat(Node *);
 Node		*cell2node(Cell *, int);
 Node		*record2node(void);
 Node		*node_link(Node *, Node *);
-const char	 *tokname(int);
 
 /* symtab.c */
 void		 symtab_init(void);

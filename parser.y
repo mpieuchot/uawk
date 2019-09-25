@@ -32,7 +32,9 @@ THIS SOFTWARE.
 #include "awk.h"
 
 int yywrap(void) { return(1); }
-void	yyerror(const char *, ...);
+
+void		  yyerror(const char *, ...);
+const char	 *tokname(int);
 
 Node	*beginloc = 0;
 Node	*endloc = 0;
@@ -796,3 +798,66 @@ notnull(Node *n)
 		return op2(NE, n, nullnode);
 	}
 }
+
+const char *
+tokname(int a)
+{
+	static struct {
+		int		t_val;
+		const char	*t_name;
+	} tokens[] = {
+		{ PROGRAM,	"PROGRAM" },
+		{ PASTAT,	"PASTAT" },
+		{ XBEGIN,	"XBEGIN" },
+		{ XEND,		"XEND" },
+		{ NL,		"NL" },
+		{ APPEND,	"APPEND" },
+		{ EQ,		"EQ" },
+		{ GE,		"GE" },
+		{ GT,		"GT" },
+		{ LE,		"LE" },
+		{ LT,		"LT" },
+		{ NE,		"NE" },
+		{ EXIT,		"EXIT" },
+		{ IF,		"IF" },
+		{ ADD,		"ADD" },
+		{ MINUS,	"MINUS" },
+		{ MULT,		"MULT" },
+		{ DIVIDE,	"DIVIDE" },
+		{ MOD,		"MODE" },
+		{ ASSIGN,	"ASSIGN" },
+		{ ASGNOP,	"ASGNOP" },
+		{ ADDEQ,	"ADDEQ" },
+		{ SUBEQ,	"SUBEQ" },
+		{ MULTEQ,	"MULTEQ" },
+		{ DIVEQ,	"DIVEQ" },
+		{ MODEQ,	"MODEQ" },
+		{ PRINT,	"PRINT" },
+		{ PRINTF,	"PRINTF" },
+		{ ELSE,		"ELSE" },
+		{ CONDEXPR,	"CONDEXPR" },
+		{ POSTINCR,	"POSTINCR" },
+		{ PREINCR,	"PREINCR" },
+		{ POSTDECR,	"POSTDECR" },
+		{ PREDECR,	"PREDECR" },
+		{ VAR,		"VAR" },
+		{ IVAR,		"IVAR" },
+		{ NUMBER,	"NUMBER" },
+		{ STRING,	"STRING" },
+		{ UMINUS,	"UMINUS" },
+		{ DECR,		"DECR" },
+		{ INCR,		"INCR" },
+		{ INDIRECT,	"INDIRECT" },
+	};
+	static char buf[100];
+	int i;
+
+	for (i = 0; i < (sizeof(tokens) / sizeof(tokens[0])); i++) {
+		if (a == tokens[i].t_val)
+			return tokens[i].t_name;
+	}
+
+	snprintf(buf, sizeof(buf), "token %d", a);
+	return buf;
+}
+
