@@ -46,8 +46,8 @@ extern int	debug;
 
 enum ctype {
 	CUNK = 0,
-	CREC,
-	CFLD,
+	CREC,		/* this is $0 */
+	CFLD,		/* this is a field $1, $2, ... */
 	CVAR,
 	CTEMP,
 	CCON,
@@ -67,18 +67,15 @@ typedef struct Cell {
 	char		*sval;	/* string value */
 	double	 	 fval;	/* value as number */
 	unsigned int 	 tval;	/* type info */
-#define	NUM		0001	/* number value is valid */
-#define	STR		0002	/* string value is valid */
-#define DONTFREE	0004	/* string space is not freeable */
-#define	CON		0010	/* this is a constant */
-#define FLD		0100	/* this is a field $1, $2, ... */
-#define	REC		0200	/* this is $0 */
+#define	NUM		(1 << 0)	/* number value is valid */
+#define	STR		(1 << 1)	/* string value is valid */
+#define	DONTFREE	(1 << 2)	/* string space is not freeable */
+#define	CON		(1 << 3)	/* this is a constant */
 	struct Cell	*cnext;	/* ptr to next if chained */
 } Cell;
 
 #define isstr(n)	((n)->tval & STR)
-#define isrec(n)	((n)->tval & REC)
-#define isrec2(n)	((n)->ctype == CREC)
+#define isrec(n)	((n)->ctype == CREC)
 #define isfld(n)	((n)->ctype == CFLD)
 #define freeable(p)	( ((p)->tval & (STR|DONTFREE)) == STR )
 

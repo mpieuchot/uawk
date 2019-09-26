@@ -23,6 +23,7 @@ ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF
 THIS SOFTWARE.
 ****************************************************************/
 
+#include <assert.h>
 #include <ctype.h>
 #include <errno.h>
 #include <math.h>
@@ -51,8 +52,8 @@ int	donerec;	/* 1 if `record' is valid (no flds have changed) */
 
 int	lastfld	= 0;	/* last used field */
 
-static Cell dollar0 = { CREC, NULL, "", 0.0, REC|STR|DONTFREE };
-static Cell dollar1 = { CFLD, NULL, "", 0.0, FLD|STR|DONTFREE };
+static Cell dollar0 = { CREC, NULL, "", 0.0, STR|DONTFREE };
+static Cell dollar1 = { CFLD, NULL, "", 0.0, STR|DONTFREE };
 
 void		 field_alloc(int, int);
 void		 field_realloc(int n);
@@ -97,9 +98,8 @@ record_get(FILE *infile)
 	if (c != 0 || buf[0] != '\0') {	/* normal record */
 		if (freeable(fldtab[0]))
 			xfree(fldtab[0]->sval);
-		fldtab[0]->ctype = CREC;
 		fldtab[0]->sval = buf;	/* buf == record */
-		fldtab[0]->tval = REC | STR | DONTFREE;
+		fldtab[0]->tval = STR | DONTFREE;
 		if (is_number(fldtab[0]->sval)) {
 			fldtab[0]->fval = atof(fldtab[0]->sval);
 			fldtab[0]->tval |= NUM;
@@ -179,7 +179,7 @@ field_from_record(void)
 		if (freeable(fldtab[i]))
 			xfree(fldtab[i]->sval);
 		fldtab[i]->sval = fr;
-		fldtab[i]->tval = FLD | STR | DONTFREE;
+		fldtab[i]->tval = STR | DONTFREE;
 		do
 			*fr++ = *r++;
 		while (*r != ' ' && *r != '\t' && *r != '\n' && *r != '\0');
@@ -245,7 +245,7 @@ field_purge(int n1, int n2)
 		if (freeable(p))
 			xfree(p->sval);
 		p->sval = "";
-		p->tval = FLD | STR | DONTFREE;
+		p->tval = STR | DONTFREE;
 	}
 }
 
@@ -346,8 +346,7 @@ record_build(void)
 
 	if (freeable(fldtab[0]))
 		xfree(fldtab[0]->sval);
-	fldtab[0]->ctype = CREC;
-	fldtab[0]->tval = REC | STR | DONTFREE;
+	fldtab[0]->tval = STR | DONTFREE;
 	fldtab[0]->sval = record;
 
 	   DPRINTF("in recbld fldtab[0]=%p\n", (void*)fldtab[0]);
