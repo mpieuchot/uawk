@@ -23,13 +23,13 @@
 .\" THIS SOFTWARE.
 .\"
 .Dd $Mdocdate: May 26 2019 $
-.Dt AWK 1
+.Dt UAWK 1
 .Os
 .Sh NAME
-.Nm awk
+.Nm uawk
 .Nd pattern-directed scanning and processing language
 .Sh SYNOPSIS
-.Nm awk
+.Nm uawk
 .Op Fl d
 .Op Ar prog | Fl f Ar progfile
 .Ar
@@ -187,7 +187,7 @@ Variable names with special meanings:
 Ordinal number of the current record.
 .El
 .Sh EXIT STATUS
-.Ex -std awk
+.Ex -std
 .Pp
 But note that the
 .Ic exit
@@ -208,6 +208,7 @@ Print a message:
 { print("hello there!") }
 .Ed
 .Sh SEE ALSO
+.Xr awk 1 ,
 .Xr printf 1
 .Sh BUGS
 There are no explicit conversions between numbers and strings.

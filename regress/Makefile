@@ -1,5 +1,5 @@
 
-UAWK?=	../obj/awk
+UAWK?=	../obj/uawk
 FILE=	/usr/share/misc/license.template
 
 .MAIN: all

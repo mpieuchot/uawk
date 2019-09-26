@@ -1,6 +1,6 @@
 #	$OpenBSD: Makefile,v 1.16 2017/07/10 21:30:37 espie Exp $
 
-PROG=	awk
+PROG=	uawk
 SRCS=	ytab.c main.c node.c symtab.c record.c run.c xmalloc.c
 LDADD=	-lm
 DPADD=	${LIBM}
