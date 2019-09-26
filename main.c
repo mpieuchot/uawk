@@ -23,6 +23,7 @@ ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF
 THIS SOFTWARE.
 ****************************************************************/
 
+#include <err.h>
 #include <stdio.h>
 #include <locale.h>
 #include <stdlib.h>
@@ -73,7 +74,7 @@ int main(int argc, char *argv[])
 		switch (ch) {
 		case 'f':
 			if (npfile >= MAX_PFILE - 1)
-				FATAL("too many -f options");
+				errx(1, "too many -f options");
 			pfile[npfile++] = optarg;
 			break;
 		case 'd':
@@ -118,7 +119,7 @@ int main(int argc, char *argv[])
 		if (*file == '-' && *(file+1) == '\0')
 			infile = stdin;
 		else if ((infile = fopen(file, "r")) == NULL)
-			FATAL("can't open file %s", file);
+			err(1, "can't open file %s", file);
 
 		execute(rootnode);
 	} else
@@ -141,7 +142,7 @@ int pgetc(void)		/* get 1 character from awk program */
 			if (strcmp(pfile[curpfile], "-") == 0)
 				yyin = stdin;
 			else if ((yyin = fopen(pfile[curpfile], "r")) == NULL)
-				FATAL("can't open file %s", pfile[curpfile]);
+				err(1, "can't open file %s", pfile[curpfile]);
 			lineno = 1;
 		}
 		if ((c = getc(yyin)) != EOF)
