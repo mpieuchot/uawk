@@ -30,7 +30,7 @@ THIS SOFTWARE.
 #define	xfree(a)	{ if ((a) != NULL) { free((a)); (a) = NULL; } }
 
 #define	NN(p)	((p) ? (p) : "(null)")	/* guaranteed non-null for DPRINTF */
-#define	DPRINTF(x)	if (debug) printf x
+#define	DPRINTF(x...)	if (debug) fprintf(stderr, x)
 
 extern int	compile_time;	/* 1 if compiling, 0 if running */
 
@@ -46,6 +46,7 @@ extern int	debug;
 
 enum ctype {
 	CUNK = 0,
+	CREC,
 	CFLD,
 	CVAR,
 	CTEMP,
@@ -77,7 +78,8 @@ typedef struct Cell {
 
 #define isstr(n)	((n)->tval & STR)
 #define isrec(n)	((n)->tval & REC)
-#define isfld(n)	((n)->tval & FLD)
+#define isrec2(n)	((n)->ctype == CREC)
+#define isfld(n)	((n)->ctype == CFLD)
 #define freeable(p)	( ((p)->tval & (STR|DONTFREE)) == STR )
 
 

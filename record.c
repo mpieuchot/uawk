@@ -51,7 +51,7 @@ int	donerec;	/* 1 if `record' is valid (no flds have changed) */
 
 int	lastfld	= 0;	/* last used field */
 
-static Cell dollar0 = { CFLD, NULL, "", 0.0, REC|STR|DONTFREE };
+static Cell dollar0 = { CREC, NULL, "", 0.0, REC|STR|DONTFREE };
 static Cell dollar1 = { CFLD, NULL, "", 0.0, FLD|STR|DONTFREE };
 
 void		 field_alloc(int, int);
@@ -97,6 +97,7 @@ record_get(FILE *infile)
 	if (c != 0 || buf[0] != '\0') {	/* normal record */
 		if (freeable(fldtab[0]))
 			xfree(fldtab[0]->sval);
+		fldtab[0]->ctype = CREC;
 		fldtab[0]->sval = buf;	/* buf == record */
 		fldtab[0]->tval = REC | STR | DONTFREE;
 		if (is_number(fldtab[0]->sval)) {
@@ -134,7 +135,7 @@ record_read(char **pbuf, int *pbufsize, FILE *inf)
 	}
 	xadjbuf(&buf, &bufsize, 1+rr-buf, recsize, &rr, "record_read 3");
 	*rr = 0;
-	   DPRINTF( ("readrec saw <%s>, returns %d\n", buf, c == EOF && rr == buf ? 0 : 1) );
+	   DPRINTF("readrec saw <%s>, returns %d\n", buf, c == EOF && rr == buf ? 0 : 1);
 	*pbuf = buf;
 	*pbufsize = bufsize;
 	return c == EOF && rr == buf ? 0 : 1;
@@ -211,8 +212,10 @@ record_cache(Cell *x)
 {
 	if (isfld(x))
 		field_from_record();
-	if (isrec(x))
+	if (isrec(x)) {
 		record_build();
+	}
+
 }
 
 void
@@ -339,15 +342,16 @@ record_build(void)
 	}
 	xadjbuf(&record, &recsize, 2+r-record, recsize, &r, "record_build 3");
 	*r = '\0';
-	   DPRINTF( ("in recbld fldtab[0]=%p\n", (void*)fldtab[0]) );
+	   DPRINTF("in recbld fldtab[0]=%p\n", (void*)fldtab[0]);
 
 	if (freeable(fldtab[0]))
 		xfree(fldtab[0]->sval);
+	fldtab[0]->ctype = CREC;
 	fldtab[0]->tval = REC | STR | DONTFREE;
 	fldtab[0]->sval = record;
 
-	   DPRINTF( ("in recbld fldtab[0]=%p\n", (void*)fldtab[0]) );
-	   DPRINTF( ("recbld = |%s|\n", record) );
+	   DPRINTF("in recbld fldtab[0]=%p\n", (void*)fldtab[0]);
+	   DPRINTF("recbld = |%s|\n", record);
 	donerec = 1;
 }
 

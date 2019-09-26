@@ -93,8 +93,8 @@ symtab_set(const char *n, const char *s, double f, unsigned t)
 	Cell *p;
 
 	if (n != NULL && (p = lookup(n, tp)) != NULL) {
-		   DPRINTF( ("setsymtab found %p: n=%s s=\"%s\" f=%g t=%o\n",
-			(void*)p, NN(p->nval), NN(p->sval), p->fval, p->tval) );
+		   DPRINTF("setsymtab found %p: n=%s s=\"%s\" f=%g t=%o\n",
+			(void*)p, NN(p->nval), NN(p->sval), p->fval, p->tval);
 		return p;
 	}
 	p = xmalloc(sizeof(Cell));
@@ -109,8 +109,8 @@ symtab_set(const char *n, const char *s, double f, unsigned t)
 	h = hash(n, tp->size);
 	p->cnext = tp->tab[h];
 	tp->tab[h] = p;
-	   DPRINTF( ("setsymtab set %p: n=%s s=\"%s\" f=%g t=%o\n",
-		(void*)p, p->nval, p->sval, p->fval, p->tval) );
+	   DPRINTF("setsymtab set %p: n=%s s=\"%s\" f=%g t=%o\n",
+		(void*)p, p->nval, p->sval, p->fval, p->tval);
 	return p;
 }
 

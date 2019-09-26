@@ -92,7 +92,7 @@ int main(int argc, char *argv[])
 	if (npfile == 0) {
 		if (argc <= 1)
 			usage();
-		   DPRINTF( ("program = |%s|\n", argv[0]) );
+		   DPRINTF("program = |%s|\n", argv[0]);
 		lexprog = argv[0];
 		argc--;
 		argv++;
@@ -110,7 +110,7 @@ int main(int argc, char *argv[])
 
 	compile_time = 1;
 	yyparse();
-	   DPRINTF( ("errorflag=%d\n", errorflag) );
+	   DPRINTF("errorflag=%d\n", errorflag);
 
 	setlocale(LC_NUMERIC, ""); /* back to whatever it is locally */
 	if (errorflag == 0) {

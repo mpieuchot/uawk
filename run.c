@@ -77,7 +77,7 @@ xadjbuf(char **pbuf, int *psiz, int minlen, int quantum, char **pbptr,
 		if (rminlen)
 			minlen += quantum - rminlen;
 		tbuf = xrealloc(*pbuf, minlen);
-		DPRINTF( ("adjbuf %s: %d %d (pbuf=%p, tbuf=%p)\n", whatrtn, *psiz, minlen, *pbuf, tbuf) );
+		DPRINTF("adjbuf %s: %d %d (pbuf=%p, tbuf=%p)\n", whatrtn, *psiz, minlen, *pbuf, tbuf);
 		*pbuf = tbuf;
 		*psiz = minlen;
 		if (pbptr)
@@ -207,7 +207,7 @@ tcell_put(Cell *a)
 	if (!istemp(a))
 		return;
 	if (freeable(a)) {
-		   DPRINTF( ("freeing %s %s %o\n", NN(a->nval), NN(a->sval), a->tval) );
+		   DPRINTF("freeing %s %s %o\n", NN(a->nval), NN(a->sval), a->tval);
 		xfree(a->sval);
 	}
 	if (a == tmps)
@@ -505,7 +505,7 @@ f_assign(Node **a, int n)
 	y = execute(a[1]);
 	x = execute(a[0]);
 	if (n == ASSIGN) {	/* ordinary assignment */
-		if (x == y && !(isfld(x) || isrec(x))) /* self-assignment: */
+		if (x == y && !(isfld(x) || isrec2(x))) /* self-assignment: */
 			;		/* leave alone unless it's a field */
 		else if ((y->tval & (STR|NUM)) == (STR|NUM)) {
 			sval_set(x, sval_get(y));
@@ -651,8 +651,8 @@ fval_get(Cell *vp)
 		if (is_number(vp->sval) && !(vp->tval&CON))
 			vp->tval |= NUM;	/* make NUM only sparingly */
 	}
-	   DPRINTF( ("getfval %p: %s = %g, t=%o\n",
-		(void*)vp, NN(vp->nval), vp->fval, vp->tval) );
+	   DPRINTF("getfval %p: %s = %g, t=%o\n",
+		(void*)vp, NN(vp->nval), vp->fval, vp->tval);
 	return(vp->fval);
 }
 
@@ -670,14 +670,14 @@ fval_set(Cell *vp, double f)
 		fldno = atoi(vp->nval);
 		if (fldno > *NF)
 			field_add(fldno);
-		   DPRINTF( ("setting field %d to %g\n", fldno, f) );
+		   DPRINTF("setting field %d to %g\n", fldno, f);
 	}
 	record_invalidate(vp);
 	if (freeable(vp))
 		xfree(vp->sval); /* free any previous string */
 	vp->tval &= ~STR;	/* mark string invalid */
 	vp->tval |= NUM;	/* mark number ok */
-	   DPRINTF( ("setfval %p: %s = %g, t=%o\n", (void*)vp, NN(vp->nval), f, vp->tval) );
+	   DPRINTF("setfval %p: %s = %g, t=%o\n", (void*)vp, NN(vp->nval), f, vp->tval);
 	return vp->fval = f;
 }
 
@@ -703,8 +703,8 @@ sval_get(Cell *vp)
 		vp->tval &= ~DONTFREE;
 		vp->tval |= STR;
 	}
-	   DPRINTF( ("getsval %p: %s = \"%s (%p)\", t=%o\n",
-		(void*)vp, NN(vp->nval), vp->sval, vp->sval, vp->tval) );
+	   DPRINTF("getsval %p: %s = \"%s (%p)\", t=%o\n",
+		(void*)vp, NN(vp->nval), vp->sval, vp->sval, vp->tval);
 	return(vp->sval);
 }
 
@@ -717,15 +717,15 @@ sval_set(Cell *vp, const char *s)
 	char *t;
 	int fldno;
 
-	   DPRINTF( ("starting sval_set %p: %s = \"%s\", t=%o\n",
-		(void*)vp, NN(vp->nval), s, vp->tval) );
+	   DPRINTF("starting sval_set %p: %s = \"%s\", t=%o\n",
+		(void*)vp, NN(vp->nval), s, vp->tval);
 	assert(vp->tval & (NUM | STR));
 
 	if (isfld(vp)) {
 		fldno = atoi(vp->nval);
 		if (fldno > *NF)
 			field_add(fldno);
-		   DPRINTF( ("setting field %d to %s (%p)\n", fldno, s, s) );
+		   DPRINTF("setting field %d to %s (%p)\n", fldno, s, s);
 	}
 	record_invalidate(vp);
 	t = xstrdup(s);	/* in case it's self-assign */
@@ -734,7 +734,7 @@ sval_set(Cell *vp, const char *s)
 	vp->tval &= ~NUM;
 	vp->tval |= STR;
 	vp->tval &= ~DONTFREE;
-	   DPRINTF( ("setsval %p: %s = \"%s (%p) \", t=%o\n",
-		(void*)vp, NN(vp->nval), t,t, vp->tval) );
+	   DPRINTF("setsval %p: %s = \"%s (%p) \", t=%o\n",
+		(void*)vp, NN(vp->nval), t,t, vp->tval);
 	return(vp->sval = t);
 }
