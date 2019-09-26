@@ -336,7 +336,6 @@ record_parse(void)
 		}
 	}
 	xadjbuf(&record, &recsize, 2+r-record, recsize, &r, "record_parse 3");
-		FATAL("built giant record `%.30s...'", record);
 	*r = '\0';
 	   DPRINTF( ("in record_parse fldtab[0]=%p\n", (void*)fldtab[0]) );
 
