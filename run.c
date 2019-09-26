@@ -651,7 +651,7 @@ fval_get(Cell *vp)
 		if (is_number(vp->sval) && !(vp->tval&CON))
 			vp->tval |= NUM;	/* make NUM only sparingly */
 	}
-	   DPRINTF( ("fval_get %p: %s = %g, t=%o\n",
+	   DPRINTF( ("getfval %p: %s = %g, t=%o\n",
 		(void*)vp, NN(vp->nval), vp->fval, vp->tval) );
 	return(vp->fval);
 }
@@ -677,7 +677,7 @@ fval_set(Cell *vp, double f)
 		xfree(vp->sval); /* free any previous string */
 	vp->tval &= ~STR;	/* mark string invalid */
 	vp->tval |= NUM;	/* mark number ok */
-	   DPRINTF( ("fval_set %p: %s = %g, t=%o\n", (void*)vp, NN(vp->nval), f, vp->tval) );
+	   DPRINTF( ("setfval %p: %s = %g, t=%o\n", (void*)vp, NN(vp->nval), f, vp->tval) );
 	return vp->fval = f;
 }
 
@@ -703,7 +703,7 @@ sval_get(Cell *vp)
 		vp->tval &= ~DONTFREE;
 		vp->tval |= STR;
 	}
-	   DPRINTF( ("sval_get %p: %s = \"%s (%p)\", t=%o\n",
+	   DPRINTF( ("getsval %p: %s = \"%s (%p)\", t=%o\n",
 		(void*)vp, NN(vp->nval), vp->sval, vp->sval, vp->tval) );
 	return(vp->sval);
 }
@@ -734,7 +734,7 @@ sval_set(Cell *vp, const char *s)
 	vp->tval &= ~NUM;
 	vp->tval |= STR;
 	vp->tval &= ~DONTFREE;
-	   DPRINTF( ("sval_set %p: %s = \"%s (%p) \", t=%o\n",
+	   DPRINTF( ("setsval %p: %s = \"%s (%p) \", t=%o\n",
 		(void*)vp, NN(vp->nval), t,t, vp->tval) );
 	return(vp->sval = t);
 }

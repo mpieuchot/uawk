@@ -132,7 +132,7 @@ record_read(char **pbuf, int *pbufsize, FILE *inf)
 	}
 	xadjbuf(&buf, &bufsize, 1+rr-buf, recsize, &rr, "record_read 3");
 	*rr = 0;
-	   DPRINTF( ("record_read saw <%s>, returns %d\n", buf, c == EOF && rr == buf ? 0 : 1) );
+	   DPRINTF( ("readrec saw <%s>, returns %d\n", buf, c == EOF && rr == buf ? 0 : 1) );
 	*pbuf = buf;
 	*pbufsize = bufsize;
 	return c == EOF && rr == buf ? 0 : 1;
@@ -337,15 +337,15 @@ record_parse(void)
 	}
 	xadjbuf(&record, &recsize, 2+r-record, recsize, &r, "record_parse 3");
 	*r = '\0';
-	   DPRINTF( ("in record_parse fldtab[0]=%p\n", (void*)fldtab[0]) );
+	   DPRINTF( ("in recbld fldtab[0]=%p\n", (void*)fldtab[0]) );
 
 	if (freeable(fldtab[0]))
 		xfree(fldtab[0]->sval);
 	fldtab[0]->tval = REC | STR | DONTFREE;
 	fldtab[0]->sval = record;
 
-	   DPRINTF( ("in record_parse fldtab[0]=%p\n", (void*)fldtab[0]) );
-	   DPRINTF( ("record_parse = |%s|\n", record) );
+	   DPRINTF( ("in recbld fldtab[0]=%p\n", (void*)fldtab[0]) );
+	   DPRINTF( ("recbld = |%s|\n", record) );
 	donerec = 1;
 }
 
