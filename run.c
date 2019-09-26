@@ -98,11 +98,11 @@ execute(Node *u)
 		curnode = a;
 		if (isvalue(a)) {
 			x = (Cell *) (a->narg[0]);
-			record_validate(x);
+			record_cache(x);
 			return x;
 		}
 		x = (*a->proc)(a->narg, a->nobj);
-		record_validate(x);
+		record_cache(x);
 		if (isexpr(a))
 			return x;
 		if (a->nnext == NULL)
@@ -645,7 +645,7 @@ fval_get(Cell *vp)
 {
 	assert(vp->tval & (NUM | STR));
 
-	record_validate(vp);
+	record_cache(vp);
 	if (!isnum(vp)) {	/* not a number */
 		vp->fval = atof(vp->sval);	/* best guess */
 		if (is_number(vp->sval) && !(vp->tval&CON))
@@ -692,7 +692,7 @@ sval_get(Cell *vp)
 
 	assert(vp->tval & (NUM | STR));
 
-	record_validate(vp);
+	record_cache(vp);
 	if (isstr(vp) == 0) {
 		if (freeable(vp))
 			xfree(vp->sval);

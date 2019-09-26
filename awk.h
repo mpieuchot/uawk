@@ -141,10 +141,8 @@ char		*sval_set(Cell *, const char *);
 /* record.c */
 void		 record_init(void);
 int		 record_get(FILE *);
-void		 record_validate(Cell *);
+void		 record_cache(Cell *);
 void		 record_invalidate(Cell *);
-void		 record_parse(void);
-void		 field_from_record(void);
 void		 field_add(int);
 Cell		*field_get(int);
 int		 is_number(const char *);

@@ -56,8 +56,10 @@ static Cell dollar1 = { CFLD, NULL, "", 0.0, FLD|STR|DONTFREE };
 
 void		 field_alloc(int, int);
 void		 field_realloc(int n);
-int		 record_read(char **buf, int *bufsize, FILE *inf);
 void		 field_purge(int, int);
+void		 field_from_record(void);
+void		 record_build(void);
+int		 record_read(char **buf, int *bufsize, FILE *inf);
 
 void
 record_init(void)
@@ -205,12 +207,12 @@ field_from_record(void)
 }
 
 void
-record_validate(Cell *x)
+record_cache(Cell *x)
 {
-	if (isfld(x) && !donefld)
+	if (isfld(x))
 		field_from_record();
-	if (isrec(x) && !donerec)
-		record_parse();
+	if (isrec(x))
+		record_build();
 }
 
 void
@@ -314,7 +316,7 @@ field_realloc(int n)
  * create $0 from $1..$NF if necessary
  */
 void
-record_parse(void)
+record_build(void)
 {
 	int i;
 	char *r, *p;
@@ -325,17 +327,17 @@ record_parse(void)
 	for (i = 1; i <= *NF; i++) {
 		p = sval_get(fldtab[i]);
 		xadjbuf(&record, &recsize, 1+strlen(p)+r-record, recsize, &r,
-		    "record_parse 1");
+		    "record_build 1");
 		while ((*r = *p++) != 0)
 			r++;
 		if (i < *NF) {
 			xadjbuf(&record, &recsize, 2+strlen(" ")+r-record,
-			    recsize, &r, "record_parse 2");
+			    recsize, &r, "record_build 2");
 			for (p = " "; (*r = *p++) != 0; )
 				r++;
 		}
 	}
-	xadjbuf(&record, &recsize, 2+r-record, recsize, &r, "record_parse 3");
+	xadjbuf(&record, &recsize, 2+r-record, recsize, &r, "record_build 3");
 	*r = '\0';
 	   DPRINTF( ("in recbld fldtab[0]=%p\n", (void*)fldtab[0]) );
 
