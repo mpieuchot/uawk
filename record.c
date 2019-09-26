@@ -96,8 +96,7 @@ record_get(FILE *infile)
 	buf[0] = 0;
 	c = record_read(&buf, &bufsize, infile);
 	if (c != 0 || buf[0] != '\0') {	/* normal record */
-		if (freeable(fldtab[0]))
-			xfree(fldtab[0]->sval);
+		cell_free(fldtab[0]);
 		fldtab[0]->sval = buf;	/* buf == record */
 		fldtab[0]->tval = STR | DONTFREE;
 		if (is_number(fldtab[0]->sval)) {
@@ -176,8 +175,7 @@ field_from_record(void)
 		i++;
 		if (i > nfields)
 			field_realloc(i);
-		if (freeable(fldtab[i]))
-			xfree(fldtab[i]->sval);
+		cell_free(fldtab[i]);
 		fldtab[i]->sval = fr;
 		fldtab[i]->tval = STR | DONTFREE;
 		do
@@ -242,8 +240,7 @@ field_purge(int n1, int n2)
 
 	for (i = n1; i <= n2; i++) {
 		p = fldtab[i];
-		if (freeable(p))
-			xfree(p->sval);
+		cell_free(p);
 		p->sval = "";
 		p->tval = STR | DONTFREE;
 	}
@@ -344,8 +341,7 @@ record_build(void)
 	*r = '\0';
 	   DPRINTF("in recbld fldtab[0]=%p\n", (void*)fldtab[0]);
 
-	if (freeable(fldtab[0]))
-		xfree(fldtab[0]->sval);
+	cell_free(fldtab[0]);
 	fldtab[0]->tval = STR | DONTFREE;
 	fldtab[0]->sval = record;
 

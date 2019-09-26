@@ -206,10 +206,7 @@ tcell_put(Cell *a)
 {
 	if (!istemp(a))
 		return;
-	if (freeable(a)) {
-		   DPRINTF("freeing %s %s %o\n", NN(a->nval), NN(a->sval), a->tval);
-		xfree(a->sval);
-	}
+	cell_free(a);
 	if (a == tmps)
 		FATAL("tempcell list is curdled");
 	a->cnext = tmps;
@@ -232,6 +229,15 @@ tcell_get(void)
 	tmps = x->cnext;
 	*x = tempcell;
 	return x;
+}
+
+void
+cell_free(Cell *a)
+{
+	if ((a->tval & (STR|DONTFREE)) == STR) {
+		DPRINTF("freeing %s %s %o\n", NN(a->nval), NN(a->sval), a->tval);
+		xfree(a->sval);
+	}
 }
 
 /* $( a[0] ) */
@@ -672,8 +678,7 @@ fval_set(Cell *vp, double f)
 		   DPRINTF("setting field %d to %g\n", fldno, f);
 	}
 	record_invalidate(vp);
-	if (freeable(vp))
-		xfree(vp->sval); /* free any previous string */
+	cell_free(vp);
 	vp->tval &= ~STR;	/* mark string invalid */
 	vp->tval |= NUM;	/* mark number ok */
 	   DPRINTF("setfval %p: %s = %g, t=%o\n", (void*)vp, NN(vp->nval), f, vp->tval);
@@ -693,8 +698,7 @@ sval_get(Cell *vp)
 
 	record_cache(vp);
 	if (isstr(vp) == 0) {
-		if (freeable(vp))
-			xfree(vp->sval);
+		cell_free(vp);
 		if (modf(vp->fval, &dtemp) == 0)	/* it's integral */
 			n = xasprintf(&vp->sval, "%.30g", vp->fval);
 		else
@@ -728,8 +732,7 @@ sval_set(Cell *vp, const char *s)
 	}
 	record_invalidate(vp);
 	t = xstrdup(s);	/* in case it's self-assign */
-	if (freeable(vp))
-		xfree(vp->sval);
+	cell_free(vp);
 	vp->tval &= ~NUM;
 	vp->tval |= STR;
 	vp->tval &= ~DONTFREE;

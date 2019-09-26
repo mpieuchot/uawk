@@ -77,7 +77,6 @@ typedef struct Cell {
 #define isstr(n)	((n)->tval & STR)
 #define isrec(n)	((n)->ctype == CREC)
 #define isfld(n)	((n)->ctype == CFLD)
-#define freeable(p)	( ((p)->tval & (STR|DONTFREE)) == STR )
 
 
 extern Cell	*nrloc;		/* NR */
@@ -162,6 +161,7 @@ extern	Cell	*f_condexpr(Node **, int);
 extern	Cell	*f_if(Node **, int);
 extern	Cell	*f_print(Node **, int);
 extern	Cell	*f_null(Node **, int);
+void		 cell_free(Cell *);
 
 /* xmalloc.c */
 void	*xmalloc(size_t);
