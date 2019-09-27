@@ -131,10 +131,6 @@ Node		*node_link(Node *, Node *);
 /* symtab.c */
 void		 symtab_init(void);
 Cell		*symtab_set(const char *, const char *, double, unsigned int);
-double		 fval_get(Cell *);
-double		 fval_set(Cell *, double);
-char		*sval_get(Cell *);
-char		*sval_set(Cell *, const char *);
 
 /* record.c */
 void		 record_init(void);
@@ -162,6 +158,10 @@ extern	Cell	*f_if(Node **, int);
 extern	Cell	*f_print(Node **, int);
 extern	Cell	*f_null(Node **, int);
 void		 cell_free(Cell *);
+double		 fval_get(Cell *);
+double		 fval_set(Cell *, double);
+char		*sval_get(Cell *);
+char		*sval_set(Cell *, const char *);
 
 /* xmalloc.c */
 void	*xmalloc(size_t);
