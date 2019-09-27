@@ -42,12 +42,6 @@ struct array {			/* symbol table array */
 #define	NSYMTAB	50		/* initial size of a symbol table */
 struct array	*symtab;	/* main symbol table */
 
-double	*NF;		/* number of fields in current record */
-double	*NR;		/* number of current record */
-
-Cell		*nrloc;		/* NR */
-Cell		*nfloc;		/* NF */
-
 Cell		*nullloc;	/* empty cell, used for if(x)... tests */
 Cell		*literal0;
 
@@ -64,11 +58,6 @@ symtab_init(void)
 	literal0 = symtab_set("0", "0", 0.0, NUM|STR|CON|DONTFREE);
 	nullloc = symtab_set("$zero&null", "", 0.0, NUM|STR|CON|DONTFREE);
 	nullnode = cell2node(nullloc, CCON);
-
-	nfloc = symtab_set("NF", "", 0.0, NUM);
-	NF = &nfloc->fval;
-	nrloc = symtab_set("NR", "", 0.0, NUM);
-	NR = &nrloc->fval;
 }
 
 struct array *

@@ -79,9 +79,6 @@ typedef struct Cell {
 #define isfld(n)	((n)->ctype == CFLD)
 
 
-extern Cell	*nrloc;		/* NR */
-extern Cell	*nfloc;		/* NF */
-
 
 
 /* Node:  parse tree is made of nodes, with Cell's at bottom */

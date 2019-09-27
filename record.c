@@ -42,6 +42,12 @@ int	recsize	= RECSIZE;
 char	*fields;
 int	fieldssize = RECSIZE;
 
+Cell	*nrloc;		/* NR */
+double	*NR;		/* number of current record */
+Cell	*nfloc;		/* NF */
+double	*NF;		/* number of fields in current record */
+
+
 Cell	**fldtab;	/* pointers to Cells */
 
 #define	MAXFLD	2
@@ -78,6 +84,11 @@ record_init(void)
 	fldtab[0]->sval = record;
 	fldtab[0]->nval = xstrdup("0");
 	field_alloc(1, nfields);
+
+	nfloc = symtab_set("NF", "", 0.0, NUM);
+	NF = &nfloc->fval;
+	nrloc = symtab_set("NR", "", 0.0, NUM);
+	NR = &nrloc->fval;
 }
 
 /*
